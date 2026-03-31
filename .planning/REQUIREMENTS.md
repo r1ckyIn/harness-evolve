@@ -33,11 +33,11 @@ Make Claude Code harnesses self-improving without manual analysis.
 
 - [ ] **ANL-01**: Shell pre-processing layer extracts frequency counts, top-N patterns, and statistical summaries from raw logs before agent analysis
 - [ ] **ANL-02**: Agent-based classifier reads compressed summaries and classifies patterns using routing decision tree
-- [ ] **ANL-03**: Detect repeated prompts (>5 occurrences of similar short prompts → suggest hook/alias)
-- [ ] **ANL-04**: Detect long repeated prompts (>200 words, repeated 2+ times → suggest skill creation)
-- [ ] **ANL-05**: Detect repeated permission approvals (same tool approved >10 times across 3+ sessions → suggest adding to allowedTools)
-- [ ] **ANL-06**: Detect recurring code preferences/corrections (>3 same correction pattern → suggest rule)
-- [ ] **ANL-07**: Detect personal/contextual information mentions → suggest memory entry
+- [ ] **ANL-03**: Detect repeated prompts (>5 occurrences of similar short prompts -> suggest hook/alias)
+- [ ] **ANL-04**: Detect long repeated prompts (>200 words, repeated 2+ times -> suggest skill creation)
+- [ ] **ANL-05**: Detect repeated permission approvals (same tool approved >10 times across 3+ sessions -> suggest adding to allowedTools)
+- [ ] **ANL-06**: Detect recurring code preferences/corrections (>3 same correction pattern -> suggest rule)
+- [ ] **ANL-07**: Detect personal/contextual information mentions -> suggest memory entry
 - [ ] **ANL-08**: Cross-session pattern aggregation — analyze accumulated data across sessions, not just current session
 - [ ] **ANL-09**: Configuration drift detection — compare content across rules, CLAUDE.md, memory, settings for contradictions and redundancies
 
@@ -51,7 +51,7 @@ Make Claude Code harnesses self-improving without manual analysis.
 - [ ] **RTG-06**: Route to memory for short-term contextual/personal information
 - [ ] **RTG-07**: Route to settings.json for permissions and global configuration
 - [ ] **RTG-08**: Dynamic environment discovery — scan settings.json (enabledPlugins), .claude/ directory, plugin SKILL.md metadata to detect installed tools
-- [ ] **RTG-09**: Adapt routing when installed tools are detected (GSD → suggest GSD patterns; Cog → suggest memory tiers; etc.)
+- [ ] **RTG-09**: Adapt routing when installed tools are detected (GSD -> suggest GSD patterns; Cog -> suggest memory tiers; etc.)
 - [ ] **RTG-10**: Adapt routing when new Claude Code features are detected (version check comparison)
 
 ### Recommendation Delivery
@@ -103,7 +103,50 @@ Make Claude Code harnesses self-improving without manual analysis.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| (Filled by roadmapper) | | |
+| CAP-01 | Phase 2 | Pending |
+| CAP-02 | Phase 2 | Pending |
+| CAP-03 | Phase 2 | Pending |
+| CAP-04 | Phase 2 | Pending |
+| CAP-05 | Phase 1 | Pending |
+| CAP-06 | Phase 1 | Pending |
+| CAP-07 | Phase 1 | Pending |
+| TRG-01 | Phase 1 | Pending |
+| TRG-02 | Phase 4 | Pending |
+| TRG-03 | Phase 5 | Pending |
+| TRG-04 | Phase 5 | Pending |
+| ANL-01 | Phase 3 | Pending |
+| ANL-02 | Phase 4 | Pending |
+| ANL-03 | Phase 4 | Pending |
+| ANL-04 | Phase 4 | Pending |
+| ANL-05 | Phase 4 | Pending |
+| ANL-06 | Phase 4 | Pending |
+| ANL-07 | Phase 4 | Pending |
+| ANL-08 | Phase 3 | Pending |
+| ANL-09 | Phase 4 | Pending |
+| RTG-01 | Phase 4 | Pending |
+| RTG-02 | Phase 4 | Pending |
+| RTG-03 | Phase 4 | Pending |
+| RTG-04 | Phase 4 | Pending |
+| RTG-05 | Phase 4 | Pending |
+| RTG-06 | Phase 4 | Pending |
+| RTG-07 | Phase 4 | Pending |
+| RTG-08 | Phase 3 | Pending |
+| RTG-09 | Phase 4 | Pending |
+| RTG-10 | Phase 4 | Pending |
+| DEL-01 | Phase 5 | Pending |
+| DEL-02 | Phase 5 | Pending |
+| DEL-03 | Phase 5 | Pending |
+| DEL-04 | Phase 5 | Pending |
+| DEL-05 | Phase 5 | Pending |
+| DEL-06 | Phase 5 | Pending |
+| ONB-01 | Phase 1 | Pending |
+| ONB-02 | Phase 6 | Pending |
+| ONB-03 | Phase 1 | Pending |
+| ONB-04 | Phase 3 | Pending |
+| QUA-01 | Phase 5 | Pending |
+| QUA-02 | Phase 5 | Pending |
+| QUA-03 | Phase 5 | Pending |
+| QUA-04 | Phase 6 | Pending |
 
 ---
-*Last updated: 2026-03-31*
+*Last updated: 2026-03-31 -- Traceability added by roadmapper*
