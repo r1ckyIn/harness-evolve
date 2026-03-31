@@ -31,7 +31,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Two concurrent processes incrementing the counter 100 times each produce a counter value of exactly 200 (no lost writes)
   4. Installing the plugin with default config.json works immediately -- no manual configuration required
   5. UserPromptSubmit stdout injection works on the current Claude Code version (Gray Area #1 validated or documented as broken with fallback plan)
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md -- Project scaffold, Zod schemas, config loader, directory management
+- [ ] 01-02-PLAN.md -- Secret scrubber (14 patterns) and JSONL logger with scrub-before-write
+- [ ] 01-03-PLAN.md -- Atomic counter with cross-process locking and concurrent integration test
 
 ### Phase 2: Collection Hooks
 **Goal**: Every user interaction with Claude Code generates a structured log entry automatically
@@ -96,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Storage | 0/? | Not started | - |
+| 1. Foundation & Storage | 0/3 | Planning complete | - |
 | 2. Collection Hooks | 0/? | Not started | - |
 | 3. Pre-Processing & Environment Discovery | 0/? | Not started | - |
 | 4. Analysis Engine & Routing | 0/? | Not started | - |
