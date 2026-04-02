@@ -93,8 +93,8 @@ Each task was committed atomically:
 
 **1. [Rule 1 - Bug] Fixed Google API key test string length**
 - **Found during:** Task 1 (scrubber tests)
-- **Issue:** Test string `AIzaSyC3B7xj1234567890abcdefghijklmnop` was 34 chars after prefix, but regex requires exactly 35
-- **Fix:** Added one character to make `AIzaSyC3B7xj1234567890abcdefghijklmnopq` (39 total = 4 prefix + 35)
+- **Issue:** Test string was 34 chars after prefix, but regex requires exactly 35
+- **Fix:** Added one character to make 39 total (4 prefix + 35)
 - **Files modified:** tests/unit/scrubber.test.ts
 - **Verification:** Test passes, pattern correctly matches
 - **Committed in:** 312d919 (Task 1 commit)

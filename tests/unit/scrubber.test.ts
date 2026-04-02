@@ -111,7 +111,8 @@ describe('scrubString', () => {
   });
 
   it('redacts Google API key (AIza prefix)', () => {
-    const input = 'AIzaSyC3B7xj1234567890abcdefghijklmnopq';
+    // Concatenated to avoid GitHub secret scanning false positive
+    const input = 'AIza' + 'SyFAKE_TEST_KEY_NOT_REAL_0000000000';
     expect(scrubString(input)).toBe('[REDACTED:google_api_key]');
   });
 
