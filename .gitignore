@@ -1,12 +1,38 @@
 node_modules/
 dist/
 coverage/
+
+# Claude Code local config (never push)
 CLAUDE.md
+*_CN.md
+*.cn.md
+
+# IDE
 .DS_Store
 .idea/
 .vscode/
+
+# Claude Code internals (keep skills for distribution)
 .claude/*
 !.claude/skills/
+
+# Logs
 *.log
+logs/
+
+# Environment variables (never commit)
 .env
 .env.*
+.env.local
+.env.staging
+.env.production
+
+# Security
+*.pem
+*.key
+*.crt
+
+# Docker / DB
+docker-data/
+*.db
+*.sqlite3
