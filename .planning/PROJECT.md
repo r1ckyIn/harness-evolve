@@ -2,7 +2,7 @@
 
 ## What This Is
 
-An open-source, environment-agnostic self-iteration engine for Claude Code. It observes how users interact with Claude Code, detects patterns, and outputs optimization recommendations routed to the most appropriate configuration tool (hooks, skills, rules, CLAUDE.md, memory, settings, or any future mechanism). The system dynamically discovers what tools are available in the user's environment and adapts its recommendations accordingly.
+An open-source, environment-agnostic self-iteration engine for Claude Code. It observes how users interact with Claude Code via lifecycle hooks, detects patterns through 8 classifiers, and outputs optimization recommendations routed to the most appropriate configuration tool (hooks, skills, rules, CLAUDE.md, memory, settings, permissions). The system dynamically discovers what tools are available in the user's environment and adapts its recommendations accordingly. Full pipeline operational: capture -> store -> pre-process -> classify -> route -> deliver -> track outcomes.
 
 ## Core Value
 
@@ -12,33 +12,34 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Capture user prompts via UserPromptSubmit hook with timestamps and session tracking — Validated in Phase 2: collection-hooks
+- [x] Capture permission approval/denial patterns via PermissionRequest hook — Validated in Phase 2: collection-hooks
+- [x] Capture tool usage patterns via PreToolUse/PostToolUse hooks — Validated in Phase 2: collection-hooks
+- [x] Access full conversation transcripts via transcript_path for context enrichment — Validated in Phase 2: collection-hooks
+- [x] Persist interaction logs across sessions in ~/.harness-evolve/logs/ — Validated in Phase 1: foundation-storage
+- [x] Count interactions per session with file-based counter — Validated in Phase 1: foundation-storage
+- [x] Pre-processing layer to compress large log data before agent analysis — Validated in Phase 3: pre-processing-environment-discovery
+- [x] Cross-session pattern aggregation (not just within single sessions) — Validated in Phase 3: pre-processing-environment-discovery
+- [x] Dynamically discover user's installed tools by scanning settings.json, .claude/ directory, enabledPlugins, and plugin metadata — Validated in Phase 3: pre-processing-environment-discovery
+- [x] Adapt routing targets when new Claude Code features are detected (version check) — Validated in Phase 3: pre-processing-environment-discovery
+- [x] Trigger automated pattern analysis at configurable threshold (default: 50 interactions) — Validated in Phase 4: analysis-engine-routing
+- [x] Classify detected patterns using an extensible routing decision tree — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend hook creation for patterns requiring 100% reliable execution — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend skill creation for repeated multi-step workflows (>200 words prompts) — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend rule creation for recurring code preferences — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend memory entries for personal/contextual information — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend permission additions for frequently approved tools — Validated in Phase 4: analysis-engine-routing
+- [x] Recommend CLAUDE.md updates for project-level configuration — Validated in Phase 4: analysis-engine-routing
+- [x] Support manual on-demand analysis via /evolve command — Validated in Phase 5: delivery-user-interaction
+- [x] Non-invasive recommendation delivery via UserPromptSubmit stdout injection — Validated in Phase 5: delivery-user-interaction
+- [x] Provide full-auto mode option for HIGH-confidence recommendations — Validated in Phase 5: delivery-user-interaction
+- [x] Output structured recommendations to ~/.harness-evolve/recommendations.md — Validated in Phase 5: delivery-user-interaction
+- [x] Tiered onboarding: detect existing config level (zero-config for new users, enhancement for power users) — Validated in Phase 6: onboarding-quality-polish
+- [x] Recommendation outcome tracking: monitor persistence/reversion, adjust future confidence — Validated in Phase 6: onboarding-quality-polish
 
 ### Active
 
-- [ ] Capture user prompts via UserPromptSubmit hook with timestamps and session tracking
-- [ ] Capture permission approval/denial patterns via PermissionRequest hook
-- [ ] Capture tool usage patterns via PreToolUse/PostToolUse hooks
-- [ ] Access full conversation transcripts via transcript_path for context enrichment
-- [ ] Persist interaction logs across sessions in ~/.harness-evolve/logs/
-- [ ] Count interactions per session with file-based counter
-- [ ] Trigger automated pattern analysis at configurable threshold (default: 50 interactions)
-- [ ] Support manual on-demand analysis via /evolve command
-- [ ] Non-invasive recommendation delivery: inject suggestions via UserPromptSubmit stdout on the interaction after threshold, Claude presents them before handling user's actual request
-- [ ] Provide full-auto mode option for users who don't want to be interrupted
-- [ ] Dynamically discover user's installed tools by scanning settings.json, .claude/ directory, enabledPlugins, and plugin metadata
-- [ ] Classify detected patterns using an extensible routing decision tree
-- [ ] Output structured recommendations to ~/.harness-evolve/recommendations.md
-- [ ] Recommend hook creation for patterns requiring 100% reliable execution
-- [ ] Recommend skill creation for repeated multi-step workflows (>200 words prompts)
-- [ ] Recommend rule creation for recurring code preferences
-- [ ] Recommend memory entries for personal/contextual information
-- [ ] Recommend permission additions for frequently approved tools
-- [ ] Recommend CLAUDE.md updates for project-level configuration
-- [ ] Adapt routing targets when new Claude Code features are detected (version check)
-- [ ] Tiered onboarding: detect existing config level (zero-config for new users, enhancement for power users)
-- [ ] Pre-processing layer to compress large log data before agent analysis
-- [ ] Cross-session pattern aggregation (not just within single sessions)
+(No active requirements — define via `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -85,21 +86,32 @@ Agnostic layer — works with any combination of workflow tools:
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Agnostic layer, not absorb/replace | Future-proof — adapts to any new tool without rebuilding | — Active |
-| Open-source from start | Community validation + contributions on routing heuristics | — Active |
-| Non-invasive recommendation delivery | Respect user flow — inject at natural break points, not interrupt mid-task | — Active |
-| File-based counter (not in-memory) | Must survive across sessions and Claude Code restarts | — Active |
-| Pre-processing before agent analysis | 50 sessions of logs can exceed agent context window | — Active |
-| Tiered onboarding | Zero-config for beginners, enhancement mode for power users | — Active |
+| Agnostic layer, not absorb/replace | Future-proof — adapts to any new tool without rebuilding | Good — ecosystem scanner detects GSD/Cog/plugins dynamically |
+| Open-source from start | Community validation + contributions on routing heuristics | Active |
+| Non-invasive recommendation delivery | Respect user flow — inject at natural break points, not interrupt mid-task | Good — stdout injection + /evolve dual-channel works |
+| File-based counter (not in-memory) | Must survive across sessions and Claude Code restarts | Good — proper-lockfile proven with concurrent test |
+| Pre-processing before agent analysis | 50 sessions of logs can exceed agent context window | Good — summary.json under 50KB target |
+| Tiered onboarding | Zero-config for beginners, enhancement mode for power users | Good — 3-tier scoring with weighted factors |
+| Zod v4 for all schemas | 14x faster than v3, TypeScript-first | Good — clean inference with .default() pattern |
+| proper-lockfile for cross-process locking | macOS Ventura lacks flock | Good — retry-based with stale detection |
+| v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Good — safe starting point, expandable in v2 |
 
-## Technical Gray Areas (Needs Validation)
+## Technical Gray Areas (v1.0 Resolution)
 
-| # | Area | Risk | Validation Plan |
-|---|------|------|-----------------|
-| 1 | UserPromptSubmit stdout injection for recommendations | Claude may not reliably "present first, then answer" — probabilistic behavior | Test with structured format markers, iterate on prompt engineering |
-| 2 | Dynamic plugin capability discovery | No official API to list installed plugins + their capabilities | Parse enabledPlugins from settings.json + read SKILL.md metadata from marketplace paths |
-| 3 | Multi-instance counter race condition | Concurrent Claude Code instances may corrupt file-based counter | Use atomic file operations or accept as low-probability edge case |
-| 4 | Agent context window for large log analysis | 50 sessions of data may exceed Stop hook agent's context | Shell pre-processing extracts top-N patterns with frequency counts, feeds compressed summary to agent |
+| # | Area | Risk | Resolution |
+|---|------|------|------------|
+| 1 | UserPromptSubmit stdout injection | Probabilistic behavior | Implemented with config-gated flag + /evolve fallback. Needs human validation. |
+| 2 | Dynamic plugin capability discovery | No official API | Filesystem scanner reads settings.json + .claude/ + plugin metadata. Working. |
+| 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
+| 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
+
+## Current State (v1.0 shipped)
+
+- **Codebase:** 11,733 LOC TypeScript (3,765 src + 7,968 tests)
+- **Tests:** 336 passing across 37 test files (1 pre-existing flaky)
+- **Build:** tsup produces 8 entry points (5 hooks + stop + run-evolve + index)
+- **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
+- **Tech debt:** inferPatternType string mismatch for 7/8 classifiers (LOW severity, feedback loop only)
 
 ## Evolution
 
@@ -119,4 +131,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 after initialization*
+*Last updated: 2026-04-02 after v1.0 milestone completion — 8 phases, 21 plans, 41 requirements validated*

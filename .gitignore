@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+CLAUDE.md
+.DS_Store
+.idea/
+.vscode/
+.claude/*
+!.claude/skills/
+*.log
+.env
+.env.*
