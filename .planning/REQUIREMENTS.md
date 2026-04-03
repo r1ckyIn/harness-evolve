@@ -65,21 +65,21 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TDT-01 | — | Pending |
-| TDT-02 | — | Pending |
-| TDT-03 | — | Pending |
-| NPM-01 | — | Pending |
-| NPM-02 | — | Pending |
-| NPM-03 | — | Pending |
-| NPM-04 | — | Pending |
-| CLI-01 | — | Pending |
-| CLI-02 | — | Pending |
-| CLI-03 | — | Pending |
-| CLI-04 | — | Pending |
-| CLI-05 | — | Pending |
-| CIC-01 | — | Pending |
-| CIC-02 | — | Pending |
-| CIC-03 | — | Pending |
+| TDT-01 | Phase 9 | Pending |
+| TDT-02 | Phase 9 | Pending |
+| TDT-03 | Phase 9 | Pending |
+| NPM-01 | Phase 10 | Pending |
+| NPM-02 | Phase 10 | Pending |
+| NPM-03 | Phase 10 | Pending |
+| NPM-04 | Phase 10 | Pending |
+| CLI-01 | Phase 11 | Pending |
+| CLI-02 | Phase 11 | Pending |
+| CLI-03 | Phase 11 | Pending |
+| CLI-04 | Phase 11 | Pending |
+| CLI-05 | Phase 11 | Pending |
+| CIC-01 | Phase 10 | Pending |
+| CIC-02 | Phase 10 | Pending |
+| CIC-03 | Phase 10 | Pending |
 
 ---
-*Last updated: 2026-04-03 — v1.1 requirements defined from research*
+*Last updated: 2026-04-02 — v1.1 roadmap traceability mapped*
