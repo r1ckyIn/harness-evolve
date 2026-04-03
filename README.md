@@ -2,10 +2,11 @@
 
 <div align="center">
 
+[![npm version](https://img.shields.io/npm/v/harness-evolve?style=flat-square)](https://www.npmjs.com/package/harness-evolve)
+[![CI](https://img.shields.io/github/actions/workflow/status/r1ckyIn/harness-evolve/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/r1ckyIn/harness-evolve/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![Language](https://img.shields.io/badge/Language-TypeScript-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![Runtime](https://img.shields.io/badge/Runtime-Node.js_22-339933?style=flat-square&logo=node.js)](https://nodejs.org)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-336_passing-brightgreen?style=flat-square)]()
 
 **A self-iteration engine for Claude Code — automatically detects usage patterns and routes optimization recommendations to the right configuration tool.**
 
