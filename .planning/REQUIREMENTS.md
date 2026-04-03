@@ -31,9 +31,9 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 
 ### CI/CD
 
-- [ ] **CIC-01**: GitHub Actions CI workflow runs build + test + typecheck on every push and PR to main
-- [ ] **CIC-02**: Automated npm publish triggered by version tag push (v*) using npm Trusted Publishing (OIDC)
-- [ ] **CIC-03**: README.md displays npm version badge, CI status badge, and license badge (shields.io flat-square)
+- [x] **CIC-01**: GitHub Actions CI workflow runs build + test + typecheck on every push and PR to main
+- [x] **CIC-02**: Automated npm publish triggered by version tag push (v*) using npm Trusted Publishing (OIDC)
+- [x] **CIC-03**: README.md displays npm version badge, CI status badge, and license badge (shields.io flat-square)
 
 ---
 
@@ -77,9 +77,9 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 | CLI-03 | Phase 11 | Pending |
 | CLI-04 | Phase 11 | Pending |
 | CLI-05 | Phase 11 | Pending |
-| CIC-01 | Phase 10 | Pending |
-| CIC-02 | Phase 10 | Pending |
-| CIC-03 | Phase 10 | Pending |
+| CIC-01 | Phase 10 | Complete |
+| CIC-02 | Phase 10 | Complete |
+| CIC-03 | Phase 10 | Complete |
 
 ---
 *Last updated: 2026-04-02 — v1.1 roadmap traceability mapped*
