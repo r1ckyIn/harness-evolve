@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Stabilization & Production
-status: executing
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-04-03T14:23:01Z"
-last_activity: 2026-04-03 -- Phase 11 Plan 01 complete
+status: verifying
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-04-03T14:33:21.078Z"
+last_activity: 2026-04-03
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 86
 ---
 
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 Phase: 11 (cli-commands-install-experience) — EXECUTING
 Plan: 2 of 2 (Plan 01 complete)
-Status: Executing Phase 11
-Last activity: 2026-04-03 -- Phase 11 Plan 01 complete
+Status: Phase complete — ready for verification
+Last activity: 2026-04-03
 
 Progress: [█████████░] 86% (v1.1 scope)
 
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - [Phase 11]: Hook path resolution: dirname(import.meta.dirname) from dist/cli/ to dist/, then into hooks/
 - [Phase 11]: mergeHooks uses HARNESS_EVOLVE_MARKER string detection to prevent duplicate hook registration
 - [Phase 11]: Commander subcommand registration pattern: registerXxxCommand(program) for extensibility
+- [Phase 11]: Status checks hook registration via JSON.stringify(hooks).includes(HARNESS_EVOLVE_MARKER)
+- [Phase 11]: Uninstall removes empty event keys after filtering, creates backup before any settings modification
 
 ### Pending Todos
 
@@ -78,6 +80,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-03T14:23:01Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-04-03T14:33:21.074Z
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
