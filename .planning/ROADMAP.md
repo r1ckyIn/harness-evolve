@@ -42,7 +42,7 @@
   4. All existing tests (336+) continue to pass after changes
 **Plans:** 3 plans
 Plans:
-- [ ] 09-01-PLAN.md — PatternType enum + outcome tracker fix (TDT-01)
+- [x] 09-01-PLAN.md — PatternType enum + outcome tracker fix (TDT-01)
 - [x] 09-02-PLAN.md — Concurrent counter lock contention fix (TDT-02)
 - [ ] 09-03-PLAN.md — Strategy pattern applier registry with RULE applier (TDT-03)
 

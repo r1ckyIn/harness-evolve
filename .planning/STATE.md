@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Stabilization & Production
 status: executing
-stopped_at: Completed 09-02-PLAN.md
-last_updated: "2026-04-03T12:17:45.935Z"
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-04-03T12:21:09.779Z"
 last_activity: 2026-04-03
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 09 (tech-debt-auto-apply-expansion) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-04-03
 
@@ -52,6 +52,8 @@ Recent decisions affecting current work:
 - [v1.1 roadmap]: TDT-03 grouped with tech debt -- builds on PatternType enum from TDT-01
 - [v1.1 roadmap]: ESM-only publish, npm OIDC trusted publishing
 - [Phase 09]: Lock retry params: 50 retries with randomize:true jitter to eliminate concurrent-counter ELOCKED flakes
+- [Phase 09]: Keep outcomeEntrySchema pattern_type as z.string() for backward compatibility with existing JSONL history
+- [Phase 09]: For multi-sub-type classifier prefixes, inferPatternType returns most common sub-type as best-effort default
 
 ### Pending Todos
 
@@ -64,6 +66,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-03T12:17:45.930Z
-Stopped at: Completed 09-02-PLAN.md
+Last session: 2026-04-03T12:21:09.774Z
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
