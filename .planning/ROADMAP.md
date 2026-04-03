@@ -77,6 +77,6 @@
 | 6. Onboarding & Quality Polish | v1.0 | 2/2 | Complete | 2026-04-01 |
 | 7. Integration Wiring | v1.0 | 3/3 | Complete | 2026-04-01 |
 | 8. Fix Permission Constants Mismatch | v1.0 | 1/1 | Complete | 2026-04-01 |
-| 9. Tech Debt & Auto-Apply Expansion | v1.1 | 0/? | Not started | - |
-| 10. npm Package & CI/CD Pipeline | v1.1 | 0/? | Not started | - |
+| 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
+| 10. npm Package & CI/CD Pipeline | v1.1 | 1/2 | In progress | - |
 | 11. CLI Commands & Install Experience | v1.1 | 0/? | Not started | - |
