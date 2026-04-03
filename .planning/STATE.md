@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Stabilization & Production
 status: executing
-stopped_at: Completed 10-02-PLAN.md
-last_updated: "2026-04-03T13:05:37.467Z"
-last_activity: 2026-04-03
+stopped_at: Completed 10-01-PLAN.md and 10-02-PLAN.md
+last_updated: "2026-04-03T13:09:25.156Z"
+last_activity: 2026-04-03 -- Phase 10 all plans complete
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 0
+  completed_plans: 5
+  percent: 80
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 Phase: 10 (npm-package-ci-cd-pipeline) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
-Last activity: 2026-04-03
+Status: All plans complete — awaiting verification
+Last activity: 2026-04-03 -- Phase 10 all plans complete
 
-Progress: [░░░░░░░░░░] 0% (v1.1 scope)
+Progress: [########░░] 80% (v1.1 scope)
 
 ## Performance Metrics
 
@@ -58,6 +58,9 @@ Recent decisions affecting current work:
 - [Phase 09]: RuleApplier is create-only: never overwrites existing rule files to respect user customizations
 - [Phase 10]: CI runs publint + attw in addition to build/test/typecheck for comprehensive package validation
 - [Phase 10]: Publish workflow includes npm install -g npm@latest to ensure OIDC-compatible npm version in CI
+- [Phase 10]: Exclude CLI entry from tsup DTS generation -- bin entries not imported as libraries
+- [Phase 10]: Shebang preserved natively by esbuild/tsup -- no postbuild script needed
+- [Phase 10]: Files whitelist approach over .npmignore for explicit tarball control
 
 ### Pending Todos
 
@@ -66,10 +69,11 @@ None.
 ### Blockers/Concerns
 
 - Hook path resolution after npm install is the dominant risk (research Pitfall #16)
-- Flaky concurrent-counter test must be fixed before CI can gate reliably
+- Flaky concurrent-counter test fixed in Phase 09 (lock retry params)
+- First npm publish must be manual before OIDC trusted publishing works
 
 ## Session Continuity
 
-Last session: 2026-04-03T13:05:37.461Z
-Stopped at: Completed 10-02-PLAN.md
+Last session: 2026-04-03T13:09:25.156Z
+Stopped at: Completed 10-01-PLAN.md and 10-02-PLAN.md
 Resume file: None

@@ -16,10 +16,10 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 
 ### npm Package
 
-- [ ] **NPM-01**: Package.json has complete metadata (description, keywords, license, repository, homepage, author, engines) for npm registry listing
-- [ ] **NPM-02**: Package.json `files` field restricts published content to dist/, README.md, LICENSE, package.json only (no tests, no .planning/)
-- [ ] **NPM-03**: Package.json `exports` map correctly exposes ESM entry points for programmatic consumers
-- [ ] **NPM-04**: Package.json `bin` field registers `harness-evolve` CLI command pointing to compiled CLI entry
+- [x] **NPM-01**: Package.json has complete metadata (description, keywords, license, repository, homepage, author, engines) for npm registry listing
+- [x] **NPM-02**: Package.json `files` field restricts published content to dist/, README.md, LICENSE, package.json only (no tests, no .planning/)
+- [x] **NPM-03**: Package.json `exports` map correctly exposes ESM entry points for programmatic consumers
+- [x] **NPM-04**: Package.json `bin` field registers `harness-evolve` CLI command pointing to compiled CLI entry
 
 ### CLI Commands
 
@@ -68,10 +68,10 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 | TDT-01 | Phase 9 | Complete |
 | TDT-02 | Phase 9 | Complete |
 | TDT-03 | Phase 9 | Complete |
-| NPM-01 | Phase 10 | Pending |
-| NPM-02 | Phase 10 | Pending |
-| NPM-03 | Phase 10 | Pending |
-| NPM-04 | Phase 10 | Pending |
+| NPM-01 | Phase 10 | Complete |
+| NPM-02 | Phase 10 | Complete |
+| NPM-03 | Phase 10 | Complete |
+| NPM-04 | Phase 10 | Complete |
 | CLI-01 | Phase 11 | Pending |
 | CLI-02 | Phase 11 | Pending |
 | CLI-03 | Phase 11 | Pending |
@@ -82,4 +82,4 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 | CIC-03 | Phase 10 | Complete |
 
 ---
-*Last updated: 2026-04-02 — v1.1 roadmap traceability mapped*
+*Last updated: 2026-04-03 — Phase 10 complete*
