@@ -1,14 +1,39 @@
 #!/usr/bin/env node
-// CLI entry point -- Phase 11 will add Commander.js commands
-// For now, display version and usage hint
+// CLI entry point -- Commander.js program with subcommands
 
+import { Command } from '@commander-js/extra-typings';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
+import { registerInitCommand } from './cli/init.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
+// Read version from package.json at runtime
+// import.meta.dirname = dist/ (where cli.js lives after build)
+const pkg = JSON.parse(
+  readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf-8'),
+);
 
-console.log(`harness-evolve v${pkg.version}`);
-console.log('Commands: init, status, uninstall (coming in v1.1)');
-console.log('Run with --help for usage information.');
+const program = new Command()
+  .name('harness-evolve')
+  .description('Self-iteration engine for Claude Code')
+  .version(pkg.version);
+
+// Register subcommands
+registerInitCommand(program);
+
+// Placeholder commands for status and uninstall (Plan 11-02 implements these)
+program
+  .command('status')
+  .description('Show harness-evolve status and statistics')
+  .action(() => {
+    console.log('Status command coming in Plan 11-02');
+  });
+
+program
+  .command('uninstall')
+  .description('Remove harness-evolve hooks and optionally delete data')
+  .option('--purge', 'Also delete ~/.harness-evolve/ data directory')
+  .action(() => {
+    console.log('Uninstall command coming in Plan 11-02');
+  });
+
+program.parse();
