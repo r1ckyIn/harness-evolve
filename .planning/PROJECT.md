@@ -39,7 +39,20 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(No active requirements — define via `/gsd:new-milestone`)
+(Defined in REQUIREMENTS.md for v1.1)
+
+## Current Milestone: v1.1 Stabilization & Production
+
+**Goal:** Fix tech debt from v1.0 audit, make the project production-ready for npm publish with CI/CD
+
+**Target features:**
+- Fix inferPatternType string mismatch (7/8 classifiers)
+- Expand auto-apply scope beyond permissions-only
+- Fix flaky concurrent-counter test
+- npm publish setup (package.json metadata, bin entry, install docs)
+- CI/CD pipeline (GitHub Actions: build + test + typecheck)
+- CLI command (`harness-evolve init` for hook registration)
+- Installation experience optimization (npx support)
 
 ### Out of Scope
 
@@ -131,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after v1.0 milestone completion — 8 phases, 21 plans, 41 requirements validated*
+*Last updated: 2026-04-03 after v1.1 milestone start — stabilization & production readiness*
