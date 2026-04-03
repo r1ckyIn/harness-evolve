@@ -37,9 +37,15 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Tiered onboarding: detect existing config level (zero-config for new users, enhancement for power users) — Validated in Phase 6: onboarding-quality-polish
 - [x] Recommendation outcome tracking: monitor persistence/reversion, adjust future confidence — Validated in Phase 6: onboarding-quality-polish
 
+- [x] Commander.js CLI with init subcommand for hook registration — Validated in Phase 11: cli-commands-install-experience
+- [x] Hook path resolution for global, npx, and git clone installs — Validated in Phase 11: cli-commands-install-experience
+- [x] Status command showing interaction count, last analysis, pending recommendations, hook registration — Validated in Phase 11: cli-commands-install-experience
+- [x] Uninstall command removing hooks from settings.json with optional data purge — Validated in Phase 11: cli-commands-install-experience
+- [x] Full init -> status -> uninstall CLI lifecycle — Validated in Phase 11: cli-commands-install-experience
+
 ### Active
 
-(Defined in REQUIREMENTS.md for v1.1)
+(v1.1 complete — no active requirements)
 
 ## Current Milestone: v1.1 Stabilization & Production
 
@@ -118,15 +124,15 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (Phase 10 complete)
+## Current State (v1.1 complete)
 
-- **Codebase:** ~12,000 LOC TypeScript (src + tests)
-- **Tests:** 397 passing across 40 test files
+- **Codebase:** ~13,000 LOC TypeScript (src + tests)
+- **Tests:** 441 passing across 44 test files
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
 - **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
 - **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
-- **CLI:** Stub entry point (`harness-evolve` command) — Phase 11 adds Commander.js commands
+- **CLI:** Commander.js with 3 commands (init, status, uninstall), hook path resolution for all install methods
 
 ## Evolution
 
@@ -146,4 +152,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 10 completion — npm publishable, CI/CD configured, dynamic badges*
+*Last updated: 2026-04-04 after Phase 11 completion — CLI commands complete, v1.1 milestone finished*
