@@ -240,26 +240,34 @@ export function computeOutcomeSummaries(
 
 /**
  * Infer the pattern type from a recommendation ID prefix.
+ * Values must match the exact strings produced by each classifier.
+ * For prefixes that map to multiple sub-types (ecosystem, onboarding),
+ * the most common sub-type is returned as a best-effort default.
  */
 function inferPatternType(id: string): string {
-  if (id.startsWith('rec-repeated-')) return 'repeated-prompt';
-  if (id.startsWith('rec-long-')) return 'long-prompt-workflow';
+  if (id.startsWith('rec-repeated-')) return 'repeated_prompt';
+  if (id.startsWith('rec-long-')) return 'long_prompt';
   if (id.startsWith('rec-permission-always-approved-')) return 'permission-always-approved';
-  if (id.startsWith('rec-correction-')) return 'code-correction-pattern';
-  if (id.startsWith('rec-ecosystem-')) return 'ecosystem-adapter';
+  if (id.startsWith('rec-correction-')) return 'code_correction';
+  if (id.startsWith('rec-personal-')) return 'personal_info';
+  if (id.startsWith('rec-drift-')) return 'config_drift';
+  if (id.startsWith('rec-ecosystem-')) return 'version_update';
+  if (id.startsWith('rec-onboarding-')) return 'onboarding_start_hooks';
   if (id.startsWith('rec-tool-preference-')) return 'tool-preference';
-  if (id.startsWith('rec-onboarding-')) return 'onboarding';
   return 'unknown';
 }
 
 /**
  * Infer the routing target from a recommendation ID prefix.
+ * Covers all 8 classifier prefixes plus tool-preference.
  */
 function inferTarget(id: string): string {
   if (id.startsWith('rec-repeated-')) return 'HOOK';
   if (id.startsWith('rec-long-')) return 'SKILL';
   if (id.startsWith('rec-permission-always-approved-')) return 'SETTINGS';
   if (id.startsWith('rec-correction-')) return 'RULE';
+  if (id.startsWith('rec-personal-')) return 'MEMORY';
+  if (id.startsWith('rec-drift-')) return 'CLAUDE_MD';
   if (id.startsWith('rec-ecosystem-')) return 'CLAUDE_MD';
   if (id.startsWith('rec-tool-preference-')) return 'SETTINGS';
   if (id.startsWith('rec-onboarding-')) return 'HOOK';

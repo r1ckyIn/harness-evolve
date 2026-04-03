@@ -62,7 +62,7 @@ describe('analyze', () => {
         id: 'mock-rec-1',
         target: 'HOOK',
         confidence: 'HIGH',
-        pattern_type: 'test_pattern',
+        pattern_type: 'repeated_prompt',
         title: 'Mock recommendation',
         description: 'A mock recommendation for testing',
         evidence: { count: 10, sessions: 3, examples: ['test'] },
@@ -92,7 +92,7 @@ describe('analyze', () => {
         id: 'low-1',
         target: 'MEMORY',
         confidence: 'LOW',
-        pattern_type: 'test',
+        pattern_type: 'repeated_prompt',
         title: 'Low rec',
         description: 'Low confidence',
         evidence: { count: 3, examples: ['a'] },
@@ -102,7 +102,7 @@ describe('analyze', () => {
         id: 'high-1',
         target: 'HOOK',
         confidence: 'HIGH',
-        pattern_type: 'test',
+        pattern_type: 'repeated_prompt',
         title: 'High rec',
         description: 'High confidence',
         evidence: { count: 20, examples: ['b'] },
@@ -112,7 +112,7 @@ describe('analyze', () => {
         id: 'medium-1',
         target: 'SKILL',
         confidence: 'MEDIUM',
-        pattern_type: 'test',
+        pattern_type: 'repeated_prompt',
         title: 'Medium rec',
         description: 'Medium confidence',
         evidence: { count: 8, examples: ['c'] },
@@ -141,7 +141,7 @@ describe('analyze', () => {
         id: `bulk-${i}`,
         target: 'HOOK' as const,
         confidence: 'MEDIUM' as const,
-        pattern_type: 'test',
+        pattern_type: 'repeated_prompt',
         title: `Bulk ${i}`,
         description: `Bulk recommendation ${i}`,
         evidence: { count: 5, examples: [`example-${i}`] },
@@ -175,7 +175,7 @@ describe('analyze', () => {
         id: `bulk-${i}`,
         target: 'HOOK' as const,
         confidence: 'MEDIUM' as const,
-        pattern_type: 'test',
+        pattern_type: 'repeated_prompt',
         title: `Bulk ${i}`,
         description: `Bulk recommendation ${i}`,
         evidence: { count: 5, examples: [`example-${i}`] },
@@ -196,7 +196,7 @@ describe('adjustConfidence', () => {
     id: 'rec-test-0',
     target: 'HOOK',
     confidence: 'HIGH',
-    pattern_type: 'repeated-prompt',
+    pattern_type: 'repeated_prompt',
     title: 'Test recommendation',
     description: 'For testing',
     evidence: { count: 10, examples: ['test'] },
@@ -205,9 +205,9 @@ describe('adjustConfidence', () => {
   });
 
   it('downgrades HIGH to MEDIUM when persistence_rate < 0.7', () => {
-    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'repeated-prompt' })];
+    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'repeated_prompt' })];
     const summaries: OutcomeSummary[] = [
-      { pattern_type: 'repeated-prompt', total_applied: 10, total_persisted: 5, total_reverted: 5, persistence_rate: 0.5 },
+      { pattern_type: 'repeated_prompt', total_applied: 10, total_persisted: 5, total_reverted: 5, persistence_rate: 0.5 },
     ];
 
     const adjusted = adjustConfidence(recs, summaries);
@@ -216,9 +216,9 @@ describe('adjustConfidence', () => {
   });
 
   it('downgrades MEDIUM to LOW when persistence_rate < 0.7', () => {
-    const recs = [makeRec({ confidence: 'MEDIUM', pattern_type: 'repeated-prompt' })];
+    const recs = [makeRec({ confidence: 'MEDIUM', pattern_type: 'repeated_prompt' })];
     const summaries: OutcomeSummary[] = [
-      { pattern_type: 'repeated-prompt', total_applied: 10, total_persisted: 3, total_reverted: 7, persistence_rate: 0.3 },
+      { pattern_type: 'repeated_prompt', total_applied: 10, total_persisted: 3, total_reverted: 7, persistence_rate: 0.3 },
     ];
 
     const adjusted = adjustConfidence(recs, summaries);
@@ -227,9 +227,9 @@ describe('adjustConfidence', () => {
   });
 
   it('keeps LOW as LOW (cannot downgrade further)', () => {
-    const recs = [makeRec({ confidence: 'LOW', pattern_type: 'repeated-prompt' })];
+    const recs = [makeRec({ confidence: 'LOW', pattern_type: 'repeated_prompt' })];
     const summaries: OutcomeSummary[] = [
-      { pattern_type: 'repeated-prompt', total_applied: 10, total_persisted: 1, total_reverted: 9, persistence_rate: 0.1 },
+      { pattern_type: 'repeated_prompt', total_applied: 10, total_persisted: 1, total_reverted: 9, persistence_rate: 0.1 },
     ];
 
     const adjusted = adjustConfidence(recs, summaries);
@@ -238,9 +238,9 @@ describe('adjustConfidence', () => {
   });
 
   it('does not modify confidence when persistence_rate >= 0.7', () => {
-    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'repeated-prompt' })];
+    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'repeated_prompt' })];
     const summaries: OutcomeSummary[] = [
-      { pattern_type: 'repeated-prompt', total_applied: 10, total_persisted: 8, total_reverted: 2, persistence_rate: 0.8 },
+      { pattern_type: 'repeated_prompt', total_applied: 10, total_persisted: 8, total_reverted: 2, persistence_rate: 0.8 },
     ];
 
     const adjusted = adjustConfidence(recs, summaries);
@@ -249,9 +249,9 @@ describe('adjustConfidence', () => {
   });
 
   it('does not modify confidence for pattern_types not in summaries', () => {
-    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'unknown-pattern' })];
+    const recs = [makeRec({ confidence: 'HIGH', pattern_type: 'long_prompt' })];
     const summaries: OutcomeSummary[] = [
-      { pattern_type: 'repeated-prompt', total_applied: 10, total_persisted: 3, total_reverted: 7, persistence_rate: 0.3 },
+      { pattern_type: 'repeated_prompt', total_applied: 10, total_persisted: 3, total_reverted: 7, persistence_rate: 0.3 },
     ];
 
     const adjusted = adjustConfidence(recs, summaries);
