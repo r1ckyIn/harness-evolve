@@ -118,13 +118,15 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v1.0 shipped)
+## Current State (Phase 10 complete)
 
-- **Codebase:** 11,733 LOC TypeScript (3,765 src + 7,968 tests)
-- **Tests:** 364 passing across 38 test files (concurrent-counter flaky test fixed in Phase 9)
-- **Build:** tsup produces 8 entry points (5 hooks + stop + run-evolve + index)
+- **Codebase:** ~12,000 LOC TypeScript (src + tests)
+- **Tests:** 397 passing across 40 test files
+- **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
-- **Tech debt:** inferPatternType string mismatch fixed (Phase 9), auto-apply expanded with strategy pattern registry
+- **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
+- **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
+- **CLI:** Stub entry point (`harness-evolve` command) — Phase 11 adds Commander.js commands
 
 ## Evolution
 
@@ -144,4 +146,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 9 completion — tech debt fixed, auto-apply expanded*
+*Last updated: 2026-04-03 after Phase 10 completion — npm publishable, CI/CD configured, dynamic badges*
