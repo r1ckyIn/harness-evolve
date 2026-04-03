@@ -40,7 +40,11 @@
   2. The concurrent-counter integration test passes 10/10 consecutive runs on a 2-vCPU environment without flaking
   3. A HIGH-confidence recommendation with target RULE triggers auto-creation of a `.claude/rules/*.md` file (not just SETTINGS modifications)
   4. All existing tests (336+) continue to pass after changes
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 09-01-PLAN.md — PatternType enum + outcome tracker fix (TDT-01)
+- [ ] 09-02-PLAN.md — Concurrent counter lock contention fix (TDT-02)
+- [ ] 09-03-PLAN.md — Strategy pattern applier registry with RULE applier (TDT-03)
 
 ### Phase 10: npm Package & CI/CD Pipeline
 **Goal**: The project is publishable to npm with correct metadata, gated by automated CI, and releases are triggered by version tags
@@ -77,6 +81,6 @@
 | 6. Onboarding & Quality Polish | v1.0 | 2/2 | Complete | 2026-04-01 |
 | 7. Integration Wiring | v1.0 | 3/3 | Complete | 2026-04-01 |
 | 8. Fix Permission Constants Mismatch | v1.0 | 1/1 | Complete | 2026-04-01 |
-| 9. Tech Debt & Auto-Apply Expansion | v1.1 | 0/? | Not started | - |
+| 9. Tech Debt & Auto-Apply Expansion | v1.1 | 0/3 | Planned | - |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 0/? | Not started | - |
 | 11. CLI Commands & Install Experience | v1.1 | 0/? | Not started | - |
