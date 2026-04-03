@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-// CLI entry point -- Commander.js program with subcommands
+// CLI entry point -- Commander.js program with init, status, and uninstall subcommands
 
 import { Command } from '@commander-js/extra-typings';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { registerInitCommand } from './cli/init.js';
+import { registerStatusCommand } from './cli/status.js';
+import { registerUninstallCommand } from './cli/uninstall.js';
 
 // Read version from package.json at runtime
 // import.meta.dirname = dist/ (where cli.js lives after build)
@@ -17,23 +19,9 @@ const program = new Command()
   .description('Self-iteration engine for Claude Code')
   .version(pkg.version);
 
-// Register subcommands
+// Register all subcommands
 registerInitCommand(program);
-
-// Placeholder commands for status and uninstall (Plan 11-02 implements these)
-program
-  .command('status')
-  .description('Show harness-evolve status and statistics')
-  .action(() => {
-    console.log('Status command coming in Plan 11-02');
-  });
-
-program
-  .command('uninstall')
-  .description('Remove harness-evolve hooks and optionally delete data')
-  .option('--purge', 'Also delete ~/.harness-evolve/ data directory')
-  .action(() => {
-    console.log('Uninstall command coming in Plan 11-02');
-  });
+registerStatusCommand(program);
+registerUninstallCommand(program);
 
 program.parse();
