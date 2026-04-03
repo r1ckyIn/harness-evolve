@@ -2,31 +2,101 @@
   "name": "harness-evolve",
   "version": "1.0.0",
   "type": "module",
+  "description": "Self-iteration engine for Claude Code \u2014 detects usage patterns and routes optimization recommendations",
+  "keywords": [
+    "claude-code",
+    "hooks",
+    "self-improvement",
+    "automation",
+    "developer-tools",
+    "ai"
+  ],
+  "license": "MIT",
+  "author": "Ricky <rickyqin919@gmail.com> (https://github.com/r1ckyIn)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r1ckyIn/harness-evolve.git"
+  },
+  "homepage": "https://github.com/r1ckyIn/harness-evolve#readme",
+  "bugs": {
+    "url": "https://github.com/r1ckyIn/harness-evolve/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./hooks/user-prompt-submit": {
+      "types": "./dist/hooks/user-prompt-submit.d.ts",
+      "default": "./dist/hooks/user-prompt-submit.js"
+    },
+    "./hooks/pre-tool-use": {
+      "types": "./dist/hooks/pre-tool-use.d.ts",
+      "default": "./dist/hooks/pre-tool-use.js"
+    },
+    "./hooks/post-tool-use": {
+      "types": "./dist/hooks/post-tool-use.d.ts",
+      "default": "./dist/hooks/post-tool-use.js"
+    },
+    "./hooks/post-tool-use-failure": {
+      "types": "./dist/hooks/post-tool-use-failure.d.ts",
+      "default": "./dist/hooks/post-tool-use-failure.js"
+    },
+    "./hooks/permission-request": {
+      "types": "./dist/hooks/permission-request.d.ts",
+      "default": "./dist/hooks/permission-request.js"
+    },
+    "./hooks/stop": {
+      "types": "./dist/hooks/stop.d.ts",
+      "default": "./dist/hooks/stop.js"
+    },
+    "./delivery/run-evolve": {
+      "types": "./dist/delivery/run-evolve.d.ts",
+      "default": "./dist/delivery/run-evolve.js"
+    }
+  },
+  "bin": {
+    "harness-evolve": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "check:publint": "publint --strict",
+    "check:attw": "attw --pack . --profile esm-only",
+    "check:package": "npm run check:publint && npm run check:attw",
+    "prepublishOnly": "npm run build && npm run check:package"
   },
   "engines": {
     "node": ">=22.14.0"
   },
+  "publishConfig": {
+    "provenance": true
+  },
   "dependencies": {
-    "zod": "^4.3.6",
+    "proper-lockfile": "^4.1.2",
     "write-file-atomic": "^7.0.0",
-    "proper-lockfile": "^4.1.2"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "~6.0.0",
-    "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
-    "vitest": "^4.1.2",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@types/node": "^22.0.0",
     "@types/proper-lockfile": "^4.1.4",
-    "@types/write-file-atomic": "^4.0.3"
+    "@types/write-file-atomic": "^4.0.3",
+    "publint": "^0.3.18",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.0",
+    "vitest": "^4.1.2"
   }
 }
