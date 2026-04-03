@@ -89,4 +89,4 @@ Plans:
 | 8. Fix Permission Constants Mismatch | v1.0 | 1/1 | Complete | 2026-04-01 |
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete    | 2026-04-03 |
-| 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete   | 2026-04-03 |
+| 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete    | 2026-04-03 |
