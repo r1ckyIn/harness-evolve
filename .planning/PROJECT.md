@@ -107,7 +107,7 @@ Agnostic layer — works with any combination of workflow tools:
 | Tiered onboarding | Zero-config for beginners, enhancement mode for power users | Good — 3-tier scoring with weighted factors |
 | Zod v4 for all schemas | 14x faster than v3, TypeScript-first | Good — clean inference with .default() pattern |
 | proper-lockfile for cross-process locking | macOS Ventura lacks flock | Good — retry-based with stale detection |
-| v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Good — safe starting point, expandable in v2 |
+| v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Expanded in Phase 9 — strategy pattern applier registry with SETTINGS + RULE appliers |
 
 ## Technical Gray Areas (v1.0 Resolution)
 
@@ -121,10 +121,10 @@ Agnostic layer — works with any combination of workflow tools:
 ## Current State (v1.0 shipped)
 
 - **Codebase:** 11,733 LOC TypeScript (3,765 src + 7,968 tests)
-- **Tests:** 336 passing across 37 test files (1 pre-existing flaky)
+- **Tests:** 364 passing across 38 test files (concurrent-counter flaky test fixed in Phase 9)
 - **Build:** tsup produces 8 entry points (5 hooks + stop + run-evolve + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
-- **Tech debt:** inferPatternType string mismatch for 7/8 classifiers (LOW severity, feedback loop only)
+- **Tech debt:** inferPatternType string mismatch fixed (Phase 9), auto-apply expanded with strategy pattern registry
 
 ## Evolution
 
@@ -144,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after v1.1 milestone start — stabilization & production readiness*
+*Last updated: 2026-04-03 after Phase 9 completion — tech debt fixed, auto-apply expanded*
