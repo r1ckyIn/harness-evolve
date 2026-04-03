@@ -158,11 +158,12 @@ describe('auto-apply', () => {
     expect(results).toEqual([]);
   });
 
-  it('skips HIGH confidence non-SETTINGS target recommendations', async () => {
+  it('skips HIGH confidence targets without a registered applier', async () => {
     mockLoadConfig.mockResolvedValue(makeConfig(true));
     mockGetStatusMap.mockResolvedValue(new Map());
 
-    const targets = ['HOOK', 'SKILL', 'RULE', 'CLAUDE_MD', 'MEMORY'] as const;
+    // HOOK, SKILL, CLAUDE_MD, MEMORY have no registered applier yet
+    const targets = ['HOOK', 'SKILL', 'CLAUDE_MD', 'MEMORY'] as const;
     const recs = targets.map((target, i) =>
       makeRecommendation({ id: `rec-${i}`, target, confidence: 'HIGH' }),
     );
