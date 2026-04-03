@@ -12,7 +12,7 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 
 - [x] **TDT-01**: Fix inferPatternType to return correct pattern_type strings matching all 8 classifiers' actual values, using a shared PatternType enum
 - [x] **TDT-02**: Fix flaky concurrent-counter.test.ts to pass deterministically on CI (2-vCPU runners with higher lock contention)
-- [ ] **TDT-03**: Expand auto-apply beyond permissions-only: add strategy pattern applier registry with RULE create-only target for HIGH-confidence recommendations
+- [x] **TDT-03**: Expand auto-apply beyond permissions-only: add strategy pattern applier registry with RULE create-only target for HIGH-confidence recommendations
 
 ### npm Package
 
@@ -67,7 +67,7 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 |--------|-------|--------|
 | TDT-01 | Phase 9 | Complete |
 | TDT-02 | Phase 9 | Complete |
-| TDT-03 | Phase 9 | Pending |
+| TDT-03 | Phase 9 | Complete |
 | NPM-01 | Phase 10 | Pending |
 | NPM-02 | Phase 10 | Pending |
 | NPM-03 | Phase 10 | Pending |

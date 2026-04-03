@@ -44,7 +44,7 @@
 Plans:
 - [x] 09-01-PLAN.md — PatternType enum + outcome tracker fix (TDT-01)
 - [x] 09-02-PLAN.md — Concurrent counter lock contention fix (TDT-02)
-- [ ] 09-03-PLAN.md — Strategy pattern applier registry with RULE applier (TDT-03)
+- [x] 09-03-PLAN.md — Strategy pattern applier registry with RULE applier (TDT-03)
 
 ### Phase 10: npm Package & CI/CD Pipeline
 **Goal**: The project is publishable to npm with correct metadata, gated by automated CI, and releases are triggered by version tags
