@@ -26,7 +26,7 @@
 **Milestone Goal:** Fix tech debt from v1.0 audit, make the project production-ready for npm publish with CI/CD, and provide a one-command install experience.
 
 - [ ] **Phase 9: Tech Debt & Auto-Apply Expansion** - Fix string mismatches, flaky test, and expand auto-apply with strategy pattern
-- [ ] **Phase 10: npm Package & CI/CD Pipeline** - Complete package.json metadata, CI quality gate, and automated publish
+- [x] **Phase 10: npm Package & CI/CD Pipeline** - Complete package.json metadata, CI quality gate, and automated publish (completed 2026-04-03)
 - [ ] **Phase 11: CLI Commands & Install Experience** - Commander.js CLI with init/status/uninstall commands and npx support
 
 ## Phase Details
@@ -56,7 +56,7 @@ Plans:
   3. The `exports` field resolves correctly for ESM consumers (verified by publint and @arethetypeswrong/cli)
   4. Pushing a `v*` tag to main triggers GitHub Actions to build, test, typecheck, and publish to npm via OIDC trusted publishing
   5. README.md displays npm version badge, CI status badge, and license badge
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 10-01-PLAN.md — Package.json metadata, files, exports, bin field + CLI stub (NPM-01, NPM-02, NPM-03, NPM-04)
 - [x] 10-02-PLAN.md — CI/CD workflows + README dynamic badges (CIC-01, CIC-02, CIC-03)
@@ -85,5 +85,5 @@ Plans:
 | 7. Integration Wiring | v1.0 | 3/3 | Complete | 2026-04-01 |
 | 8. Fix Permission Constants Mismatch | v1.0 | 1/1 | Complete | 2026-04-01 |
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
-| 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | In progress | - |
+| 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete    | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 0/? | Not started | - |
