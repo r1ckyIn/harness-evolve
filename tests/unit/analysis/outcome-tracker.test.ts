@@ -265,6 +265,101 @@ describe('trackOutcomes', () => {
     expect(results[0].outcome).toBe('monitoring');
   });
 
+  it('produces correct pattern_type for rec-repeated-* prefix', async () => {
+    mockLoadState.mockResolvedValue({
+      entries: [
+        {
+          id: 'rec-repeated-0',
+          status: 'applied',
+          updated_at: '2026-03-01T00:00:00Z',
+        },
+      ],
+      last_updated: '2026-03-01T00:00:00Z',
+    });
+
+    const snapshot = makeEmptySnapshot();
+    snapshot.installed_tools.hooks = [
+      { event: 'UserPromptSubmit', scope: 'user', type: 'command' },
+    ];
+
+    const results = await trackOutcomes(snapshot);
+    expect(results[0].pattern_type).toBe('repeated_prompt');
+  });
+
+  it('produces correct pattern_type for rec-personal-* prefix', async () => {
+    mockLoadState.mockResolvedValue({
+      entries: [
+        {
+          id: 'rec-personal-0',
+          status: 'applied',
+          updated_at: '2026-03-01T00:00:00Z',
+        },
+      ],
+      last_updated: '2026-03-01T00:00:00Z',
+    });
+
+    const snapshot = makeEmptySnapshot();
+    const results = await trackOutcomes(snapshot);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].pattern_type).toBe('personal_info');
+  });
+
+  it('produces correct pattern_type for rec-drift-* prefix', async () => {
+    mockLoadState.mockResolvedValue({
+      entries: [
+        {
+          id: 'rec-drift-0',
+          status: 'applied',
+          updated_at: '2026-03-01T00:00:00Z',
+        },
+      ],
+      last_updated: '2026-03-01T00:00:00Z',
+    });
+
+    const snapshot = makeEmptySnapshot();
+    const results = await trackOutcomes(snapshot);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].pattern_type).toBe('config_drift');
+  });
+
+  it('infers target MEMORY for rec-personal-* prefix', async () => {
+    mockLoadState.mockResolvedValue({
+      entries: [
+        {
+          id: 'rec-personal-0',
+          status: 'applied',
+          updated_at: '2026-03-01T00:00:00Z',
+        },
+      ],
+      last_updated: '2026-03-01T00:00:00Z',
+    });
+
+    const snapshot = makeEmptySnapshot();
+    const results = await trackOutcomes(snapshot);
+
+    expect(results[0].target).toBe('MEMORY');
+  });
+
+  it('infers target CLAUDE_MD for rec-drift-* prefix', async () => {
+    mockLoadState.mockResolvedValue({
+      entries: [
+        {
+          id: 'rec-drift-0',
+          status: 'applied',
+          updated_at: '2026-03-01T00:00:00Z',
+        },
+      ],
+      last_updated: '2026-03-01T00:00:00Z',
+    });
+
+    const snapshot = makeEmptySnapshot();
+    const results = await trackOutcomes(snapshot);
+
+    expect(results[0].target).toBe('CLAUDE_MD');
+  });
+
   it('returns empty array when no applied recommendations exist', async () => {
     mockLoadState.mockResolvedValue({
       entries: [
