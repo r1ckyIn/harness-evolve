@@ -23,11 +23,11 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 
 ### CLI Commands
 
-- [ ] **CLI-01**: `harness-evolve init` detects settings.json location, displays planned hook registrations, and applies after user confirmation (or `--yes` flag)
-- [ ] **CLI-02**: `harness-evolve init` resolves hook command paths dynamically based on actual install location (works for both global install and npx)
+- [x] **CLI-01**: `harness-evolve init` detects settings.json location, displays planned hook registrations, and applies after user confirmation (or `--yes` flag)
+- [x] **CLI-02**: `harness-evolve init` resolves hook command paths dynamically based on actual install location (works for both global install and npx)
 - [ ] **CLI-03**: `harness-evolve status` shows interaction count, last analysis timestamp, pending recommendations count, and hook registration status
 - [ ] **CLI-04**: `harness-evolve uninstall` removes hook entries from settings.json and optionally deletes ~/.harness-evolve/ data directory
-- [ ] **CLI-05**: `npx harness-evolve init` works as zero-install setup (download, run init, register hooks, exit)
+- [x] **CLI-05**: `npx harness-evolve init` works as zero-install setup (download, run init, register hooks, exit)
 
 ### CI/CD
 
@@ -72,11 +72,11 @@ Make Claude Code harnesses self-improving without manual analysis — now instal
 | NPM-02 | Phase 10 | Complete |
 | NPM-03 | Phase 10 | Complete |
 | NPM-04 | Phase 10 | Complete |
-| CLI-01 | Phase 11 | Pending |
-| CLI-02 | Phase 11 | Pending |
+| CLI-01 | Phase 11 | Complete |
+| CLI-02 | Phase 11 | Complete |
 | CLI-03 | Phase 11 | Pending |
 | CLI-04 | Phase 11 | Pending |
-| CLI-05 | Phase 11 | Pending |
+| CLI-05 | Phase 11 | Complete |
 | CIC-01 | Phase 10 | Complete |
 | CIC-02 | Phase 10 | Complete |
 | CIC-03 | Phase 10 | Complete |

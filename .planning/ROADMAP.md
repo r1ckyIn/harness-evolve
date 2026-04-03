@@ -70,9 +70,9 @@ Plans:
   2. Hook command paths in settings.json resolve correctly regardless of install method (global `npm i -g`, local `npx`, git clone)
   3. `harness-evolve status` displays interaction count, last analysis timestamp, pending recommendations count, and hook registration status
   4. `harness-evolve uninstall` removes all hook entries from settings.json and optionally deletes the ~/.harness-evolve/ data directory
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 11-01-PLAN.md — Commander.js framework + init command with hook path resolution (CLI-01, CLI-02, CLI-05)
+- [x] 11-01-PLAN.md — Commander.js framework + init command with hook path resolution (CLI-01, CLI-02, CLI-05)
 - [ ] 11-02-PLAN.md — Status + uninstall commands + integration test (CLI-03, CLI-04, CLI-05)
 
 ## Progress
@@ -89,4 +89,4 @@ Plans:
 | 8. Fix Permission Constants Mismatch | v1.0 | 1/1 | Complete | 2026-04-01 |
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete    | 2026-04-03 |
-| 11. CLI Commands & Install Experience | v1.1 | 0/2 | Planned | - |
+| 11. CLI Commands & Install Experience | v1.1 | 1/2 | In Progress|  |
