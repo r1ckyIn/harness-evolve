@@ -62,9 +62,9 @@
   2. Running a scan on a project that uses npm scoped packages (`@scope/package`) or URLs with `@user/path` produces zero false-positive stale reference warnings for those patterns
   3. User can `apply-one <id>` on a MEDIUM or LOW confidence recommendation and it applies successfully without being rejected by a confidence gate
   4. After the Stop hook completes background analysis with new recommendations, the next user prompt automatically shows a notification line without the user having to manually run `/evolve`
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 17-01-PLAN.md -- Fix global slash command path (FIX-01) and scanner false positives (FIX-02)
+- [x] 17-01-PLAN.md -- Fix global slash command path (FIX-01) and scanner false positives (FIX-02)
 - [ ] 17-02-PLAN.md -- Fix apply-one confidence gate (FIX-03) and stop hook notification (FIX-04)
 
 ### Phase 18: Comprehensive Config Audit
@@ -111,6 +111,6 @@ Phases execute in numeric order: 17 -> 18 -> 19
 | 14. Auto-Apply Closure | v2.0 | 1/1 | Complete | 2026-04-04 |
 | 15. Slash Commands & Interactive Apply | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 16. UX Polish | v2.0 | 2/2 | Complete | 2026-04-04 |
-| 17. Bug Fixes & Reliability | v3.0 | 0/2 | Planning | - |
+| 17. Bug Fixes & Reliability | v3.0 | 1/2 | In Progress|  |
 | 18. Comprehensive Config Audit | v3.0 | 0/0 | Not started | - |
 | 19. Workflow Documentation | v3.0 | 0/0 | Not started | - |

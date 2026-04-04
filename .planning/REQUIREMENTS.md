@@ -10,8 +10,8 @@ Make Claude Code harnesses self-improving without manual analysis — now reliab
 
 ### Bug Fixes (v2.0 dogfooding)
 
-- [ ] **FIX-01**: 斜杠命令安装到全局 `~/.claude/commands/evolve/` 而非项目级 `.claude/commands/evolve/`，确保在任何目录启动的 Claude Code session 都能使用 `/evolve:scan` 和 `/evolve:apply`
-- [ ] **FIX-02**: Stale reference scanner 过滤 npm scoped 包名（`@scope/package`）和 URL 中的用户路径（`@user/path`），只对真实的 Claude Code 文件引用（`@docs/xxx.md`）报告 stale reference
+- [x] **FIX-01**: 斜杠命令安装到全局 `~/.claude/commands/evolve/` 而非项目级 `.claude/commands/evolve/`，确保在任何目录启动的 Claude Code session 都能使用 `/evolve:scan` 和 `/evolve:apply`
+- [x] **FIX-02**: Stale reference scanner 过滤 npm scoped 包名（`@scope/package`）和 URL 中的用户路径（`@user/path`），只对真实的 Claude Code 文件引用（`@docs/xxx.md`）报告 stale reference
 - [ ] **FIX-03**: `apply-one` CLI 子命令在用户主动选择应用时跳过 confidence 门槛检查，不再限制为 HIGH-only
 - [ ] **FIX-04**: Stop hook 分析完成后自动设置通知标记（`has-pending-notifications`），下次 UserPromptSubmit 时通知用户，不再依赖用户手动运行 `/evolve`
 
