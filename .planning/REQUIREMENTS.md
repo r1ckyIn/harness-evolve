@@ -25,9 +25,9 @@ Make Claude Code harnesses self-improving without manual analysis — now with D
 
 ### Slash Commands (斜杠命令体系)
 
-- [ ] **CMD-01**: `harness-evolve init` 安装 `/evolve:scan`、`/evolve:apply` 等斜杠命令到项目的 `.claude/commands/` 目录
+- [x] **CMD-01**: `harness-evolve init` 安装 `/evolve:scan`、`/evolve:apply` 等斜杠命令到项目的 `.claude/commands/` 目录
 - [ ] **CMD-02**: `/evolve:apply` 逐条展示待处理推荐，用户选择应用/跳过/永久忽略
-- [ ] **CMD-03**: `harness-evolve uninstall` 同时清理安装的斜杠命令文件
+- [x] **CMD-03**: `harness-evolve uninstall` 同时清理安装的斜杠命令文件
 
 ### UX Polish (体验优化)
 

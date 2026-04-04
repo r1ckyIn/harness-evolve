@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
 status: executing
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-04T09:39:09.513Z"
+stopped_at: Completed 15-01-PLAN.md
+last_updated: "2026-04-04T10:10:39.743Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 14 — auto-apply-closure
+**Current focus:** Phase 15 — slash-commands-interactive-apply
 
 ## Current Position
 
-Phase: 15
-Plan: Not started
-Status: Executing Phase 14
+Phase: 15 (slash-commands-interactive-apply) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-04
 
 Progress: [░░░░░░░░░░] 0% (v2.0 scope)
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 | 13-auto-generators | 01 | 6min | 2 | 4 |
 | 13-auto-generators | 02 | 3min | 2 | 6 |
 | 14-auto-apply-closure | 01 | 6min | 3 | 6 |
+| Phase 15-slash-commands-interactive-apply P01 | 6min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 14]: HookApplier reuses CLI utils (readSettings/writeSettings/mergeHooks) — no settings I/O duplication
 - [Phase 14]: ClaudeMdApplier uses Set-based destructive pattern guard for scan_stale_reference and scan_redundancy
 - [Phase 14]: Backup naming: settings-backup-{id}.json for hooks, claudemd-backup-{id}.md for CLAUDE.md
+- [Phase 15]: Template generators are pure functions returning strings -- matching Phase 13 generator pattern
+- [Phase 15]: Create-only guard: init skips existing command files to prevent overwriting user customizations
+- [Phase 15]: Graceful cleanup: uninstall uses rmdir (not rm -rf) to preserve user-added files in evolve/ directory
 
 ### Pending Todos
 
@@ -83,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T09:32:00Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-04-04T10:10:39.738Z
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
