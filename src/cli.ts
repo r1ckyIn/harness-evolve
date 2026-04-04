@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import { registerInitCommand } from './cli/init.js';
 import { registerStatusCommand } from './cli/status.js';
 import { registerUninstallCommand } from './cli/uninstall.js';
+import { registerScanCommand } from './cli/scan.js';
+import { registerPendingCommand, registerApplyOneCommand, registerDismissCommand } from './cli/apply.js';
 
 // Read version from package.json at runtime
 // import.meta.dirname = dist/ (where cli.js lives after build)
@@ -23,5 +25,9 @@ const program = new Command()
 registerInitCommand(program);
 registerStatusCommand(program);
 registerUninstallCommand(program);
+registerScanCommand(program);
+registerPendingCommand(program);
+registerApplyOneCommand(program);
+registerDismissCommand(program);
 
 program.parse();
