@@ -75,7 +75,7 @@ async function resetCounterWithTimestamp(): Promise<void> {
   }
 
   const release = await lock(paths.counter, {
-    retries: { retries: 10, minTimeout: 50, maxTimeout: 500 },
+    retries: { retries: 50, minTimeout: 20, maxTimeout: 1000, randomize: true },
     stale: 10000,
   });
 

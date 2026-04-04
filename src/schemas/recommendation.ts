@@ -17,11 +17,31 @@ export type RoutingTarget = z.infer<typeof routingTargetSchema>;
 export const confidenceSchema = z.enum(['HIGH', 'MEDIUM', 'LOW']);
 export type Confidence = z.infer<typeof confidenceSchema>;
 
+export const patternTypeSchema = z.enum([
+  'repeated_prompt',
+  'long_prompt',
+  'permission-always-approved',
+  'code_correction',
+  'personal_info',
+  'config_drift',
+  'version_update',
+  'ecosystem_gsd',
+  'ecosystem_cog',
+  'onboarding_start_hooks',
+  'onboarding_start_rules',
+  'onboarding_start_claudemd',
+  'onboarding_optimize',
+  'scan_redundancy',
+  'scan_missing_mechanization',
+  'scan_stale_reference',
+]);
+export type PatternType = z.infer<typeof patternTypeSchema>;
+
 export const recommendationSchema = z.object({
   id: z.string(),
   target: routingTargetSchema,
   confidence: confidenceSchema,
-  pattern_type: z.string(),
+  pattern_type: patternTypeSchema,
   title: z.string(),
   description: z.string(),
   evidence: z.object({

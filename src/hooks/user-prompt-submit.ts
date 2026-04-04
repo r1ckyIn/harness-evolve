@@ -13,8 +13,6 @@ import {
   clearNotificationFlag,
   readNotificationFlagCount,
 } from '../delivery/notification.js';
-import { paths } from '../storage/dirs.js';
-
 /**
  * Core handler logic, exported for testability.
  * Validates input, appends prompt log entry, increments counter.
@@ -43,7 +41,7 @@ export async function handleUserPromptSubmit(rawJson: string): Promise<void> {
       if (config.delivery.stdoutInjection && await hasNotificationFlag()) {
         const pendingCount = await readNotificationFlagCount();
         if (pendingCount > 0) {
-          const msg = buildNotification(pendingCount, paths.recommendations);
+          const msg = buildNotification(pendingCount);
           process.stdout.write(msg + '\n');
           await clearNotificationFlag();
         }

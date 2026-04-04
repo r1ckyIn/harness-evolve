@@ -127,3 +127,27 @@ export {
   loadOutcomeHistory,
   computeOutcomeSummaries,
 } from './analysis/outcome-tracker.js';
+
+// Phase 12: Deep Scan
+export { runDeepScan } from './scan/index.js';
+export type { ScanResult, ScanContext, Scanner } from './scan/index.js';
+export { scanContextSchema } from './scan/schemas.js';
+export { buildScanContext } from './scan/context-builder.js';
+export { scanRedundancy } from './scan/scanners/redundancy.js';
+export { scanMechanization } from './scan/scanners/mechanization.js';
+export { scanStaleness } from './scan/scanners/staleness.js';
+
+// Phase 13: Auto-Generators
+export { generateSkill } from './generators/skill-generator.js';
+export { generateHook } from './generators/hook-generator.js';
+export { generateClaudeMdPatch } from './generators/claude-md-generator.js';
+export { generatedArtifactSchema, GENERATOR_VERSION } from './generators/schemas.js';
+export type { GeneratedArtifact, GeneratorOptions } from './generators/schemas.js';
+
+// Phase 14: Auto-Apply Closure
+export { HookApplier } from './delivery/appliers/hook-applier.js';
+export { ClaudeMdApplier } from './delivery/appliers/claude-md-applier.js';
+
+// Phase 15: Slash Commands & Interactive Apply
+export { registerScanCommand } from './cli/scan.js';
+export { registerPendingCommand, registerApplyOneCommand, registerDismissCommand } from './cli/apply.js';

@@ -57,26 +57,29 @@ const {
 } = await import('../../../src/delivery/notification.js');
 
 describe('buildNotification', () => {
-  it('returns string containing "3 new recommendations" for count=3', () => {
-    const msg = buildNotification(3, '~/.harness-evolve/recommendations.md');
-    expect(msg).toContain('3 new recommendations');
-    expect(msg).toContain('recommendations.md');
+  it('returns string containing "3 new suggestions" for count=3', () => {
+    const msg = buildNotification(3);
+    expect(msg).toContain('3 new suggestions');
   });
 
-  it('uses singular "recommendation" for count=1', () => {
-    const msg = buildNotification(1, '~/.harness-evolve/recommendations.md');
-    expect(msg).toContain('1 new recommendation');
-    expect(msg).not.toContain('1 new recommendations');
+  it('uses singular "suggestion" for count=1', () => {
+    const msg = buildNotification(1);
+    expect(msg).toContain('1 new suggestion');
+    expect(msg).not.toContain('1 new suggestions');
   });
 
   it('output is under 200 characters', () => {
-    const msg = buildNotification(99, '~/.harness-evolve/recommendations.md');
+    const msg = buildNotification(99);
     expect(msg.length).toBeLessThan(200);
   });
 
-  it('contains "/evolve" as fallback reference', () => {
-    const msg = buildNotification(5, '~/.harness-evolve/recommendations.md');
-    expect(msg).toContain('/evolve');
+  it('contains "/evolve:apply" reference', () => {
+    const msg = buildNotification(5);
+    expect(msg).toContain('/evolve:apply');
+  });
+
+  it('takes only 1 parameter (pendingCount)', () => {
+    expect(buildNotification.length).toBe(1);
   });
 });
 
@@ -193,7 +196,7 @@ describe('UserPromptSubmit notification injection', () => {
 
     // Should not have written notification (may have written other things)
     const notifCalls = stdoutWriteSpy.mock.calls.filter(
-      (call) => typeof call[0] === 'string' && call[0].includes('recommendation'),
+      (call) => typeof call[0] === 'string' && call[0].includes('suggestion'),
     );
     expect(notifCalls.length).toBe(0);
   });
@@ -213,10 +216,10 @@ describe('UserPromptSubmit notification injection', () => {
     await handleUserPromptSubmit(JSON.stringify(validInput));
 
     const notifCalls = stdoutWriteSpy.mock.calls.filter(
-      (call) => typeof call[0] === 'string' && call[0].includes('recommendation'),
+      (call) => typeof call[0] === 'string' && call[0].includes('suggestion'),
     );
     expect(notifCalls.length).toBe(1);
-    expect(notifCalls[0][0]).toContain('3 new recommendations');
+    expect(notifCalls[0][0]).toContain('3 new suggestions');
   });
 
   it('does NOT write to stdout when no flag file exists even if stdoutInjection=true', async () => {
@@ -227,7 +230,7 @@ describe('UserPromptSubmit notification injection', () => {
     await handleUserPromptSubmit(JSON.stringify(validInput));
 
     const notifCalls = stdoutWriteSpy.mock.calls.filter(
-      (call) => typeof call[0] === 'string' && call[0].includes('recommendation'),
+      (call) => typeof call[0] === 'string' && call[0].includes('suggestion'),
     );
     expect(notifCalls.length).toBe(0);
   });

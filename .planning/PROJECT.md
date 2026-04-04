@@ -37,22 +37,62 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Tiered onboarding: detect existing config level (zero-config for new users, enhancement for power users) — Validated in Phase 6: onboarding-quality-polish
 - [x] Recommendation outcome tracking: monitor persistence/reversion, adjust future confidence — Validated in Phase 6: onboarding-quality-polish
 
+- [x] Fix inferPatternType string mismatches for 7/8 classifiers via shared PatternType enum — Validated in Phase 9: tech-debt-auto-apply
+- [x] Fix flaky concurrent-counter test with hardened lock retry config — Validated in Phase 9: tech-debt-auto-apply
+- [x] Expand auto-apply with strategy pattern applier registry (SETTINGS + RULE targets) — Validated in Phase 9: tech-debt-auto-apply
+- [x] Complete npm package.json metadata, files whitelist, ESM exports map — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] CLI bin entry pointing to compiled Commander.js program — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] GitHub Actions CI (build+test+typecheck+publint+attw) — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] Automated npm publish via OIDC trusted publishing on v* tags — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] Commander.js CLI with init subcommand for hook registration — Validated in Phase 11: cli-commands-install-experience
+- [x] Hook path resolution for global, npx, and git clone installs — Validated in Phase 11: cli-commands-install-experience
+- [x] Status command showing interaction count, last analysis, pending recommendations, hook registration — Validated in Phase 11: cli-commands-install-experience
+- [x] Uninstall command removing hooks from settings.json with optional data purge — Validated in Phase 11: cli-commands-install-experience
+- [x] Full init -> status -> uninstall CLI lifecycle — Validated in Phase 11: cli-commands-install-experience
+
+- [x] Deep scan: `harness-evolve init` scans CLAUDE.md, rules, settings, commands and generates config quality report — Validated in Phase 12: deep-scan-infrastructure
+- [x] Deep scan detects redundancy, missing mechanization, and staleness across config files — Validated in Phase 12: deep-scan-infrastructure
+- [x] Scan results output as structured Recommendation[], reusing existing delivery pipeline — Validated in Phase 12: deep-scan-infrastructure
+
+- [x] Generate .claude/commands/<name>.md skill file drafts from long_prompt SKILL recommendations — Validated in Phase 13: auto-generators
+- [x] Generate shell command hook script drafts from mechanization/repeated_prompt HOOK recommendations — Validated in Phase 13: auto-generators
+- [x] Generate CLAUDE.md patches in diff format from CLAUDE_MD-targeted recommendations — Validated in Phase 13: auto-generators
+
+- [x] Auto-apply HIGH-confidence HOOK recommendations: write script to disk with +x, register in settings.json — Validated in Phase 14: auto-apply-closure
+- [x] Auto-apply HIGH-confidence CLAUDE_MD recommendations: append section to CLAUDE.md with atomic write — Validated in Phase 14: auto-apply-closure
+
+- [x] `harness-evolve init` installs `/evolve:scan` and `/evolve:apply` slash commands to `.claude/commands/evolve/` — Validated in Phase 15: slash-commands-interactive-apply
+- [x] On-demand deep scan via `harness-evolve scan` CLI, outputting structured JSON recommendations — Validated in Phase 15: slash-commands-interactive-apply
+- [x] Interactive apply workflow: `pending`, `apply-one <id>`, `dismiss <id>` CLI subcommands for `/evolve:apply` — Validated in Phase 15: slash-commands-interactive-apply
+- [x] `harness-evolve uninstall` removes slash command files with graceful cleanup — Validated in Phase 15: slash-commands-interactive-apply
+
+- [x] Post-analysis notification is a concise one-liner referencing /evolve:apply, not a file path — Validated in Phase 16: ux-polish
+- [x] `harness-evolve init` displays a one-line purpose description next to each hook event — Validated in Phase 16: ux-polish
+- [x] Recommendations sorted by impact (HIGH → MEDIUM → LOW) in CLI output — Validated in Phase 16: ux-polish
+
 ### Active
 
-(Defined in REQUIREMENTS.md for v1.1)
+(Defined in REQUIREMENTS.md for v2.0)
 
-## Current Milestone: v1.1 Stabilization & Production
+## Current Milestone: v2.0 Deep Scan & Auto-Generation
 
-**Goal:** Fix tech debt from v1.0 audit, make the project production-ready for npm publish with CI/CD
+**Goal:** 消除冷启动问题，补全自动应用闭环，从后台工具升级为交互式优化助手
 
 **Target features:**
-- Fix inferPatternType string mismatch (7/8 classifiers)
-- Expand auto-apply scope beyond permissions-only
-- Fix flaky concurrent-counter test
-- npm publish setup (package.json metadata, bin entry, install docs)
-- CI/CD pipeline (GitHub Actions: build + test + typecheck)
-- CLI command (`harness-evolve init` for hook registration)
-- Installation experience optimization (npx support)
+- 初始化深度配置扫描（Day 0 价值）
+- Skill/Hook/CLAUDE.md 自动生成 + auto-apply 闭环
+-斜杠命令体系安装（/evolve:scan、/evolve:apply 等）
+- 交互式推荐应用
+- 分析完成简洁通知
+- init 体验优化
+
+## Shipped Milestones
+
+### v1.0 Self-Iteration Engine (shipped 2026-04-02)
+Full pipeline: capture -> store -> pre-process -> classify -> route -> deliver -> track outcomes. 8 phases, 21 plans, 2 days.
+
+### v1.1 Stabilization & Production (shipped 2026-04-04)
+Tech debt fixes, npm publish readiness, CI/CD pipeline, Commander.js CLI with init/status/uninstall. 3 phases, 7 plans.
 
 ### Out of Scope
 
@@ -107,7 +147,11 @@ Agnostic layer — works with any combination of workflow tools:
 | Tiered onboarding | Zero-config for beginners, enhancement mode for power users | Good — 3-tier scoring with weighted factors |
 | Zod v4 for all schemas | 14x faster than v3, TypeScript-first | Good — clean inference with .default() pattern |
 | proper-lockfile for cross-process locking | macOS Ventura lacks flock | Good — retry-based with stale detection |
-| v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Good — safe starting point, expandable in v2 |
+| v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Expanded in Phase 9 — strategy pattern applier registry with SETTINGS + RULE appliers |
+| ESM-only npm publish | Node 22+ target, Claude Code is ESM | Good — publint + attw validate exports |
+| npm OIDC trusted publishing | No static tokens in CI | Good — v* tag triggers automated publish |
+| Commander.js 14 over oclif | Lightweight for ~5 commands | Good — 3 commands registered, extensible |
+| import.meta.dirname for hook path resolution | ESM-native, works across install methods | Good — global, npx, git clone all resolve correctly |
 
 ## Technical Gray Areas (v1.0 Resolution)
 
@@ -118,13 +162,20 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v1.0 shipped)
+## Current State (v2.0 Phase 16 complete — milestone done)
 
-- **Codebase:** 11,733 LOC TypeScript (3,765 src + 7,968 tests)
-- **Tests:** 336 passing across 37 test files (1 pre-existing flaky)
-- **Build:** tsup produces 8 entry points (5 hooks + stop + run-evolve + index)
+- **Codebase:** ~15,500 LOC TypeScript (src + tests)
+- **Tests:** 607 passing across 58 test files
+- **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
-- **Tech debt:** inferPatternType string mismatch for 7/8 classifiers (LOW severity, feedback loop only)
+- **Scanners:** 3 (redundancy, mechanization, staleness) — deep scan infrastructure
+- **Generators:** 3 (skill, hook, claude-md-patch) — pure functions, no filesystem access
+- **Appliers:** 4 (settings, rule, hook, claude-md) — strategy pattern registry, auto-apply pipeline complete
+- **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
+- **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
+- **CLI:** Commander.js with 3 commands (init, status, uninstall), hook path resolution for all install methods
+- **Slash commands:** /evolve:scan and /evolve:apply installed via init
+- **UX:** Concise notifications, hook descriptions in init, confidence-sorted output
 
 ## Evolution
 
@@ -144,4 +195,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after v1.1 milestone start — stabilization & production readiness*
+*Last updated: 2026-04-04 — Phase 16 complete, v2.0 milestone done (5 phases, 10 plans)*
