@@ -96,7 +96,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 15-01-PLAN.md — Slash command templates and init/uninstall wiring (CMD-01, CMD-03)
-- [ ] 15-02-PLAN.md — CLI scan, pending, apply-one, dismiss subcommands (SCN-04, CMD-02)
+- [x] 15-02-PLAN.md — CLI scan, pending, apply-one, dismiss subcommands (SCN-04, CMD-02)
 
 ### Phase 16: UX Polish
 **Goal**: The recommendation experience is concise, informative, and prioritized so users see the highest-impact suggestions first

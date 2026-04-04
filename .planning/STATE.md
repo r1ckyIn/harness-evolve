@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
 status: executing
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-04-04T10:10:39.743Z"
-last_activity: 2026-04-04
+stopped_at: Completed all Phase 15 plans (01 + 02)
+last_updated: "2026-04-04T10:13:00.000Z"
+last_activity: 2026-04-04 -- Phase 15 all plans completed
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 8
   completed_plans: 7
-  percent: 0
+  percent: 88
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 
 Phase: 15 (slash-commands-interactive-apply) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
-Last activity: 2026-04-04
+Status: All plans completed
+Last activity: 2026-04-04 -- Phase 15 all plans completed
 
-Progress: [░░░░░░░░░░] 0% (v2.0 scope)
+Progress: [========░░] 88% (v2.0 scope)
 
 ## Performance Metrics
 
@@ -51,7 +51,8 @@ Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 | 13-auto-generators | 01 | 6min | 2 | 4 |
 | 13-auto-generators | 02 | 3min | 2 | 6 |
 | 14-auto-apply-closure | 01 | 6min | 3 | 6 |
-| Phase 15-slash-commands-interactive-apply P01 | 6min | 2 tasks | 7 files |
+| 15-slash-commands-interactive-apply | 01 | 6min | 2 | 7 |
+| 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 15]: Template generators are pure functions returning strings -- matching Phase 13 generator pattern
 - [Phase 15]: Create-only guard: init skips existing command files to prevent overwriting user customizations
 - [Phase 15]: Graceful cleanup: uninstall uses rmdir (not rm -rf) to preserve user-added files in evolve/ directory
+- [Phase 15]: Scan CLI output omits scan_context for concise JSON output
+- [Phase 15]: apply-one imports auto-apply.js for side-effect applier registration
+- [Phase 15]: All new CLI subcommands output structured JSON for slash command consumption
 
 ### Pending Todos
 
@@ -87,6 +91,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:10:39.738Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-04-04T10:13:00Z
+Stopped at: Completed all Phase 15 plans
 Resume file: None

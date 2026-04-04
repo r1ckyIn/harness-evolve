@@ -147,3 +147,7 @@ export type { GeneratedArtifact, GeneratorOptions } from './generators/schemas.j
 // Phase 14: Auto-Apply Closure
 export { HookApplier } from './delivery/appliers/hook-applier.js';
 export { ClaudeMdApplier } from './delivery/appliers/claude-md-applier.js';
+
+// Phase 15: Slash Commands & Interactive Apply
+export { registerScanCommand } from './cli/scan.js';
+export { registerPendingCommand, registerApplyOneCommand, registerDismissCommand } from './cli/apply.js';
