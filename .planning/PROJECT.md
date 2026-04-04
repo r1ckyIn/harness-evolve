@@ -50,6 +50,10 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Uninstall command removing hooks from settings.json with optional data purge — Validated in Phase 11: cli-commands-install-experience
 - [x] Full init -> status -> uninstall CLI lifecycle — Validated in Phase 11: cli-commands-install-experience
 
+- [x] Deep scan: `harness-evolve init` scans CLAUDE.md, rules, settings, commands and generates config quality report — Validated in Phase 12: deep-scan-infrastructure
+- [x] Deep scan detects redundancy, missing mechanization, and staleness across config files — Validated in Phase 12: deep-scan-infrastructure
+- [x] Scan results output as structured Recommendation[], reusing existing delivery pipeline — Validated in Phase 12: deep-scan-infrastructure
+
 ### Active
 
 (Defined in REQUIREMENTS.md for v2.0)
