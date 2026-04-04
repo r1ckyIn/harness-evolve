@@ -4,6 +4,9 @@
 import type { Command } from '@commander-js/extra-typings';
 import { runDeepScan } from '../scan/index.js';
 
+/** Confidence tier ordering: HIGH (0) -> MEDIUM (1) -> LOW (2) */
+const CONFIDENCE_ORDER: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
 /**
  * Register the 'scan' subcommand on a Commander.js program.
  *
@@ -18,11 +21,15 @@ export function registerScanCommand(program: Command): void {
     .action(async () => {
       try {
         const result = await runDeepScan(process.cwd());
+        // Sort recommendations by confidence: HIGH -> MEDIUM -> LOW
+        const sorted = [...result.recommendations].sort((a, b) =>
+          (CONFIDENCE_ORDER[a.confidence] ?? 3) - (CONFIDENCE_ORDER[b.confidence] ?? 3)
+        );
         // Output minimal JSON (no scan_context to keep output clean for slash command)
         const output = {
           generated_at: result.generated_at,
-          recommendation_count: result.recommendations.length,
-          recommendations: result.recommendations,
+          recommendation_count: sorted.length,
+          recommendations: sorted,
         };
         console.log(JSON.stringify(output, null, 2));
       } catch (err) {

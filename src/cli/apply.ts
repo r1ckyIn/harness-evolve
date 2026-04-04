@@ -12,6 +12,9 @@ import { analysisResultSchema } from '../schemas/recommendation.js';
 import '../delivery/auto-apply.js';
 import { getApplier } from '../delivery/appliers/index.js';
 
+/** Confidence tier ordering: HIGH (0) -> MEDIUM (1) -> LOW (2) */
+const CONFIDENCE_ORDER: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
 /**
  * Load recommendations from the analysis result file.
  * Returns an empty array when the file does not exist or is invalid.
@@ -43,10 +46,15 @@ export function registerPendingCommand(program: Command): void {
       const statusMap = new Map(state.entries.map(e => [e.id, e.status]));
 
       // Filter to pending: recommendations not in state, or explicitly pending
-      const pending = allRecs.filter(rec => {
-        const status = statusMap.get(rec.id);
-        return status === undefined || status === 'pending';
-      });
+      // Sort by confidence: HIGH -> MEDIUM -> LOW
+      const pending = allRecs
+        .filter(rec => {
+          const status = statusMap.get(rec.id);
+          return status === undefined || status === 'pending';
+        })
+        .sort((a, b) =>
+          (CONFIDENCE_ORDER[a.confidence] ?? 3) - (CONFIDENCE_ORDER[b.confidence] ?? 3)
+        );
 
       console.log(JSON.stringify({ pending, count: pending.length }, null, 2));
     });
