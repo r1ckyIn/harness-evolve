@@ -112,7 +112,8 @@ describe('CLI pending command', () => {
     const output = JSON.parse(logs.join(''));
     expect(output.pending).toHaveLength(2);
     expect(output.count).toBe(2);
-    expect(output.pending.map((r: any) => r.id)).toEqual(['rec-2', 'rec-3']);
+    // After sorting by confidence: rec-3 (HIGH) before rec-2 (MEDIUM)
+    expect(output.pending.map((r: any) => r.id)).toEqual(['rec-3', 'rec-2']);
   });
 
   it('returns empty array when no analysis result exists', async () => {
@@ -142,6 +143,43 @@ describe('CLI pending command', () => {
     const output = JSON.parse(logs.join(''));
     expect(output.pending).toEqual([]);
     expect(output.count).toBe(0);
+  });
+
+  it('sorts pending recommendations by confidence HIGH -> MEDIUM -> LOW', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const { loadState } = await import('../../../src/delivery/state.js');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedLoadState = vi.mocked(loadState);
+
+    // Recommendations in reverse confidence order: LOW, MEDIUM, HIGH
+    const mixedRecs = [
+      { ...sampleRecommendations[1], id: 'low-1', confidence: 'LOW' },
+      { ...sampleRecommendations[1], id: 'med-1', confidence: 'MEDIUM' },
+      { ...sampleRecommendations[0], id: 'high-1', confidence: 'HIGH' },
+    ];
+
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({
+      generated_at: '2026-04-04T00:00:00.000Z',
+      summary_period: { since: '2026-04-01', until: '2026-04-04', days: 3 },
+      recommendations: mixedRecs,
+      metadata: { classifier_count: 8, patterns_evaluated: 10, environment_ecosystems: [], claude_code_version: '1.0.0' },
+    }));
+
+    mockedLoadState.mockResolvedValueOnce({
+      entries: [],
+      last_updated: '2026-04-04T00:00:00.000Z',
+    });
+
+    const { registerPendingCommand } = await import('../../../src/cli/apply.js');
+    const program = new Command();
+    program.exitOverride();
+    registerPendingCommand(program);
+
+    await program.parseAsync(['pending'], { from: 'user' });
+
+    const output = JSON.parse(logs.join(''));
+    expect(output.pending.map((r: any) => r.confidence)).toEqual(['HIGH', 'MEDIUM', 'LOW']);
+    expect(output.pending.map((r: any) => r.id)).toEqual(['high-1', 'med-1', 'low-1']);
   });
 
   it('treats missing state entries as pending', async () => {

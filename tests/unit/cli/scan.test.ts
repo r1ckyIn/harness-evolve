@@ -63,6 +63,58 @@ describe('CLI scan command', () => {
     expect(output.recommendations[0].id).toBe('rec-1');
   });
 
+  it('scan output recommendations are sorted by confidence', async () => {
+    const { runDeepScan } = await import('../../../src/scan/index.js');
+    const mockedScan = vi.mocked(runDeepScan);
+    mockedScan.mockResolvedValueOnce({
+      generated_at: '2026-04-04T00:00:00.000Z',
+      scan_context: {} as any,
+      recommendations: [
+        {
+          id: 'low-1',
+          target: 'RULE',
+          confidence: 'LOW',
+          pattern_type: 'scan_redundancy',
+          title: 'Low priority',
+          description: 'Low',
+          evidence: { count: 1, examples: ['x'] },
+          suggested_action: 'Do low',
+        },
+        {
+          id: 'high-1',
+          target: 'HOOK',
+          confidence: 'HIGH',
+          pattern_type: 'scan_missing_mechanization',
+          title: 'High priority',
+          description: 'High',
+          evidence: { count: 5, examples: ['y'] },
+          suggested_action: 'Do high',
+        },
+        {
+          id: 'med-1',
+          target: 'CLAUDE_MD',
+          confidence: 'MEDIUM',
+          pattern_type: 'scan_stale_reference',
+          title: 'Medium priority',
+          description: 'Medium',
+          evidence: { count: 2, examples: ['z'] },
+          suggested_action: 'Do medium',
+        },
+      ],
+    });
+
+    const { registerScanCommand } = await import('../../../src/cli/scan.js');
+    const program = new Command();
+    program.exitOverride();
+    registerScanCommand(program);
+
+    await program.parseAsync(['scan'], { from: 'user' });
+
+    const output = JSON.parse(logs.join(''));
+    expect(output.recommendations.map((r: any) => r.confidence)).toEqual(['HIGH', 'MEDIUM', 'LOW']);
+    expect(output.recommendations.map((r: any) => r.id)).toEqual(['high-1', 'med-1', 'low-1']);
+  });
+
   it('scan command handles errors gracefully', async () => {
     const { runDeepScan } = await import('../../../src/scan/index.js');
     const mockedScan = vi.mocked(runDeepScan);
