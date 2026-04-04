@@ -1,8 +1,8 @@
 // Init command implementation -- registers harness-evolve hooks in Claude Code settings.json
 // and runs a deep scan of existing configuration for quality issues.
 
-import { copyFile, mkdir, access } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { copyFile, mkdir, access, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import type { Command } from '@commander-js/extra-typings';
 import {
   HOOK_REGISTRATIONS,
@@ -14,6 +14,8 @@ import {
   confirm,
 } from './utils.js';
 import { runDeepScan } from '../scan/index.js';
+import { generateScanCommand } from '../commands/evolve-scan.js';
+import { generateApplyCommand } from '../commands/evolve-apply.js';
 
 /**
  * Options for runInit, with test overrides.
@@ -22,6 +24,7 @@ export interface InitOptions {
   yes: boolean;
   settingsPath?: string;
   baseDirOverride?: string;
+  projectDir?: string;
 }
 
 /**
@@ -33,6 +36,29 @@ async function fileExists(path: string): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Install slash command Markdown files into the project's .claude/commands/evolve/ directory.
+ * Creates the directory if it doesn't exist. Skips files that already exist (create-only guard).
+ */
+async function installSlashCommands(projectDir: string): Promise<void> {
+  const commandsDir = join(projectDir, '.claude', 'commands', 'evolve');
+  await mkdir(commandsDir, { recursive: true });
+
+  const commands = [
+    { name: 'scan', generate: generateScanCommand, path: join(commandsDir, 'scan.md') },
+    { name: 'apply', generate: generateApplyCommand, path: join(commandsDir, 'apply.md') },
+  ];
+
+  for (const cmd of commands) {
+    if (await fileExists(cmd.path)) {
+      console.log(`  /evolve:${cmd.name} already installed, skipping`);
+    } else {
+      await writeFile(cmd.path, cmd.generate(), 'utf-8');
+      console.log(`  /evolve:${cmd.name} installed`);
+    }
   }
 }
 
@@ -110,6 +136,10 @@ export async function runInit(options: InitOptions): Promise<void> {
   console.log(
     `Hooks registered successfully! (${hookCommands.length} events)`,
   );
+
+  // Install slash commands
+  console.log('\nInstalling slash commands...\n');
+  await installSlashCommands(options.projectDir ?? process.cwd());
 
   // Deep scan: analyze existing configuration for quality issues
   try {

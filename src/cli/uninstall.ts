@@ -1,7 +1,8 @@
 // Uninstall command implementation -- removes harness-evolve hooks and optionally deletes data
 
-import { copyFile, rm, access } from 'node:fs/promises';
+import { copyFile, rm, rmdir, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
+import { join } from 'node:path';
 import type { Command } from '@commander-js/extra-typings';
 import {
   readSettings,
@@ -19,6 +20,31 @@ export interface UninstallOptions {
   purge: boolean;
   yes: boolean;
   settingsPath?: string;
+  projectDir?: string;
+}
+
+/**
+ * Remove slash command files from the project's .claude/commands/evolve/ directory.
+ * Handles missing files gracefully. Attempts to remove the evolve/ directory if empty.
+ */
+async function removeSlashCommands(projectDir: string): Promise<void> {
+  const commandsDir = join(projectDir, '.claude', 'commands', 'evolve');
+
+  for (const file of ['scan.md', 'apply.md']) {
+    try {
+      await rm(join(commandsDir, file));
+      console.log(`  Removed /evolve:${file.replace('.md', '')}`);
+    } catch {
+      // File doesn't exist -- nothing to remove
+    }
+  }
+
+  // Try to remove empty directory
+  try {
+    await rmdir(commandsDir);
+  } catch {
+    // Directory not empty (user added files) or doesn't exist
+  }
 }
 
 /**
@@ -78,6 +104,10 @@ export async function runUninstall(options: UninstallOptions): Promise<void> {
       console.log('No harness-evolve hooks found in settings.json');
     }
   }
+
+  // --- Remove slash commands ---
+  console.log('\nRemoving slash commands...');
+  await removeSlashCommands(options.projectDir ?? process.cwd());
 
   // --- Optionally delete data directory ---
   if (options.purge) {

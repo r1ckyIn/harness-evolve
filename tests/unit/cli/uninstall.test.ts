@@ -14,6 +14,7 @@ vi.mock('node:fs/promises', () => ({
   mkdir: vi.fn().mockResolvedValue(undefined),
   access: vi.fn(),
   rm: vi.fn().mockResolvedValue(undefined),
+  rmdir: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock node:readline/promises
@@ -196,6 +197,7 @@ describe('CLI uninstall command', () => {
     const mockedRm = vi.mocked(rm);
 
     mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
 
     const { runUninstall } = await import('../../../src/cli/uninstall.js');
     await runUninstall({
@@ -204,8 +206,12 @@ describe('CLI uninstall command', () => {
       settingsPath: '/tmp/test-no-purge/.claude/settings.json',
     });
 
-    // rm should NOT have been called
-    expect(mockedRm).not.toHaveBeenCalled();
+    // rm should NOT have been called with recursive+force (purge call)
+    // Note: rm may be called for slash command file removal, which is fine
+    const purgeCall = mockedRm.mock.calls.find(
+      (c) => typeof c[1] === 'object' && (c[1] as Record<string, unknown>).recursive === true,
+    );
+    expect(purgeCall).toBeUndefined();
   });
 
   it('creates backup of settings.json before modification', async () => {
@@ -251,6 +257,8 @@ describe('CLI uninstall command', () => {
     mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
     // Data directory exists
     mockedAccess.mockResolvedValueOnce(undefined);
+    // Allow rm for slash command removal (non-recursive)
+    mockedRm.mockResolvedValue(undefined);
 
     // Mock readline to answer "n" (decline purge)
     const readline = await import('node:readline/promises');
@@ -271,8 +279,12 @@ describe('CLI uninstall command', () => {
 
     // Should have prompted
     expect(mockRl.question).toHaveBeenCalled();
-    // Should NOT have deleted (user declined)
-    expect(mockedRm).not.toHaveBeenCalled();
+    // Should NOT have called rm with recursive+force (purge call)
+    // rm may be called for slash command file removal, which is expected
+    const purgeCall = mockedRm.mock.calls.find(
+      (c) => typeof c[1] === 'object' && (c[1] as Record<string, unknown>).recursive === true,
+    );
+    expect(purgeCall).toBeUndefined();
     const output = logs.join('\n');
     expect(output).toContain('preserved');
   });
@@ -305,5 +317,95 @@ describe('CLI uninstall command', () => {
   it('exports registerUninstallCommand function', async () => {
     const { registerUninstallCommand } = await import('../../../src/cli/uninstall.js');
     expect(typeof registerUninstallCommand).toBe('function');
+  });
+});
+
+describe('CLI uninstall slash commands', () => {
+  let logs: string[];
+  let originalLog: typeof console.log;
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    logs = [];
+    originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+  });
+
+  afterEach(() => {
+    console.log = originalLog;
+    vi.restoreAllMocks();
+  });
+
+  it('removes scan.md and apply.md', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    // No hooks in settings
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
+    mockedRmdir.mockResolvedValue(undefined);
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+    await runUninstall({
+      purge: false,
+      yes: true,
+      settingsPath: '/tmp/test-slash-rm/.claude/settings.json',
+      projectDir: '/tmp/test-slash-rm',
+    });
+
+    // rm should have been called for both scan.md and apply.md
+    const rmCalls = mockedRm.mock.calls.map((c) => c[0]);
+    expect(rmCalls).toContain('/tmp/test-slash-rm/.claude/commands/evolve/scan.md');
+    expect(rmCalls).toContain('/tmp/test-slash-rm/.claude/commands/evolve/apply.md');
+  });
+
+  it('attempts to remove evolve/ directory', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
+    mockedRmdir.mockResolvedValue(undefined);
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+    await runUninstall({
+      purge: false,
+      yes: true,
+      settingsPath: '/tmp/test-slash-rmdir/.claude/settings.json',
+      projectDir: '/tmp/test-slash-rmdir',
+    });
+
+    expect(mockedRmdir).toHaveBeenCalledWith('/tmp/test-slash-rmdir/.claude/commands/evolve');
+  });
+
+  it('handles missing command files gracefully', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+
+    // rm throws ENOENT (files don't exist)
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedRm.mockRejectedValue(enoent);
+    mockedRmdir.mockRejectedValue(enoent);
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+
+    // Should not throw
+    await expect(
+      runUninstall({
+        purge: false,
+        yes: true,
+        settingsPath: '/tmp/test-slash-missing/.claude/settings.json',
+        projectDir: '/tmp/test-slash-missing',
+      }),
+    ).resolves.not.toThrow();
   });
 });

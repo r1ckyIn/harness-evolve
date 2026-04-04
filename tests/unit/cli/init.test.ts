@@ -14,6 +14,7 @@ vi.mock('node:fs/promises', () => ({
   copyFile: vi.fn().mockResolvedValue(undefined),
   mkdir: vi.fn().mockResolvedValue(undefined),
   access: vi.fn(),
+  writeFile: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock node:readline/promises
@@ -481,6 +482,162 @@ describe('CLI init command', () => {
     expect(mockedCopyFile).toHaveBeenCalledWith(
       '/tmp/test-backup/.claude/settings.json',
       '/tmp/test-backup/.claude/settings.json.backup',
+    );
+  });
+});
+
+describe('CLI init slash commands', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('installs scan.md and apply.md to .claude/commands/evolve/', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // Slash command files do not exist (access throws ENOENT)
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedAccess.mockRejectedValue(enoent);
+
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-slash/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        projectDir: '/tmp/test-slash',
+      });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // writeFile should have been called for both scan.md and apply.md
+    expect(mockedWriteFile).toHaveBeenCalledTimes(2);
+
+    // Verify paths
+    const writePaths = mockedWriteFile.mock.calls.map((c) => c[0]);
+    expect(writePaths).toContain(join('/tmp/test-slash', '.claude', 'commands', 'evolve', 'scan.md'));
+    expect(writePaths).toContain(join('/tmp/test-slash', '.claude', 'commands', 'evolve', 'apply.md'));
+
+    // Verify content contains expected frontmatter
+    const scanContent = mockedWriteFile.mock.calls.find((c) =>
+      String(c[0]).includes('scan.md'),
+    )?.[1] as string;
+    expect(scanContent).toContain('name: scan');
+
+    const applyContent = mockedWriteFile.mock.calls.find((c) =>
+      String(c[0]).includes('apply.md'),
+    )?.[1] as string;
+    expect(applyContent).toContain('name: apply');
+  });
+
+  it('skips existing command files', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // Slash command files already exist (access resolves)
+    mockedAccess.mockResolvedValue(undefined);
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-skip/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        projectDir: '/tmp/test-skip',
+      });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // writeFile should NOT have been called for command files
+    expect(mockedWriteFile).not.toHaveBeenCalled();
+
+    // Should log "already installed"
+    expect(logs.some((l) => l.includes('already installed'))).toBe(true);
+  });
+
+  it('creates .claude/commands/evolve/ directory', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // Files don't exist
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedAccess.mockRejectedValue(enoent);
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const originalLog = console.log;
+    console.log = () => {};
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-mkdirslash/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        projectDir: '/tmp/test-mkdirslash',
+      });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // mkdir should have been called with .claude/commands/evolve/ path with recursive
+    const mkdirCalls = mockedMkdir.mock.calls.map((c) => c[0]);
+    expect(mkdirCalls).toContain(
+      join('/tmp/test-mkdirslash', '.claude', 'commands', 'evolve'),
     );
   });
 });
