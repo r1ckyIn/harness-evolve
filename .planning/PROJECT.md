@@ -61,6 +61,11 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Auto-apply HIGH-confidence HOOK recommendations: write script to disk with +x, register in settings.json — Validated in Phase 14: auto-apply-closure
 - [x] Auto-apply HIGH-confidence CLAUDE_MD recommendations: append section to CLAUDE.md with atomic write — Validated in Phase 14: auto-apply-closure
 
+- [x] `harness-evolve init` installs `/evolve:scan` and `/evolve:apply` slash commands to `.claude/commands/evolve/` — Validated in Phase 15: slash-commands-interactive-apply
+- [x] On-demand deep scan via `harness-evolve scan` CLI, outputting structured JSON recommendations — Validated in Phase 15: slash-commands-interactive-apply
+- [x] Interactive apply workflow: `pending`, `apply-one <id>`, `dismiss <id>` CLI subcommands for `/evolve:apply` — Validated in Phase 15: slash-commands-interactive-apply
+- [x] `harness-evolve uninstall` removes slash command files with graceful cleanup — Validated in Phase 15: slash-commands-interactive-apply
+
 ### Active
 
 (Defined in REQUIREMENTS.md for v2.0)
