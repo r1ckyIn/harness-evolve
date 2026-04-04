@@ -127,3 +127,12 @@ export {
   loadOutcomeHistory,
   computeOutcomeSummaries,
 } from './analysis/outcome-tracker.js';
+
+// Phase 12: Deep Scan
+export { runDeepScan } from './scan/index.js';
+export type { ScanResult, ScanContext, Scanner } from './scan/index.js';
+export { scanContextSchema } from './scan/schemas.js';
+export { buildScanContext } from './scan/context-builder.js';
+export { scanRedundancy } from './scan/scanners/redundancy.js';
+export { scanMechanization } from './scan/scanners/mechanization.js';
+export { scanStaleness } from './scan/scanners/staleness.js';

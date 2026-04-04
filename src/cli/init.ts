@@ -1,4 +1,5 @@
 // Init command implementation -- registers harness-evolve hooks in Claude Code settings.json
+// and runs a deep scan of existing configuration for quality issues.
 
 import { copyFile, mkdir, access } from 'node:fs/promises';
 import { dirname } from 'node:path';
@@ -12,6 +13,7 @@ import {
   mergeHooks,
   confirm,
 } from './utils.js';
+import { runDeepScan } from '../scan/index.js';
 
 /**
  * Options for runInit, with test overrides.
@@ -108,6 +110,29 @@ export async function runInit(options: InitOptions): Promise<void> {
   console.log(
     `Hooks registered successfully! (${hookCommands.length} events)`,
   );
+
+  // Deep scan: analyze existing configuration for quality issues
+  try {
+    console.log('\nScanning configuration...\n');
+    const scanResult = await runDeepScan(process.cwd());
+    if (scanResult.recommendations.length > 0) {
+      console.log(
+        `Found ${scanResult.recommendations.length} configuration suggestion(s):\n`,
+      );
+      for (const rec of scanResult.recommendations) {
+        console.log(`  [${rec.confidence}] ${rec.title}`);
+        console.log(`    ${rec.description}`);
+        console.log(`    Suggested: ${rec.suggested_action}\n`);
+      }
+    } else {
+      console.log('Configuration looks clean -- no issues detected.\n');
+    }
+  } catch (err) {
+    // Scan is advisory -- don't block init on scan failures
+    console.error(
+      `Warning: Configuration scan failed: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
 }
 
 /**
