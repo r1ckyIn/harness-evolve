@@ -31,6 +31,9 @@ export const patternTypeSchema = z.enum([
   'onboarding_start_rules',
   'onboarding_start_claudemd',
   'onboarding_optimize',
+  'scan_redundancy',
+  'scan_missing_mechanization',
+  'scan_stale_reference',
 ]);
 export type PatternType = z.infer<typeof patternTypeSchema>;
 
