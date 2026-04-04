@@ -1,6 +1,6 @@
 // Unit tests for CLI scan subcommand
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Command } from '@commander-js/extra-typings';
 
 // Mock the scan module
@@ -39,7 +39,7 @@ describe('CLI scan command', () => {
           id: 'rec-1',
           target: 'HOOK',
           confidence: 'HIGH',
-          pattern_type: 'scan_mechanization',
+          pattern_type: 'scan_missing_mechanization',
           title: 'Test Recommendation',
           description: 'A test recommendation',
           evidence: { count: 1, examples: ['example'] },

@@ -33,7 +33,7 @@ const sampleRecommendations = [
     id: 'rec-1',
     target: 'HOOK',
     confidence: 'HIGH',
-    pattern_type: 'scan_mechanization',
+    pattern_type: 'scan_missing_mechanization',
     title: 'Create hook for npm test',
     description: 'Mechanize npm test command',
     evidence: { count: 5, examples: ['npm test'] },
