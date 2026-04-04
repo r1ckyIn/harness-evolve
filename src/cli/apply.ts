@@ -87,7 +87,8 @@ export function registerApplyOneCommand(program: Command): void {
         }
 
         const applier = getApplier(rec.target);
-        if (!applier || !applier.canApply(rec)) {
+        const applyOptions = { skipConfidenceGate: true };
+        if (!applier || !applier.canApply(rec, applyOptions)) {
           console.log(JSON.stringify({
             recommendation_id: id,
             success: false,
@@ -97,7 +98,7 @@ export function registerApplyOneCommand(program: Command): void {
           return;
         }
 
-        const result = await applier.apply(rec);
+        const result = await applier.apply(rec, applyOptions);
 
         // Log the attempt (non-critical -- ignore write failures)
         const logEntry = {

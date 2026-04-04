@@ -21,8 +21,9 @@ const DESTRUCTIVE_PATTERNS = new Set([
 export class ClaudeMdApplier implements Applier {
   readonly target = 'CLAUDE_MD';
 
-  canApply(rec: Recommendation): boolean {
-    return rec.confidence === 'HIGH' && rec.target === 'CLAUDE_MD';
+  canApply(rec: Recommendation, options?: ApplierOptions): boolean {
+    const confidenceOk = options?.skipConfidenceGate || rec.confidence === 'HIGH';
+    return confidenceOk && rec.target === 'CLAUDE_MD';
   }
 
   async apply(

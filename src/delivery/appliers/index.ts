@@ -15,11 +15,13 @@ export interface ApplierOptions {
   hooksDir?: string;
   /** Override CLAUDE.md path (used in testing) */
   claudeMdPath?: string;
+  /** Skip confidence gate when user explicitly invokes apply-one */
+  skipConfidenceGate?: boolean;
 }
 
 export interface Applier {
   readonly target: string;
-  canApply(rec: Recommendation): boolean;
+  canApply(rec: Recommendation, options?: ApplierOptions): boolean;
   apply(rec: Recommendation, options?: ApplierOptions): Promise<AutoApplyResult>;
 }
 
