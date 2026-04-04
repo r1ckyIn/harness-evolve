@@ -52,7 +52,11 @@
   2. The scan detects redundant rules (same constraint in multiple files), missing mechanization (operations in rules that should be hooks), and stale config (references to non-existent files or commands)
   3. Scan results output as structured recommendations using the existing recommendation format and delivery pipeline
   4. Scan can be triggered programmatically (not yet via slash command -- that comes in Phase 15)
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 12-01-PLAN.md — Scan schemas, context-builder, and patternType extension
+- [ ] 12-02-PLAN.md — Redundancy, mechanization, and staleness scanners
+- [ ] 12-03-PLAN.md — Scan orchestrator, init integration, and public API exports
 
 ### Phase 13: Auto-Generators
 **Goal**: The system can produce ready-to-use artifact drafts (skills, hooks, CLAUDE.md patches) from detected patterns
@@ -114,7 +118,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
-| 12. Deep Scan Infrastructure | v2.0 | 0/? | Not started | - |
+| 12. Deep Scan Infrastructure | v2.0 | 0/3 | Planned | - |
 | 13. Auto-Generators | v2.0 | 0/? | Not started | - |
 | 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
