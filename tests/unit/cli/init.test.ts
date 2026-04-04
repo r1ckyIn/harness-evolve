@@ -507,7 +507,7 @@ describe('CLI init slash commands', () => {
     vi.restoreAllMocks();
   });
 
-  it('installs scan.md and apply.md to .claude/commands/evolve/', async () => {
+  it('installs scan.md and apply.md to global ~/.claude/commands/evolve/', async () => {
     const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
     const writeFileAtomic = (await import('write-file-atomic')).default;
     const mockedReadFile = vi.mocked(readFile);
@@ -530,6 +530,9 @@ describe('CLI init slash commands', () => {
 
     mockedWriteFile.mockResolvedValue(undefined);
 
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-slash-home';
+
     const { runInit } = await import('../../../src/cli/init.js');
 
     const logs: string[] = [];
@@ -545,15 +548,16 @@ describe('CLI init slash commands', () => {
       });
     } finally {
       console.log = originalLog;
+      process.env.HOME = originalHome;
     }
 
     // writeFile should have been called for both scan.md and apply.md
     expect(mockedWriteFile).toHaveBeenCalledTimes(2);
 
-    // Verify paths
+    // Verify paths point to HOME, not projectDir
     const writePaths = mockedWriteFile.mock.calls.map((c) => c[0]);
-    expect(writePaths).toContain(join('/tmp/test-slash', '.claude', 'commands', 'evolve', 'scan.md'));
-    expect(writePaths).toContain(join('/tmp/test-slash', '.claude', 'commands', 'evolve', 'apply.md'));
+    expect(writePaths).toContain(join('/tmp/test-slash-home', '.claude', 'commands', 'evolve', 'scan.md'));
+    expect(writePaths).toContain(join('/tmp/test-slash-home', '.claude', 'commands', 'evolve', 'apply.md'));
 
     // Verify content contains expected frontmatter
     const scanContent = mockedWriteFile.mock.calls.find((c) =>
@@ -583,8 +587,11 @@ describe('CLI init slash commands', () => {
     mockedMkdir.mockResolvedValue(undefined as never);
     mockedWrite.mockResolvedValueOnce(undefined);
 
-    // Slash command files already exist (access resolves)
+    // All access() calls resolve (files exist -- including stale project-level dir)
     mockedAccess.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-skip-home';
 
     const { runInit } = await import('../../../src/cli/init.js');
 
@@ -601,6 +608,7 @@ describe('CLI init slash commands', () => {
       });
     } finally {
       console.log = originalLog;
+      process.env.HOME = originalHome;
     }
 
     // writeFile should NOT have been called for command files
@@ -610,7 +618,163 @@ describe('CLI init slash commands', () => {
     expect(logs.some((l) => l.includes('already installed'))).toBe(true);
   });
 
-  it('creates .claude/commands/evolve/ directory', async () => {
+  it('installs slash commands to global HOME path instead of projectDir', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // Slash command files do not exist (access throws ENOENT)
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedAccess.mockRejectedValue(enoent);
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    // Set HOME to a known temp path
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/fake-home';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const originalLog = console.log;
+    console.log = () => {};
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-global/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/some-project',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // writeFile should write to HOME-based path, NOT projectDir-based path
+    const writePaths = mockedWriteFile.mock.calls.map((c) => c[0]);
+    expect(writePaths).toContain(join('/tmp/fake-home', '.claude', 'commands', 'evolve', 'scan.md'));
+    expect(writePaths).toContain(join('/tmp/fake-home', '.claude', 'commands', 'evolve', 'apply.md'));
+
+    // Should NOT contain project-level path
+    expect(writePaths).not.toContain(join('/tmp/some-project', '.claude', 'commands', 'evolve', 'scan.md'));
+  });
+
+  it('warns about stale project-level commands when directory exists', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // For slash command files: access behavior depends on the path
+    // Global HOME commands don't exist (ENOENT) but project-level dir exists
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedAccess.mockImplementation(async (p: Parameters<typeof access>[0]) => {
+      const pathStr = String(p);
+      // Project-level commands dir exists (stale)
+      if (pathStr === join('/tmp/stale-project', '.claude', 'commands', 'evolve')) {
+        return undefined;
+      }
+      // All other access calls (file existence checks) throw ENOENT
+      throw enoent;
+    });
+
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/fake-home-stale';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/stale-project/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/stale-project',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // Should warn about stale project-level commands
+    expect(logs.some((l) => l.includes('project-level') || l.includes('stale'))).toBe(true);
+  });
+
+  it('does NOT warn when project-level commands directory does not exist', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // All access calls throw ENOENT (no stale project dir, no existing command files)
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedAccess.mockRejectedValue(enoent);
+
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/fake-home-nostale';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/nostale-project/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/nostale-project',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // Should NOT have stale/project-level warning
+    expect(logs.some((l) => l.includes('project-level') && l.includes('stale'))).toBe(false);
+  });
+
+  it('creates global ~/.claude/commands/evolve/ directory', async () => {
     const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
     const writeFileAtomic = (await import('write-file-atomic')).default;
     const mockedReadFile = vi.mocked(readFile);
@@ -631,6 +795,9 @@ describe('CLI init slash commands', () => {
     mockedAccess.mockRejectedValue(enoent);
     mockedWriteFile.mockResolvedValue(undefined);
 
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-mkdirslash-home';
+
     const { runInit } = await import('../../../src/cli/init.js');
 
     const originalLog = console.log;
@@ -644,12 +811,13 @@ describe('CLI init slash commands', () => {
       });
     } finally {
       console.log = originalLog;
+      process.env.HOME = originalHome;
     }
 
-    // mkdir should have been called with .claude/commands/evolve/ path with recursive
+    // mkdir should have been called with HOME-based .claude/commands/evolve/ path
     const mkdirCalls = mockedMkdir.mock.calls.map((c) => c[0]);
     expect(mkdirCalls).toContain(
-      join('/tmp/test-mkdirslash', '.claude', 'commands', 'evolve'),
+      join('/tmp/test-mkdirslash-home', '.claude', 'commands', 'evolve'),
     );
   });
 });

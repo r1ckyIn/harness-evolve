@@ -40,11 +40,12 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 /**
- * Install slash command Markdown files into the project's .claude/commands/evolve/ directory.
+ * Install slash command Markdown files into the global ~/.claude/commands/evolve/ directory.
  * Creates the directory if it doesn't exist. Skips files that already exist (create-only guard).
  */
-async function installSlashCommands(projectDir: string): Promise<void> {
-  const commandsDir = join(projectDir, '.claude', 'commands', 'evolve');
+async function installSlashCommands(): Promise<void> {
+  const home = process.env.HOME ?? '';
+  const commandsDir = join(home, '.claude', 'commands', 'evolve');
   await mkdir(commandsDir, { recursive: true });
 
   const commands = [
@@ -138,9 +139,19 @@ export async function runInit(options: InitOptions): Promise<void> {
     `Hooks registered successfully! (${hookCommands.length} events)`,
   );
 
-  // Install slash commands
+  // Install slash commands (global ~/.claude/commands/evolve/)
   console.log('\nInstalling slash commands...\n');
-  await installSlashCommands(options.projectDir ?? process.cwd());
+  await installSlashCommands();
+
+  // Warn about stale project-level commands
+  const projectCommandsDir = join(options.projectDir ?? process.cwd(), '.claude', 'commands', 'evolve');
+  try {
+    await access(projectCommandsDir);
+    console.log(`\nNote: Found project-level commands at ${projectCommandsDir}`);
+    console.log('These are stale after global install. You can safely remove the project-level .claude/commands/evolve/ directory.\n');
+  } catch {
+    // No stale project-level commands -- nothing to warn about
+  }
 
   // Deep scan: analyze existing configuration for quality issues
   try {
