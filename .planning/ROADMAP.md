@@ -38,7 +38,7 @@
 - [x] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references (completed 2026-04-04)
 - [x] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns (completed 2026-04-04)
 - [x] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage (completed 2026-04-04)
-- [ ] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow
+- [x] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow (completed 2026-04-04)
 - [ ] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations
 
 ## Phase Details
@@ -129,5 +129,5 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
 | 13. Auto-Generators | v2.0 | 2/2 | Complete    | 2026-04-04 |
 | 14. Auto-Apply Closure | v2.0 | 1/1 | Complete    | 2026-04-04 |
-| 15. Slash Commands & Interactive Apply | v2.0 | 1/2 | In Progress|  |
+| 15. Slash Commands & Interactive Apply | v2.0 | 1/2 | Complete    | 2026-04-04 |
 | 16. UX Polish | v2.0 | 0/? | Not started | - |
