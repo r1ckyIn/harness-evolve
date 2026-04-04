@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
-status: executing
-stopped_at: Completed 16-02-PLAN.md
-last_updated: "2026-04-04T10:47:47.563Z"
+status: verifying
+stopped_at: Completed 16-01-PLAN.md
+last_updated: "2026-04-04T10:48:28.640Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 5
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 
 Phase: 16 (ux-polish) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-04
 
 Progress: [========░░] 88% (v2.0 scope)
@@ -54,6 +54,7 @@ Progress: [========░░] 88% (v2.0 scope)
 | 15-slash-commands-interactive-apply | 01 | 6min | 2 | 7 |
 | 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 | Phase 16 P02 | 3min | 1 tasks | 4 files |
+| Phase 16-ux-polish P01 | 4min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 15]: All new CLI subcommands output structured JSON for slash command consumption
 - [Phase 16]: CONFIDENCE_ORDER Record<string,number> with fallback for defensive unknown-value handling
 - [Phase 16]: Spread copy in scan sort to avoid mutating source array
+- [Phase 16-ux-polish]: Notification text uses 'suggestion' instead of 'recommendation' for conciseness
+- [Phase 16-ux-polish]: buildNotification reduced to single parameter -- /evolve:apply is the only action path
+- [Phase 16-ux-polish]: Hook descriptions embedded in HOOK_REGISTRATIONS array, not a separate data structure
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:47:47.558Z
-Stopped at: Completed 16-02-PLAN.md
+Last session: 2026-04-04T10:48:28.635Z
+Stopped at: Completed 16-01-PLAN.md
 Resume file: None
