@@ -4,6 +4,7 @@
 
 - **v1.0 Self-Iteration Engine** — Phases 1-8 (shipped 2026-04-02) | [Archive](milestones/v1.0-ROADMAP.md)
 - **v1.1 Stabilization & Production** — Phases 9-11 (shipped 2026-04-04) | [Archive](milestones/v1.1-ROADMAP.md)
+- **v2.0 Deep Scan & Auto-Generation** — Phases 12-16 (in progress)
 
 ## Phases
 
@@ -30,7 +31,75 @@
 
 </details>
 
+### v2.0 Deep Scan & Auto-Generation (In Progress)
+
+**Milestone Goal:** Eliminate cold-start problem, close the auto-apply loop for all target types, and upgrade harness-evolve from a background tool to an interactive optimization assistant.
+
+- [ ] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references
+- [ ] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns
+- [ ] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage
+- [ ] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow
+- [ ] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations
+
+## Phase Details
+
+### Phase 12: Deep Scan Infrastructure
+**Goal**: Users get immediate Day 0 value by scanning their existing Claude Code configuration for quality issues
+**Depends on**: Phase 11 (CLI init command exists as entry point)
+**Requirements**: SCN-01, SCN-02, SCN-03
+**Success Criteria** (what must be TRUE):
+  1. Running `harness-evolve init` scans CLAUDE.md, .claude/rules/, settings.json, and .claude/commands/ and produces a config quality report
+  2. The scan detects redundant rules (same constraint in multiple files), missing mechanization (operations in rules that should be hooks), and stale config (references to non-existent files or commands)
+  3. Scan results output as structured recommendations using the existing recommendation format and delivery pipeline
+  4. Scan can be triggered programmatically (not yet via slash command -- that comes in Phase 15)
+**Plans**: TBD
+
+### Phase 13: Auto-Generators
+**Goal**: The system can produce ready-to-use artifact drafts (skills, hooks, CLAUDE.md patches) from detected patterns
+**Depends on**: Phase 12 (scan infrastructure provides detection context)
+**Requirements**: GEN-01, GEN-02, GEN-03
+**Success Criteria** (what must be TRUE):
+  1. When repeated long-prompt patterns are detected, a `.claude/commands/<name>.md` skill file draft is generated with the extracted prompt template
+  2. When mechanizable operation patterns are detected, a shell command hook script draft is generated with the appropriate lifecycle event binding
+  3. When project-level config suggestions are detected, a CLAUDE.md patch is generated in diff format that the user can review before applying
+  4. Generated artifacts follow Claude Code conventions (correct directory structure, valid format, appropriate metadata)
+**Plans**: TBD
+
+### Phase 14: Auto-Apply Closure
+**Goal**: HIGH-confidence HOOK and CLAUDE_MD recommendations can be automatically applied without user intervention, completing the auto-apply loop for all generated artifact types
+**Depends on**: Phase 13 (generators must exist before appliers can use them)
+**Requirements**: GEN-04, GEN-05
+**Success Criteria** (what must be TRUE):
+  1. A HOOK auto-applier is registered in the strategy pattern applier registry and can write hook scripts + update settings.json hook registration
+  2. A CLAUDE_MD auto-applier is registered in the strategy pattern applier registry and can apply diff patches to CLAUDE.md files
+  3. Both appliers integrate with the existing backup/audit/confidence pipeline (backup before apply, JSONL audit log, only HIGH confidence triggers auto-apply)
+**Plans**: TBD
+
+### Phase 15: Slash Commands & Interactive Apply
+**Goal**: Users can interact with harness-evolve through Claude Code slash commands for scanning, reviewing, and applying recommendations
+**Depends on**: Phase 14 (auto-apply closure needed for /evolve:apply to have full capability)
+**Requirements**: CMD-01, CMD-02, CMD-03, SCN-04
+**Success Criteria** (what must be TRUE):
+  1. `harness-evolve init` installs `/evolve:scan` and `/evolve:apply` slash command files into the project's `.claude/commands/` directory
+  2. `/evolve:scan` triggers a deep config scan at any time (not just during init), outputting structured recommendations
+  3. `/evolve:apply` presents pending recommendations one-by-one, allowing the user to apply, skip, or permanently ignore each
+  4. `harness-evolve uninstall` removes installed slash command files in addition to existing hook cleanup
+**Plans**: TBD
+
+### Phase 16: UX Polish
+**Goal**: The recommendation experience is concise, informative, and prioritized so users see the highest-impact suggestions first
+**Depends on**: Phase 15 (all functional features complete; polish layer on top)
+**Requirements**: UX-01, UX-02, UX-03
+**Success Criteria** (what must be TRUE):
+  1. After analysis completes, the next UserPromptSubmit injects a one-line notification (e.g., "Found N new suggestions, /evolve:apply to review") instead of dumping full recommendation text
+  2. `harness-evolve init` displays a one-line purpose description next to each registered hook
+  3. Recommendations are sorted by impact (HIGH confidence first, then MEDIUM, then LOW) rather than flat listing
+**Plans**: TBD
+
 ## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -45,3 +114,8 @@
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
+| 12. Deep Scan Infrastructure | v2.0 | 0/? | Not started | - |
+| 13. Auto-Generators | v2.0 | 0/? | Not started | - |
+| 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
+| 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
+| 16. UX Polish | v2.0 | 0/? | Not started | - |

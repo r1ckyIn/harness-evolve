@@ -61,21 +61,21 @@ Make Claude Code harnesses self-improving without manual analysis — now with D
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| SCN-01 | - | Planned |
-| SCN-02 | - | Planned |
-| SCN-03 | - | Planned |
-| SCN-04 | - | Planned |
-| GEN-01 | - | Planned |
-| GEN-02 | - | Planned |
-| GEN-03 | - | Planned |
-| GEN-04 | - | Planned |
-| GEN-05 | - | Planned |
-| CMD-01 | - | Planned |
-| CMD-02 | - | Planned |
-| CMD-03 | - | Planned |
-| UX-01 | - | Planned |
-| UX-02 | - | Planned |
-| UX-03 | - | Planned |
+| SCN-01 | Phase 12 | Planned |
+| SCN-02 | Phase 12 | Planned |
+| SCN-03 | Phase 12 | Planned |
+| SCN-04 | Phase 15 | Planned |
+| GEN-01 | Phase 13 | Planned |
+| GEN-02 | Phase 13 | Planned |
+| GEN-03 | Phase 13 | Planned |
+| GEN-04 | Phase 14 | Planned |
+| GEN-05 | Phase 14 | Planned |
+| CMD-01 | Phase 15 | Planned |
+| CMD-02 | Phase 15 | Planned |
+| CMD-03 | Phase 15 | Planned |
+| UX-01 | Phase 16 | Planned |
+| UX-02 | Phase 16 | Planned |
+| UX-03 | Phase 16 | Planned |
 
 ---
-*Last updated: 2026-04-04 — v2.0 requirements defined*
+*Last updated: 2026-04-04 — v2.0 roadmap created, all 15 requirements mapped*
