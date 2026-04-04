@@ -42,7 +42,8 @@ vi.mock('../../../src/storage/dirs.js', async () => {
   };
 });
 
-// Import after mocks
+// Import after mocks — auto-apply.ts registers all built-in appliers
+// (SettingsApplier, RuleApplier, HookApplier, ClaudeMdApplier) at module load.
 const { autoApplyRecommendations } =
   await import('../../../src/delivery/auto-apply.js');
 const { HookApplier } = await import(
@@ -51,13 +52,6 @@ const { HookApplier } = await import(
 const { ClaudeMdApplier } = await import(
   '../../../src/delivery/appliers/claude-md-applier.js'
 );
-const { registerApplier } = await import(
-  '../../../src/delivery/appliers/index.js'
-);
-
-// Register the new appliers for test purposes
-registerApplier(new HookApplier());
-registerApplier(new ClaudeMdApplier());
 
 // --- Helpers ---
 
@@ -136,7 +130,7 @@ describe('auto-apply', () => {
     expect(mockGetStatusMap).not.toHaveBeenCalled();
   });
 
-  it('only processes HIGH confidence + SETTINGS target recommendations when fullAuto=true', async () => {
+  it('only processes HIGH confidence recommendations with registered appliers when fullAuto=true', async () => {
     mockLoadConfig.mockResolvedValue(makeConfig(true));
     mockGetStatusMap.mockResolvedValue(new Map());
 
@@ -147,12 +141,12 @@ describe('auto-apply', () => {
       makeRecommendation({ id: 'rec-high-settings', target: 'SETTINGS', confidence: 'HIGH' }),
       makeRecommendation({ id: 'rec-med-settings', target: 'SETTINGS', confidence: 'MEDIUM' }),
       makeRecommendation({ id: 'rec-low-settings', target: 'SETTINGS', confidence: 'LOW' }),
-      makeRecommendation({ id: 'rec-high-hook', target: 'HOOK', confidence: 'HIGH' }),
+      makeRecommendation({ id: 'rec-high-skill', target: 'SKILL', confidence: 'HIGH' }),
     ];
 
     const results = await autoApplyRecommendations(recs, { settingsPath });
 
-    // Only the HIGH+SETTINGS recommendation should be processed
+    // Only the HIGH+SETTINGS recommendation should be processed (SKILL has no applier)
     expect(results).toHaveLength(1);
     expect(results[0].recommendation_id).toBe('rec-high-settings');
   });
@@ -175,8 +169,8 @@ describe('auto-apply', () => {
     mockLoadConfig.mockResolvedValue(makeConfig(true));
     mockGetStatusMap.mockResolvedValue(new Map());
 
-    // HOOK, SKILL, CLAUDE_MD, MEMORY have no registered applier yet
-    const targets = ['HOOK', 'SKILL', 'CLAUDE_MD', 'MEMORY'] as const;
+    // SKILL and MEMORY have no registered applier
+    const targets = ['SKILL', 'MEMORY'] as const;
     const recs = targets.map((target, i) =>
       makeRecommendation({ id: `rec-${i}`, target, confidence: 'HIGH' }),
     );

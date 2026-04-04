@@ -3,6 +3,7 @@
 // automatically applies HIGH-confidence recommendations that have a registered
 // applier. Dispatches to the correct applier via the strategy pattern registry.
 // v1 appliers: SettingsApplier (permission-always-approved), RuleApplier (create-only rules).
+// v2 appliers: HookApplier (hook script generation + settings registration), ClaudeMdApplier (CLAUDE.md append).
 
 import { appendFile } from 'node:fs/promises';
 import { paths, ensureInit } from '../storage/dirs.js';
@@ -15,6 +16,8 @@ import {
 } from './appliers/index.js';
 import { SettingsApplier } from './appliers/settings-applier.js';
 import { RuleApplier } from './appliers/rule-applier.js';
+import { HookApplier } from './appliers/hook-applier.js';
+import { ClaudeMdApplier } from './appliers/claude-md-applier.js';
 import type { Recommendation } from '../schemas/recommendation.js';
 import type { AutoApplyLogEntry } from '../schemas/delivery.js';
 import type { ApplierOptions } from './appliers/index.js';
@@ -30,6 +33,8 @@ export interface AutoApplyOptions extends ApplierOptions {}
 // Register all built-in appliers
 registerApplier(new SettingsApplier());
 registerApplier(new RuleApplier());
+registerApplier(new HookApplier());
+registerApplier(new ClaudeMdApplier());
 
 /**
  * Auto-apply HIGH-confidence recommendations when fullAuto is enabled.

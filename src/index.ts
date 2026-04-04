@@ -143,3 +143,7 @@ export { generateHook } from './generators/hook-generator.js';
 export { generateClaudeMdPatch } from './generators/claude-md-generator.js';
 export { generatedArtifactSchema, GENERATOR_VERSION } from './generators/schemas.js';
 export type { GeneratedArtifact, GeneratorOptions } from './generators/schemas.js';
+
+// Phase 14: Auto-Apply Closure
+export { HookApplier } from './delivery/appliers/hook-applier.js';
+export { ClaudeMdApplier } from './delivery/appliers/claude-md-applier.js';
