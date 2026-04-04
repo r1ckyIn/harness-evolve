@@ -205,6 +205,52 @@ describe('buildScanContext', () => {
   });
 });
 
+describe('extractReferences filtering', () => {
+  // Import extractReferences directly for targeted unit tests
+  let extractReferences: (content: string) => string[];
+
+  beforeEach(async () => {
+    const mod = await import('../../../src/scan/context-builder.js');
+    extractReferences = mod.extractReferences;
+  });
+
+  it('filters npm scoped package @scope/package (no file extension)', () => {
+    expect(extractReferences('@scope/package')).toEqual([]);
+  });
+
+  it('filters real npm scoped package @commander-js/extra-typings', () => {
+    expect(extractReferences('@commander-js/extra-typings')).toEqual([]);
+  });
+
+  it('filters npm scoped package in JSON/import context "@scope/package"', () => {
+    expect(extractReferences('"@scope/package"')).toEqual([]);
+  });
+
+  it('filters URL user path github.com/@user/repo', () => {
+    expect(extractReferences('github.com/@user/repo')).toEqual([]);
+  });
+
+  it('filters URL user path https://npmjs.com/@scope/pkg', () => {
+    expect(extractReferences('https://npmjs.com/@scope/pkg')).toEqual([]);
+  });
+
+  it('preserves real file reference @docs/guide.md', () => {
+    expect(extractReferences('See @docs/guide.md for details')).toEqual(['docs/guide.md']);
+  });
+
+  it('preserves deep path reference @.planning/phases/01-foo/bar.md', () => {
+    expect(extractReferences('@.planning/phases/01-foo/bar.md')).toEqual(['.planning/phases/01-foo/bar.md']);
+  });
+
+  it('preserves file with extension @src/utils.ts', () => {
+    expect(extractReferences('@src/utils.ts')).toEqual(['src/utils.ts']);
+  });
+
+  it('filters scoped package but keeps real file reference in mixed content', () => {
+    expect(extractReferences('use @scope/package and @docs/guide.md')).toEqual(['docs/guide.md']);
+  });
+});
+
 describe('Scanner type and registry', () => {
   it('Scanner type signature is (context: ScanContext) => Recommendation[]', () => {
     // Type-level check: if Scanner doesn't match the expected signature,

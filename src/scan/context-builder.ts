@@ -32,8 +32,42 @@ export function extractHeadings(content: string): string[] {
 }
 
 /**
+ * Check if a reference looks like an npm scoped package (e.g., @scope/package).
+ * Returns true when the ref has exactly one slash (2 segments) and the second
+ * segment has no file extension, OR when the @ is preceded by a quote character
+ * (JSON/import context).
+ */
+function isNpmScopedPackage(ref: string, content: string, matchIndex: number): boolean {
+  // Check for JSON/import context: "@scope/package" or '@scope/package'
+  if (matchIndex > 0 && (content[matchIndex - 1] === '"' || content[matchIndex - 1] === "'")) {
+    return true;
+  }
+
+  const segments = ref.split('/');
+  // npm scoped packages have exactly 2 path segments: scope/package
+  if (segments.length !== 2) return false;
+
+  // If the last segment has a file extension, it's a real file reference
+  const lastSegment = segments[segments.length - 1];
+  if (/\.\w+$/.test(lastSegment)) return false;
+
+  return true;
+}
+
+/**
+ * Check if a reference is a URL user path (e.g., github.com/@user/path).
+ * Returns true when the character before @ is / or : (URL context).
+ */
+function isUrlUserPath(content: string, matchIndex: number): boolean {
+  if (matchIndex <= 0) return false;
+  const prevChar = content[matchIndex - 1];
+  return prevChar === '/' || prevChar === ':';
+}
+
+/**
  * Extract @-reference paths from content (e.g., @docs/guide.md).
- * Filters out email-like patterns (user@domain).
+ * Filters out email-like patterns (user@domain), npm scoped packages
+ * (@scope/package), and URL user paths (/@user/path).
  */
 export function extractReferences(content: string): string[] {
   const refs: string[] = [];
@@ -46,9 +80,17 @@ export function extractReferences(content: string): string[] {
     if (idx > 0 && /\w/.test(content[idx - 1])) {
       continue;
     }
-    // Strip trailing dots only if they don't look like file extensions
+    // Strip trailing dots (punctuation) before filtering
     // e.g., "file.ts." -> "file.ts", but "file.md" stays as-is
     const cleaned = ref.replace(/\.$/, '');
+    // Filter npm scoped packages: @scope/package patterns
+    if (isNpmScopedPackage(cleaned, content, idx)) {
+      continue;
+    }
+    // Filter URL user paths: /@user/path preceded by / or :
+    if (isUrlUserPath(content, idx)) {
+      continue;
+    }
     refs.push(cleaned);
   }
   return refs;
