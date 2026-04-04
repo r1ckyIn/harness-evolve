@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
 status: executing
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-04T09:39:09.513Z"
-last_activity: 2026-04-04
+stopped_at: Completed 15-02-PLAN.md
+last_updated: "2026-04-04T10:13:00.000Z"
+last_activity: 2026-04-04 -- Phase 15 plan 02 completed
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
-  percent: 0
+  total_plans: 8
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 14 — auto-apply-closure
+**Current focus:** Phase 15 — slash-commands-interactive-apply
 
 ## Current Position
 
-Phase: 15
-Plan: Not started
-Status: Executing Phase 14
-Last activity: 2026-04-04
+Phase: 15 (slash-commands-interactive-apply) — EXECUTING
+Plan: 2 of 2
+Status: Plan 02 completed
+Last activity: 2026-04-04 -- Phase 15 plan 02 completed
 
-Progress: [░░░░░░░░░░] 0% (v2.0 scope)
+Progress: [========░░] 88% (v2.0 scope)
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 | 13-auto-generators | 01 | 6min | 2 | 4 |
 | 13-auto-generators | 02 | 3min | 2 | 6 |
 | 14-auto-apply-closure | 01 | 6min | 3 | 6 |
+| 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 14]: HookApplier reuses CLI utils (readSettings/writeSettings/mergeHooks) — no settings I/O duplication
 - [Phase 14]: ClaudeMdApplier uses Set-based destructive pattern guard for scan_stale_reference and scan_redundancy
 - [Phase 14]: Backup naming: settings-backup-{id}.json for hooks, claudemd-backup-{id}.md for CLAUDE.md
+- [Phase 15]: Scan CLI output omits scan_context for concise JSON output
+- [Phase 15]: apply-one imports auto-apply.js for side-effect applier registration
+- [Phase 15]: All new CLI subcommands output structured JSON for slash command consumption
 
 ### Pending Todos
 
@@ -83,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T09:32:00Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-04-04T10:13:00Z
+Stopped at: Completed 15-02-PLAN.md
 Resume file: None

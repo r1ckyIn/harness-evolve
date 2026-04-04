@@ -96,7 +96,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [ ] 15-01-PLAN.md — Slash command templates and init/uninstall wiring (CMD-01, CMD-03)
-- [ ] 15-02-PLAN.md — CLI scan, pending, apply-one, dismiss subcommands (SCN-04, CMD-02)
+- [x] 15-02-PLAN.md — CLI scan, pending, apply-one, dismiss subcommands (SCN-04, CMD-02)
 
 ### Phase 16: UX Polish
 **Goal**: The recommendation experience is concise, informative, and prioritized so users see the highest-impact suggestions first
@@ -129,5 +129,5 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
 | 13. Auto-Generators | v2.0 | 2/2 | Complete    | 2026-04-04 |
 | 14. Auto-Apply Closure | v2.0 | 1/1 | Complete    | 2026-04-04 |
-| 15. Slash Commands & Interactive Apply | v2.0 | 0/2 | Not started | - |
+| 15. Slash Commands & Interactive Apply | v2.0 | 1/2 | In Progress|  |
 | 16. UX Polish | v2.0 | 0/? | Not started | - |
