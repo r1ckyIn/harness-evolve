@@ -7,12 +7,12 @@ import { readFile, unlink, writeFile } from 'node:fs/promises';
 import { paths } from '../storage/dirs.js';
 
 /**
- * Build a one-line notification string pointing users to recommendations.
+ * Build a one-line notification string referencing /evolve:apply.
  * Output is always under 200 characters (well under 200 tokens).
  */
-export function buildNotification(pendingCount: number, filePath: string): string {
+export function buildNotification(pendingCount: number): string {
   const plural = pendingCount === 1 ? '' : 's';
-  return `[harness-evolve] ${pendingCount} new recommendation${plural} available. See ${filePath} or run /evolve to review.`;
+  return `[harness-evolve] ${pendingCount} new suggestion${plural} found. Run /evolve:apply to review.`;
 }
 
 /**
