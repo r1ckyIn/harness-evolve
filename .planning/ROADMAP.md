@@ -106,7 +106,10 @@ Plans:
   1. After analysis completes, the next UserPromptSubmit injects a one-line notification (e.g., "Found N new suggestions, /evolve:apply to review") instead of dumping full recommendation text
   2. `harness-evolve init` displays a one-line purpose description next to each registered hook
   3. Recommendations are sorted by impact (HIGH confidence first, then MEDIUM, then LOW) rather than flat listing
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 16-01-PLAN.md — Concise notification text and hook description display (UX-01, UX-02)
+- [ ] 16-02-PLAN.md — Confidence-sorted pending and scan output (UX-03)
 
 ## Progress
 
@@ -129,5 +132,5 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
 | 13. Auto-Generators | v2.0 | 2/2 | Complete    | 2026-04-04 |
 | 14. Auto-Apply Closure | v2.0 | 1/1 | Complete    | 2026-04-04 |
-| 15. Slash Commands & Interactive Apply | v2.0 | 1/2 | Complete    | 2026-04-04 |
-| 16. UX Polish | v2.0 | 0/? | Not started | - |
+| 15. Slash Commands & Interactive Apply | v2.0 | 2/2 | Complete    | 2026-04-04 |
+| 16. UX Polish | v2.0 | 0/2 | Planned | - |
