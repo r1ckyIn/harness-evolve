@@ -57,6 +57,14 @@ describe('CLI utils', () => {
         'stop.js',
       ]);
     });
+
+    it('each entry has a non-empty description string', async () => {
+      const { HOOK_REGISTRATIONS } = await import('../../../src/cli/utils.js');
+      for (const reg of HOOK_REGISTRATIONS) {
+        expect(typeof reg.description).toBe('string');
+        expect(reg.description.length).toBeGreaterThan(0);
+      }
+    });
   });
 
   describe('HARNESS_EVOLVE_MARKER', () => {
@@ -336,6 +344,10 @@ describe('CLI init command', () => {
       'Stop',
       'UserPromptSubmit',
     ]);
+
+    // Should display hook descriptions in output
+    expect(logs.some((l) => l.includes('Captures prompts'))).toBe(true);
+    expect(logs.some((l) => l.includes('Triggers analysis'))).toBe(true);
   });
 
   it('without --yes calls confirm() and respects "no" answer', async () => {

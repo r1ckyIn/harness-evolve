@@ -28,6 +28,7 @@ export interface HookRegistration {
   hookFile: string;
   timeout: number;
   async: boolean;
+  description: string;
 }
 
 /**
@@ -40,32 +41,43 @@ export const HOOK_REGISTRATIONS: HookRegistration[] = [
     hookFile: 'user-prompt-submit.js',
     timeout: 10,
     async: false,
+    description: 'Captures prompts and delivers optimization notifications',
   },
   {
     event: 'PreToolUse',
     hookFile: 'pre-tool-use.js',
     timeout: 10,
     async: true,
+    description: 'Tracks tool usage patterns before execution',
   },
   {
     event: 'PostToolUse',
     hookFile: 'post-tool-use.js',
     timeout: 10,
     async: true,
+    description: 'Records tool outcomes for pattern analysis',
   },
   {
     event: 'PostToolUseFailure',
     hookFile: 'post-tool-use-failure.js',
     timeout: 10,
     async: true,
+    description: 'Logs tool failures to detect correction patterns',
   },
   {
     event: 'PermissionRequest',
     hookFile: 'permission-request.js',
     timeout: 10,
     async: true,
+    description: 'Monitors permission decisions for auto-approval suggestions',
   },
-  { event: 'Stop', hookFile: 'stop.js', timeout: 10, async: true },
+  {
+    event: 'Stop',
+    hookFile: 'stop.js',
+    timeout: 10,
+    async: true,
+    description: 'Triggers analysis when interaction threshold is reached',
+  },
 ];
 
 /**

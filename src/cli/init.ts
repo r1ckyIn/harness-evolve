@@ -82,6 +82,7 @@ export async function runInit(options: InitOptions): Promise<void> {
       command: `node "${absolutePath}"`,
       timeout: reg.timeout,
       async: reg.async,
+      description: reg.description,
     };
   });
 
@@ -89,7 +90,7 @@ export async function runInit(options: InitOptions): Promise<void> {
   console.log('\nPlanned hook registrations:\n');
   for (const hc of hookCommands) {
     const asyncLabel = hc.async ? ' (async)' : '';
-    console.log(`  ${hc.event}${asyncLabel}`);
+    console.log(`  ${hc.event}${asyncLabel} -- ${hc.description}`);
     console.log(`    -> ${hc.command}`);
   }
   console.log('');
