@@ -66,6 +66,10 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Interactive apply workflow: `pending`, `apply-one <id>`, `dismiss <id>` CLI subcommands for `/evolve:apply` — Validated in Phase 15: slash-commands-interactive-apply
 - [x] `harness-evolve uninstall` removes slash command files with graceful cleanup — Validated in Phase 15: slash-commands-interactive-apply
 
+- [x] Post-analysis notification is a concise one-liner referencing /evolve:apply, not a file path — Validated in Phase 16: ux-polish
+- [x] `harness-evolve init` displays a one-line purpose description next to each hook event — Validated in Phase 16: ux-polish
+- [x] Recommendations sorted by impact (HIGH → MEDIUM → LOW) in CLI output — Validated in Phase 16: ux-polish
+
 ### Active
 
 (Defined in REQUIREMENTS.md for v2.0)
@@ -158,10 +162,10 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v2.0 Phase 14 complete)
+## Current State (v2.0 Phase 16 complete — milestone done)
 
-- **Codebase:** ~15,200 LOC TypeScript (src + tests)
-- **Tests:** 563 passing across 55 test files
+- **Codebase:** ~15,500 LOC TypeScript (src + tests)
+- **Tests:** 607 passing across 58 test files
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
 - **Scanners:** 3 (redundancy, mechanization, staleness) — deep scan infrastructure
@@ -170,6 +174,8 @@ Agnostic layer — works with any combination of workflow tools:
 - **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
 - **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
 - **CLI:** Commander.js with 3 commands (init, status, uninstall), hook path resolution for all install methods
+- **Slash commands:** /evolve:scan and /evolve:apply installed via init
+- **UX:** Concise notifications, hook descriptions in init, confidence-sorted output
 
 ## Evolution
 
@@ -189,4 +195,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — Phase 14 complete, auto-apply pipeline fully closed (4 appliers)*
+*Last updated: 2026-04-04 — Phase 16 complete, v2.0 milestone done (5 phases, 10 plans)*
