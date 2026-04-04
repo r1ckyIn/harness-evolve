@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: null
-milestone_name: null
-status: idle
-stopped_at: v1.1 milestone completed and archived
-last_updated: "2026-04-04T05:40:00.000Z"
+milestone: v2.0
+milestone_name: Deep Scan & Auto-Generation
+status: planning
+stopped_at: Defining requirements
+last_updated: "2026-04-04T06:00:00.000Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 0
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Planning next milestone
+**Current focus:** v2.0 — Deep Scan & Auto-Generation
 
 ## Current Position
 
-Phase: None (between milestones)
-Plan: N/A
-Status: v1.1 shipped, ready for next milestone planning
-Last activity: 2026-04-04
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-04 — Milestone v2.0 started
 
-Progress: No active milestone
+Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 
 ## Performance Metrics
 

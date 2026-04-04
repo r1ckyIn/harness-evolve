@@ -52,7 +52,19 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(No active milestone — all v1.0 and v1.1 requirements shipped)
+(Defined in REQUIREMENTS.md for v2.0)
+
+## Current Milestone: v2.0 Deep Scan & Auto-Generation
+
+**Goal:** 消除冷启动问题，补全自动应用闭环，从后台工具升级为交互式优化助手
+
+**Target features:**
+- 初始化深度配置扫描（Day 0 价值）
+- Skill/Hook/CLAUDE.md 自动生成 + auto-apply 闭环
+-斜杠命令体系安装（/evolve:scan、/evolve:apply 等）
+- 交互式推荐应用
+- 分析完成简洁通知
+- init 体验优化
 
 ## Shipped Milestones
 
@@ -158,4 +170,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after v1.1 milestone — Stabilization & Production shipped*
+*Last updated: 2026-04-04 — v2.0 milestone started*
