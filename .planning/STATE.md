@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
-status: verifying
-stopped_at: Completed 13-02-PLAN.md
-last_updated: "2026-04-04T07:46:30.136Z"
-last_activity: 2026-04-04
+status: executing
+stopped_at: Completed 14-01-PLAN.md
+last_updated: "2026-04-04T09:32:00Z"
+last_activity: 2026-04-04 -- Phase 14 plan 01 complete
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 6
+  completed_plans: 6
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 13 — auto-generators
+**Current focus:** Phase 14 — auto-apply-closure
 
 ## Current Position
 
-Phase: 14
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-04
+Phase: 14 (auto-apply-closure) — Plan 01 COMPLETE
+Plan: 1 of 1
+Status: Executing Phase 14
+Last activity: 2026-04-04 -- Phase 14 plan 01 complete
 
 Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 
@@ -49,7 +49,8 @@ Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 13-auto-generators | 01 | 6min | 2 | 4 |
-| Phase 13-auto-generators P02 | 3min | 2 tasks | 6 files |
+| 13-auto-generators | 02 | 3min | 2 | 6 |
+| 14-auto-apply-closure | 01 | 6min | 3 | 6 |
 
 ## Accumulated Context
 
@@ -68,6 +69,9 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 13]: Hook event extraction uses regex cascade: description -> suggested_action -> PreToolUse fallback
 - [Phase 13]: CLAUDE.md patches use simplified unified diff format, not full git diff
 - [Phase 13]: All generators exported both through generators/index.ts barrel and directly from src/index.ts
+- [Phase 14]: HookApplier reuses CLI utils (readSettings/writeSettings/mergeHooks) — no settings I/O duplication
+- [Phase 14]: ClaudeMdApplier uses Set-based destructive pattern guard for scan_stale_reference and scan_redundancy
+- [Phase 14]: Backup naming: settings-backup-{id}.json for hooks, claudemd-backup-{id}.md for CLAUDE.md
 
 ### Pending Todos
 
@@ -79,6 +83,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T07:41:17.733Z
-Stopped at: Completed 13-02-PLAN.md
+Last session: 2026-04-04T09:32:00Z
+Stopped at: Completed 14-01-PLAN.md
 Resume file: None

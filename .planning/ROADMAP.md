@@ -37,7 +37,7 @@
 
 - [x] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references (completed 2026-04-04)
 - [x] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns (completed 2026-04-04)
-- [ ] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage
+- [x] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage (completed 2026-04-04)
 - [ ] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow
 - [ ] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations
 
@@ -82,7 +82,7 @@ Plans:
   3. Both appliers integrate with the existing backup/audit/confidence pipeline (backup before apply, JSONL audit log, only HIGH confidence triggers auto-apply)
 **Plans**: 1 plan
 Plans:
-- [ ] 14-01-PLAN.md — HookApplier, ClaudeMdApplier implementation and registry wiring (GEN-04, GEN-05)
+- [x] 14-01-PLAN.md — HookApplier, ClaudeMdApplier implementation and registry wiring (GEN-04, GEN-05)
 
 ### Phase 15: Slash Commands & Interactive Apply
 **Goal**: Users can interact with harness-evolve through Claude Code slash commands for scanning, reviewing, and applying recommendations
@@ -125,6 +125,6 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
 | 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
 | 13. Auto-Generators | v2.0 | 2/2 | Complete    | 2026-04-04 |
-| 14. Auto-Apply Closure | v2.0 | 0/1 | Not started | - |
+| 14. Auto-Apply Closure | v2.0 | 1/1 | Complete   | 2026-04-04 |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
 | 16. UX Polish | v2.0 | 0/? | Not started | - |
