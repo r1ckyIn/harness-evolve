@@ -50,15 +50,15 @@ Make Claude Code harnesses self-improving without manual analysis — now reliab
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| FIX-01 | TBD | Planned |
-| FIX-02 | TBD | Planned |
-| FIX-03 | TBD | Planned |
-| FIX-04 | TBD | Planned |
-| AUD-01 | TBD | Planned |
-| AUD-02 | TBD | Planned |
-| AUD-03 | TBD | Planned |
-| WFL-01 | TBD | Planned |
-| WFL-02 | TBD | Planned |
+| FIX-01 | Phase 17 | Planned |
+| FIX-02 | Phase 17 | Planned |
+| FIX-03 | Phase 17 | Planned |
+| FIX-04 | Phase 17 | Planned |
+| AUD-01 | Phase 18 | Planned |
+| AUD-02 | Phase 18 | Planned |
+| AUD-03 | Phase 18 | Planned |
+| WFL-01 | Phase 19 | Planned |
+| WFL-02 | Phase 19 | Planned |
 
 ---
-*Last updated: 2026-04-04 — v3.0 requirements defined, 9 requirements across 3 categories*
+*Last updated: 2026-04-04 — v3.0 roadmap created, 9 requirements mapped to 3 phases*
