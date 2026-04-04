@@ -55,7 +55,7 @@
 **Plans**: 3 plans
 Plans:
 - [x] 12-01-PLAN.md — Scan schemas, context-builder, and patternType extension
-- [ ] 12-02-PLAN.md — Redundancy, mechanization, and staleness scanners
+- [x] 12-02-PLAN.md — Redundancy, mechanization, and staleness scanners
 - [ ] 12-03-PLAN.md — Scan orchestrator, init integration, and public API exports
 
 ### Phase 13: Auto-Generators
@@ -118,7 +118,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
-| 12. Deep Scan Infrastructure | v2.0 | 1/3 | In Progress|  |
+| 12. Deep Scan Infrastructure | v2.0 | 2/3 | In Progress|  |
 | 13. Auto-Generators | v2.0 | 0/? | Not started | - |
 | 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
