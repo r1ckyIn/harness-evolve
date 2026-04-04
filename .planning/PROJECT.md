@@ -72,27 +72,18 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(Defined in REQUIREMENTS.md for v2.0)
-
-## Current Milestone: v2.0 Deep Scan & Auto-Generation
-
-**Goal:** 消除冷启动问题，补全自动应用闭环，从后台工具升级为交互式优化助手
-
-**Target features:**
-- 初始化深度配置扫描（Day 0 价值）
-- Skill/Hook/CLAUDE.md 自动生成 + auto-apply 闭环
--斜杠命令体系安装（/evolve:scan、/evolve:apply 等）
-- 交互式推荐应用
-- 分析完成简洁通知
-- init 体验优化
+(No active milestone — run `/gsd:new-milestone` to define v3.0)
 
 ## Shipped Milestones
 
-### v1.0 Self-Iteration Engine (shipped 2026-04-02)
-Full pipeline: capture -> store -> pre-process -> classify -> route -> deliver -> track outcomes. 8 phases, 21 plans, 2 days.
+### v2.0 Deep Scan & Auto-Generation (shipped 2026-04-04)
+Deep scan infrastructure, auto-generators (skill/hook/CLAUDE.md), auto-apply closure (4 appliers), slash commands (/evolve:scan, /evolve:apply), UX polish. 5 phases, 10 plans. Published to npm as `harness-evolve@1.0.0`.
 
 ### v1.1 Stabilization & Production (shipped 2026-04-04)
 Tech debt fixes, npm publish readiness, CI/CD pipeline, Commander.js CLI with init/status/uninstall. 3 phases, 7 plans.
+
+### v1.0 Self-Iteration Engine (shipped 2026-04-02)
+Full pipeline: capture -> store -> pre-process -> classify -> route -> deliver -> track outcomes. 8 phases, 21 plans, 2 days.
 
 ### Out of Scope
 
@@ -162,10 +153,11 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v2.0 Phase 16 complete — milestone done)
+## Current State (v2.0 shipped)
 
-- **Codebase:** ~15,500 LOC TypeScript (src + tests)
+- **Codebase:** ~19,100 LOC TypeScript (src + tests)
 - **Tests:** 607 passing across 58 test files
+- **npm:** Published as `harness-evolve@1.0.0`
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
 - **Scanners:** 3 (redundancy, mechanization, staleness) — deep scan infrastructure
@@ -195,4 +187,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — Phase 16 complete, v2.0 milestone done (5 phases, 10 plans)*
+*Last updated: 2026-04-04 — v2.0 shipped, published to npm as harness-evolve@1.0.0*

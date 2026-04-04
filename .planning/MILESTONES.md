@@ -1,5 +1,24 @@
 # Milestones
 
+## v2.0 Deep Scan & Auto-Generation (Shipped: 2026-04-04)
+
+**Phases completed:** 5 phases, 10 plans, 20 tasks
+
+**Key accomplishments:**
+
+- ScanContext Zod schema with context-builder reading CLAUDE.md, rules, settings, commands, and hooks from filesystem, plus Scanner type and patternType extension
+- Three scanner functions detecting redundancy, missing mechanization, and stale references in Claude Code configuration, all producing valid Recommendation[] and registered in scanner array
+- runDeepScan orchestrator wiring context-builder to scanners, integrated into CLI init with advisory scan results display, and full public API export for programmatic scan access
+- GeneratedArtifact Zod schema with toSlug/escapeYaml utilities, plus generateSkill() converting long_prompt SKILL recommendations into .claude/commands/<slug>.md drafts
+- Hook script generator (GEN-02) and CLAUDE.md patch generator (GEN-03) with public API barrel module exporting all three generators for Phase 14 applier consumption
+- HookApplier and ClaudeMdApplier complete the auto-apply pipeline for 4 of 6 routing targets (SETTINGS, RULE, HOOK, CLAUDE_MD)
+- Pure-function slash command template generators for /evolve:scan and /evolve:apply wired into init/uninstall CLI with create-only guard and graceful cleanup
+- Four CLI subcommands (scan, pending, apply-one, dismiss) providing JSON backend for /evolve:scan and /evolve:apply slash commands
+- Notification text now references /evolve:apply with 'suggestion' wording; init output shows hook purpose descriptions
+- Pending and scan CLI outputs now sort recommendations HIGH -> MEDIUM -> LOW using explicit CONFIDENCE_ORDER constant
+
+---
+
 ## v1.1 Stabilization & Production (Shipped: 2026-04-04)
 
 **Phases completed:** 3 phases, 7 plans, 12 tasks
