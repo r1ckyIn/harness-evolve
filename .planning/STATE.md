@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Stabilization & Production
-status: ready_to_plan
-stopped_at: v1.1 roadmap created, ready to plan Phase 9
-last_updated: "2026-04-02T00:00:00.000Z"
-last_activity: 2026-04-02
+milestone: v2.0
+milestone_name: Deep Scan & Auto-Generation
+status: executing
+stopped_at: Completed 13-01-PLAN.md
+last_updated: "2026-04-04T07:31:00.000Z"
+last_activity: 2026-04-04 -- Phase 13 plan 01 completed
 progress:
-  total_phases: 3
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 5
+  completed_phases: 1
+  total_plans: 5
+  completed_plans: 4
   percent: 0
 ---
 
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-03)
+See: .planning/PROJECT.md (updated 2026-04-04)
 
-**Core value:** Make Claude Code harnesses self-improving without manual analysis — now installable by anyone with one command.
-**Current focus:** Phase 9 - Tech Debt & Auto-Apply Expansion
+**Core value:** Make Claude Code harnesses self-improving without manual analysis.
+**Current focus:** Phase 13 — auto-generators
 
 ## Current Position
 
-Phase: 9 of 11 (Tech Debt & Auto-Apply Expansion)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-04-02 — v1.1 roadmap created
+Phase: 13 (auto-generators) — EXECUTING
+Plan: 2 of 2
+Status: Executing Phase 13
+Last activity: 2026-04-04 -- Phase 13 plan 01 completed
 
-Progress: [░░░░░░░░░░] 0% (v1.1 scope)
+Progress: [░░░░░░░░░░] 0% (v2.0 scope)
 
 ## Performance Metrics
 
@@ -40,17 +40,30 @@ Progress: [░░░░░░░░░░] 0% (v1.1 scope)
 - Timeline: 2 days (2026-03-31 to 2026-04-01)
 - Total commits: 121
 
+**Velocity (v1.1):**
+
+- Total plans completed: 7
+- Timeline: 1 day (2026-04-03 to 2026-04-04)
+- Total commits: 39
+
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| 13-auto-generators | 01 | 6min | 2 | 4 |
+
 ## Accumulated Context
 
 ### Decisions
 
-Decisions archived in PROJECT.md Key Decisions table. See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 history.
+All prior decisions archived in PROJECT.md Key Decisions table.
+See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 history.
+See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 
-Recent decisions affecting current work:
-
-- [v1.1 roadmap]: 3-phase structure (tech debt -> npm+CI -> CLI) based on hard dependency chain
-- [v1.1 roadmap]: TDT-03 grouped with tech debt -- builds on PatternType enum from TDT-01
-- [v1.1 roadmap]: ESM-only publish, npm OIDC trusted publishing
+- [Phase 12]: Scanner type follows Classifier pattern: (context: ScanContext) => Recommendation[]
+- [Phase 12]: Scanner type supports both sync and async via Recommendation[] | Promise<Recommendation[]>
+- [Phase 12]: Scan runs after hook registration -- hooks are critical path, scan is advisory
+- [Phase 12]: All scan functions exported individually from src/index.ts for programmatic use
+- [Phase 13]: Used z.string() for metadata.pattern_type (patternTypeSchema not exported in current branch)
+- [Phase 13]: Generators are pure functions -- no filesystem access, content generation separated from file writing
 
 ### Pending Todos
 
@@ -58,11 +71,10 @@ None.
 
 ### Blockers/Concerns
 
-- Hook path resolution after npm install is the dominant risk (research Pitfall #16)
-- Flaky concurrent-counter test must be fixed before CI can gate reliably
+- First npm publish must be manual before OIDC trusted publishing works
 
 ## Session Continuity
 
-Last session: 2026-04-02
-Stopped at: v1.1 roadmap created, ready to plan Phase 9
+Last session: 2026-04-04T07:31:00.000Z
+Stopped at: Completed 13-01-PLAN.md
 Resume file: None

@@ -3,7 +3,8 @@
 ## Milestones
 
 - **v1.0 Self-Iteration Engine** — Phases 1-8 (shipped 2026-04-02) | [Archive](milestones/v1.0-ROADMAP.md)
-- **v1.1 Stabilization & Production** — Phases 9-11 (in progress)
+- **v1.1 Stabilization & Production** — Phases 9-11 (shipped 2026-04-04) | [Archive](milestones/v1.1-ROADMAP.md)
+- **v2.0 Deep Scan & Auto-Generation** — Phases 12-16 (in progress)
 
 ## Phases
 
@@ -80,3 +81,5 @@
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 0/? | Not started | - |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 0/? | Not started | - |
 | 11. CLI Commands & Install Experience | v1.1 | 0/? | Not started | - |
+| 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
+| 13. Auto-Generators | v2.0 | 1/2 | In progress | - |
