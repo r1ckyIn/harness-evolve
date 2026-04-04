@@ -136,3 +136,10 @@ export { buildScanContext } from './scan/context-builder.js';
 export { scanRedundancy } from './scan/scanners/redundancy.js';
 export { scanMechanization } from './scan/scanners/mechanization.js';
 export { scanStaleness } from './scan/scanners/staleness.js';
+
+// Phase 13: Auto-Generators
+export { generateSkill } from './generators/skill-generator.js';
+export { generateHook } from './generators/hook-generator.js';
+export { generateClaudeMdPatch } from './generators/claude-md-generator.js';
+export { generatedArtifactSchema, GENERATOR_VERSION } from './generators/schemas.js';
+export type { GeneratedArtifact, GeneratorOptions } from './generators/schemas.js';
