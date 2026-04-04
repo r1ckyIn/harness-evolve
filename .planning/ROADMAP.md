@@ -35,7 +35,7 @@
 
 **Milestone Goal:** Eliminate cold-start problem, close the auto-apply loop for all target types, and upgrade harness-evolve from a background tool to an interactive optimization assistant.
 
-- [ ] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references
+- [x] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references (completed 2026-04-04)
 - [ ] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns
 - [ ] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage
 - [ ] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow
@@ -56,7 +56,7 @@
 Plans:
 - [x] 12-01-PLAN.md — Scan schemas, context-builder, and patternType extension
 - [x] 12-02-PLAN.md — Redundancy, mechanization, and staleness scanners
-- [ ] 12-03-PLAN.md — Scan orchestrator, init integration, and public API exports
+- [x] 12-03-PLAN.md — Scan orchestrator, init integration, and public API exports
 
 ### Phase 13: Auto-Generators
 **Goal**: The system can produce ready-to-use artifact drafts (skills, hooks, CLAUDE.md patches) from detected patterns
@@ -118,7 +118,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
-| 12. Deep Scan Infrastructure | v2.0 | 2/3 | In Progress|  |
+| 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete   | 2026-04-04 |
 | 13. Auto-Generators | v2.0 | 0/? | Not started | - |
 | 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |

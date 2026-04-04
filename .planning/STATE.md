@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
-status: executing
-stopped_at: Completed 12-02-PLAN.md
-last_updated: "2026-04-04T06:42:36.220Z"
+status: verifying
+stopped_at: Completed 12-03-PLAN.md
+last_updated: "2026-04-04T06:48:15.914Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 
 Phase: 12 (deep-scan-infrastructure) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-04
 
 Progress: [░░░░░░░░░░] 0% (v2.0 scope)
@@ -56,6 +56,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 
 - [Phase 12]: Scanner type follows Classifier pattern: (context: ScanContext) => Recommendation[]
 - [Phase 12]: Scanner type supports both sync and async via Recommendation[] | Promise<Recommendation[]>
+- [Phase 12]: Scan runs after hook registration -- hooks are critical path, scan is advisory
+- [Phase 12]: All scan functions exported individually from src/index.ts for programmatic use
 
 ### Pending Todos
 
@@ -67,6 +69,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T06:42:36.216Z
-Stopped at: Completed 12-02-PLAN.md
+Last session: 2026-04-04T06:48:15.908Z
+Stopped at: Completed 12-03-PLAN.md
 Resume file: None

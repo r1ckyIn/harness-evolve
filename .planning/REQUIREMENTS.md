@@ -12,7 +12,7 @@ Make Claude Code harnesses self-improving without manual analysis — now with D
 
 - [x] **SCN-01**: `harness-evolve init` 扫描用户现有的 CLAUDE.md、.claude/rules/、settings.json、.claude/commands/ 配置，生成配置质量报告
 - [x] **SCN-02**: 深度扫描检测冗余规则（多个文件定义相同约束）、缺失机械化（应为 hook 但写在 rules 里的操作）、过时配置（引用不存在的文件或命令）
-- [ ] **SCN-03**: 扫描结果以结构化推荐输出，复用现有 recommendation 格式和 delivery pipeline
+- [x] **SCN-03**: 扫描结果以结构化推荐输出，复用现有 recommendation 格式和 delivery pipeline
 - [ ] **SCN-04**: `/evolve:scan` 斜杠命令支持随时手动触发深度扫描（不限于 init 时）
 
 ### Auto-Generation (自动生成能力)
