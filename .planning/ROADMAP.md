@@ -69,7 +69,7 @@ Plans:
   4. Generated artifacts follow Claude Code conventions (correct directory structure, valid format, appropriate metadata)
 **Plans**: 2 plans
 Plans:
-- [ ] 13-01-PLAN.md — Generator schemas, shared utilities, and skill generator (GEN-01)
+- [x] 13-01-PLAN.md — Generator schemas, shared utilities, and skill generator (GEN-01)
 - [ ] 13-02-PLAN.md — Hook generator, CLAUDE.md patch generator, and public API exports (GEN-02, GEN-03)
 
 ### Phase 14: Auto-Apply Closure
@@ -121,8 +121,8 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9. Tech Debt & Auto-Apply Expansion | v1.1 | 3/3 | Complete | 2026-04-03 |
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
-| 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete    | 2026-04-04 |
-| 13. Auto-Generators | v2.0 | 0/2 | Planned | - |
+| 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
+| 13. Auto-Generators | v2.0 | 1/2 | In progress | - |
 | 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
 | 16. UX Polish | v2.0 | 0/? | Not started | - |
