@@ -214,8 +214,8 @@ describe('Scanner type and registry', () => {
     expect(mockScanner({} as Parameters<Scanner>[0])).toEqual([]);
   });
 
-  it('scanners array is initially empty', () => {
-    expect(scanners).toEqual([]);
+  it('scanners array contains registered scanners', () => {
     expect(Array.isArray(scanners)).toBe(true);
+    expect(scanners.length).toBe(3);
   });
 });
