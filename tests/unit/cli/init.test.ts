@@ -79,16 +79,16 @@ describe('CLI utils', () => {
   describe('resolveHookPath', () => {
     it('returns absolute path ending with /dist/hooks/<hookFile>', async () => {
       const { resolveHookPath } = await import('../../../src/cli/utils.js');
-      const fakeBaseDir = '/opt/harness-evolve/dist/cli';
+      const fakeBaseDir = '/opt/harness-evolve/dist';
       const result = resolveHookPath('user-prompt-submit.js', fakeBaseDir);
       expect(result).toBe(
         '/opt/harness-evolve/dist/hooks/user-prompt-submit.js',
       );
     });
 
-    it('goes up one level from cli/ to dist/, then into hooks/', async () => {
+    it('resolves hooks relative to baseDir for any install location', async () => {
       const { resolveHookPath } = await import('../../../src/cli/utils.js');
-      const fakeBaseDir = '/home/user/.npm/lib/harness-evolve/dist/cli';
+      const fakeBaseDir = '/home/user/.npm/lib/harness-evolve/dist';
       const result = resolveHookPath('stop.js', fakeBaseDir);
       expect(result).toBe(
         '/home/user/.npm/lib/harness-evolve/dist/hooks/stop.js',
@@ -319,7 +319,7 @@ describe('CLI init command', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-init/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
       });
     } finally {
       console.log = originalLog;
@@ -381,7 +381,7 @@ describe('CLI init command', () => {
       await runInit({
         yes: false,
         settingsPath: '/tmp/test-init/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
       });
     } finally {
       console.log = originalLog;
@@ -414,7 +414,7 @@ describe('CLI init command', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-mkdir/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
       });
     } finally {
       console.log = originalLog;
@@ -447,7 +447,7 @@ describe('CLI init command', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-create/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
       });
     } finally {
       console.log = originalLog;
@@ -484,7 +484,7 @@ describe('CLI init command', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-backup/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
       });
     } finally {
       console.log = originalLog;
@@ -540,7 +540,7 @@ describe('CLI init slash commands', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-slash/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
         projectDir: '/tmp/test-slash',
       });
     } finally {
@@ -596,7 +596,7 @@ describe('CLI init slash commands', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-skip/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
         projectDir: '/tmp/test-skip',
       });
     } finally {
@@ -639,7 +639,7 @@ describe('CLI init slash commands', () => {
       await runInit({
         yes: true,
         settingsPath: '/tmp/test-mkdirslash/.claude/settings.json',
-        baseDirOverride: '/opt/harness-evolve/dist/cli',
+        baseDirOverride: '/opt/harness-evolve/dist',
         projectDir: '/tmp/test-mkdirslash',
       });
     } finally {

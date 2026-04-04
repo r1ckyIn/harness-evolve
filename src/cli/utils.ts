@@ -95,7 +95,7 @@ export function resolveHookPath(
   baseDirOverride?: string,
 ): string {
   const baseDir = baseDirOverride ?? import.meta.dirname;
-  return join(dirname(baseDir), 'hooks', hookFile);
+  return join(baseDir, 'hooks', hookFile);
 }
 
 /**

@@ -45,7 +45,7 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     const raw = await readFile(settingsPath, 'utf-8');
@@ -92,7 +92,7 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     const raw = await readFile(settingsPath, 'utf-8');
@@ -119,7 +119,7 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     // Backup should exist with original content
@@ -134,14 +134,14 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     // Second init (same settings)
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     const raw = await readFile(settingsPath, 'utf-8');
@@ -158,7 +158,7 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     // Verify hooks were written
@@ -202,7 +202,7 @@ describe('CLI init -> status -> uninstall integration', () => {
     await runInit({
       yes: true,
       settingsPath,
-      baseDirOverride: '/fake/harness-evolve/dist/cli',
+      baseDirOverride: '/fake/harness-evolve/dist',
     });
 
     // Uninstall removes only harness-evolve hooks
