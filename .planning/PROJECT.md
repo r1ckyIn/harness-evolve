@@ -70,9 +70,14 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] `harness-evolve init` displays a one-line purpose description next to each hook event — Validated in Phase 16: ux-polish
 - [x] Recommendations sorted by impact (HIGH → MEDIUM → LOW) in CLI output — Validated in Phase 16: ux-polish
 
+- [x] Slash commands install to global ~/.claude/commands/evolve/ (works in any directory) — Validated in Phase 17: bug-fixes-reliability
+- [x] Scanner filters npm scoped packages and URL @ patterns from false positives — Validated in Phase 17: bug-fixes-reliability
+- [x] apply-one CLI skips confidence gate for user-initiated applies — Validated in Phase 17: bug-fixes-reliability
+- [x] Stop hook analysis writes notification flag for UserPromptSubmit — Validated in Phase 17: bug-fixes-reliability
+
 ### Active
 
-(Defined in REQUIREMENTS.md for v3.0)
+(Remaining v3.0: AUD-01/02/03, WFL-01/02 — defined in REQUIREMENTS.md)
 
 ## Current Milestone: v3.0 Reliability & Config Audit
 
@@ -165,10 +170,10 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v2.0 shipped)
+## Current State (Phase 17 complete)
 
-- **Codebase:** ~19,100 LOC TypeScript (src + tests)
-- **Tests:** 607 passing across 58 test files
+- **Codebase:** ~19,500 LOC TypeScript (src + tests)
+- **Tests:** 632 passing across 58 test files
 - **npm:** Published as `harness-evolve@1.0.0`
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
@@ -199,4 +204,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — v3.0 milestone started*
+*Last updated: 2026-04-05 — Phase 17 complete, 4 dogfooding bugs fixed*
