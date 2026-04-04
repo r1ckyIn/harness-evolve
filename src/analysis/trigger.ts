@@ -13,6 +13,8 @@ import {
   loadOutcomeHistory,
   computeOutcomeSummaries,
 } from './outcome-tracker.js';
+import { writeNotificationFlag } from '../delivery/notification.js';
+import { getStatusMap } from '../delivery/state.js';
 import type { OutcomeSummary } from '../schemas/onboarding.js';
 import type { AnalysisResult } from '../schemas/recommendation.js';
 import writeFileAtomic from 'write-file-atomic';
@@ -123,10 +125,24 @@ export async function checkAndTriggerAnalysis(
   }
 
   // Attempt analysis -- preserve counter on failure
+  let result: AnalysisResult;
   try {
-    await runAnalysis(cwd);
+    result = await runAnalysis(cwd);
   } catch {
     return false;
+  }
+
+  // Write notification flag for pending recommendations (FIX-04)
+  try {
+    const stateMap = await getStatusMap();
+    const pendingCount = result.recommendations.filter(
+      (r) => (stateMap.get(r.id) ?? 'pending') === 'pending',
+    ).length;
+    if (pendingCount > 0) {
+      await writeNotificationFlag(pendingCount);
+    }
+  } catch {
+    // Notification failure must not block analysis flow
   }
 
   // Reset counter with timestamp after successful analysis
