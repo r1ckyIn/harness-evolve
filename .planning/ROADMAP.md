@@ -39,7 +39,7 @@
 - [x] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns (completed 2026-04-04)
 - [x] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage (completed 2026-04-04)
 - [x] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow (completed 2026-04-04)
-- [ ] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations
+- [x] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations (completed 2026-04-04)
 
 ## Phase Details
 
@@ -108,8 +108,8 @@ Plans:
   3. Recommendations are sorted by impact (HIGH confidence first, then MEDIUM, then LOW) rather than flat listing
 **Plans**: 2 plans
 Plans:
-- [ ] 16-01-PLAN.md — Concise notification text and hook description display (UX-01, UX-02)
-- [ ] 16-02-PLAN.md — Confidence-sorted pending and scan output (UX-03)
+- [x] 16-01-PLAN.md — Concise notification text and hook description display (UX-01, UX-02)
+- [x] 16-02-PLAN.md — Confidence-sorted pending and scan output (UX-03)
 
 ## Progress
 
@@ -133,4 +133,4 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 13. Auto-Generators | v2.0 | 2/2 | Complete    | 2026-04-04 |
 | 14. Auto-Apply Closure | v2.0 | 1/1 | Complete    | 2026-04-04 |
 | 15. Slash Commands & Interactive Apply | v2.0 | 2/2 | Complete    | 2026-04-04 |
-| 16. UX Polish | v2.0 | 0/2 | Planned | - |
+| 16. UX Polish | v2.0 | 2/2 | Complete   | 2026-04-04 |

@@ -33,7 +33,7 @@ Make Claude Code harnesses self-improving without manual analysis — now with D
 
 - [ ] **UX-01**: 分析完成后下次 UserPromptSubmit 时简洁通知（"发现 N 条新建议，/evolve:apply 查看"），不再灌长文本
 - [ ] **UX-02**: `harness-evolve init` 每个 hook 旁显示一句话用途说明
-- [ ] **UX-03**: 推荐按影响度排序（HIGH 在前），不再平铺
+- [x] **UX-03**: 推荐按影响度排序（HIGH 在前），不再平铺
 
 ---
 

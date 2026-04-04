@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deep Scan & Auto-Generation
-status: completed
-stopped_at: Completed all Phase 15 plans
-last_updated: "2026-04-04T10:25:10.045Z"
+status: executing
+stopped_at: Completed 16-02-PLAN.md
+last_updated: "2026-04-04T10:47:47.563Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  completed_phases: 5
+  total_plans: 10
+  completed_plans: 10
   percent: 88
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 15 — slash-commands-interactive-apply
+**Current focus:** Phase 16 — ux-polish
 
 ## Current Position
 
-Phase: 16
-Plan: Not started
-Status: All plans completed
+Phase: 16 (ux-polish) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-04
 
 Progress: [========░░] 88% (v2.0 scope)
@@ -53,6 +53,7 @@ Progress: [========░░] 88% (v2.0 scope)
 | 14-auto-apply-closure | 01 | 6min | 3 | 6 |
 | 15-slash-commands-interactive-apply | 01 | 6min | 2 | 7 |
 | 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
+| Phase 16 P02 | 3min | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 15]: Scan CLI output omits scan_context for concise JSON output
 - [Phase 15]: apply-one imports auto-apply.js for side-effect applier registration
 - [Phase 15]: All new CLI subcommands output structured JSON for slash command consumption
+- [Phase 16]: CONFIDENCE_ORDER Record<string,number> with fallback for defensive unknown-value handling
+- [Phase 16]: Spread copy in scan sort to avoid mutating source array
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:13:00Z
-Stopped at: Completed all Phase 15 plans
+Last session: 2026-04-04T10:47:47.558Z
+Stopped at: Completed 16-02-PLAN.md
 Resume file: None
