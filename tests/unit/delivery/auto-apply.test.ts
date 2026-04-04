@@ -45,6 +45,19 @@ vi.mock('../../../src/storage/dirs.js', async () => {
 // Import after mocks
 const { autoApplyRecommendations } =
   await import('../../../src/delivery/auto-apply.js');
+const { HookApplier } = await import(
+  '../../../src/delivery/appliers/hook-applier.js'
+);
+const { ClaudeMdApplier } = await import(
+  '../../../src/delivery/appliers/claude-md-applier.js'
+);
+const { registerApplier } = await import(
+  '../../../src/delivery/appliers/index.js'
+);
+
+// Register the new appliers for test purposes
+registerApplier(new HookApplier());
+registerApplier(new ClaudeMdApplier());
 
 // --- Helpers ---
 
@@ -488,19 +501,229 @@ describe('auto-apply', () => {
       expect(logEntry.success).toBe(true);
     });
 
-    it('skips HIGH confidence HOOK/SKILL/CLAUDE_MD/MEMORY targets (no applier)', async () => {
+    it('skips HIGH confidence SKILL/MEMORY targets (no applier)', async () => {
       mockLoadConfig.mockResolvedValue(makeConfig(true));
       mockGetStatusMap.mockResolvedValue(new Map());
 
-      const targets = ['HOOK', 'SKILL', 'CLAUDE_MD', 'MEMORY'] as const;
+      const targets = ['SKILL', 'MEMORY'] as const;
       const recs = targets.map((target, i) =>
         makeRecommendation({ id: `rec-skip-${i}`, target, confidence: 'HIGH' }),
       );
 
       const results = await autoApplyRecommendations(recs, { settingsPath });
 
-      // None of these targets have appliers yet
+      // SKILL and MEMORY have no registered applier
       expect(results).toEqual([]);
+    });
+  });
+
+  // --- HOOK Applier Tests ---
+
+  describe('HOOK applier', () => {
+    let hooksDir: string;
+
+    beforeEach(async () => {
+      hooksDir = join(tempDir, '.claude', 'hooks');
+    });
+
+    it('canApply returns true for HIGH confidence + HOOK target', () => {
+      const applier = new HookApplier();
+      const rec = makeRecommendation({
+        target: 'HOOK',
+        confidence: 'HIGH',
+        pattern_type: 'scan_missing_mechanization',
+      });
+      expect(applier.canApply(rec)).toBe(true);
+    });
+
+    it('canApply returns false for non-HIGH confidence', () => {
+      const applier = new HookApplier();
+      const rec = makeRecommendation({
+        target: 'HOOK',
+        confidence: 'MEDIUM',
+      });
+      expect(applier.canApply(rec)).toBe(false);
+    });
+
+    it('canApply returns false for non-HOOK target', () => {
+      const applier = new HookApplier();
+      const rec = makeRecommendation({
+        target: 'SETTINGS',
+        confidence: 'HIGH',
+      });
+      expect(applier.canApply(rec)).toBe(false);
+    });
+
+    it('apply calls generateHook, writes script file with +x, and registers hook in settings.json', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig(true));
+      mockGetStatusMap.mockResolvedValue(new Map());
+
+      // Write initial settings.json
+      await writeFile(settingsPath, JSON.stringify({}));
+
+      const rec = makeRecommendation({
+        id: 'rec-hook-create',
+        target: 'HOOK',
+        confidence: 'HIGH',
+        pattern_type: 'scan_missing_mechanization',
+        title: 'Mechanize branch protection',
+        description: 'Pattern suitable for a PreToolUse hook',
+        suggested_action: 'Create a PreToolUse hook for branch protection',
+      });
+
+      const results = await autoApplyRecommendations([rec], {
+        settingsPath,
+        hooksDir,
+      });
+
+      expect(results).toHaveLength(1);
+      expect(results[0].success).toBe(true);
+      expect(results[0].details).toContain('Created hook script');
+
+      // Verify script file exists
+      const { readdir, stat } = await import('node:fs/promises');
+      const files = await readdir(hooksDir);
+      expect(files.length).toBeGreaterThan(0);
+
+      // Verify +x permission
+      const scriptPath = join(hooksDir, files[0]);
+      const fileStat = await stat(scriptPath);
+      // Check executable bit: 0o755 & 0o100 = 0o100
+      expect(fileStat.mode & 0o100).toBe(0o100);
+
+      // Verify settings.json has hook registered
+      const updatedSettings = JSON.parse(await readFile(settingsPath, 'utf-8'));
+      expect(updatedSettings.hooks).toBeDefined();
+    });
+
+    it('apply returns success=false when hook file already exists (create-only guard)', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig(true));
+      mockGetStatusMap.mockResolvedValue(new Map());
+
+      await writeFile(settingsPath, JSON.stringify({}));
+
+      const rec = makeRecommendation({
+        id: 'rec-hook-exists',
+        target: 'HOOK',
+        confidence: 'HIGH',
+        pattern_type: 'scan_missing_mechanization',
+        title: 'Mechanize branch protection',
+        description: 'Pattern suitable for a PreToolUse hook',
+        suggested_action: 'Create a PreToolUse hook',
+      });
+
+      // Pre-create the hook file
+      await mkdir(hooksDir, { recursive: true });
+      const slugTitle = 'mechanize-branch-protection';
+      await writeFile(
+        join(hooksDir, `evolve-${slugTitle}.sh`),
+        '#!/bin/bash\nexit 0',
+      );
+
+      const results = await autoApplyRecommendations([rec], {
+        settingsPath,
+        hooksDir,
+      });
+
+      expect(results).toHaveLength(1);
+      expect(results[0].success).toBe(false);
+      expect(results[0].details).toContain('already exists');
+    });
+
+    it('apply creates backup of settings.json before modification', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig(true));
+      mockGetStatusMap.mockResolvedValue(new Map());
+
+      const originalSettings = { allowedTools: ['Read'] };
+      await writeFile(settingsPath, JSON.stringify(originalSettings));
+
+      const rec = makeRecommendation({
+        id: 'rec-hook-backup',
+        target: 'HOOK',
+        confidence: 'HIGH',
+        pattern_type: 'scan_missing_mechanization',
+        title: 'Mechanize test runs',
+        description: 'Pattern suitable for a PreToolUse hook',
+        suggested_action: 'Create a PreToolUse hook',
+      });
+
+      const results = await autoApplyRecommendations([rec], {
+        settingsPath,
+        hooksDir,
+      });
+
+      expect(results).toHaveLength(1);
+      expect(results[0].success).toBe(true);
+
+      // Check backup file exists
+      const backupFile = join(
+        tempDir,
+        'analysis',
+        'backups',
+        'settings-backup-rec-hook-backup.json',
+      );
+      const backupContent = JSON.parse(await readFile(backupFile, 'utf-8'));
+      expect(backupContent).toEqual(originalSettings);
+    });
+
+    it('apply returns success=false when generateHook returns null', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig(true));
+      mockGetStatusMap.mockResolvedValue(new Map());
+
+      await writeFile(settingsPath, JSON.stringify({}));
+
+      // A rec with target != HOOK will cause generateHook to return null
+      // But we need target=HOOK for the applier to be selected.
+      // generateHook returns null when rec.target !== 'HOOK',
+      // but in our case it IS 'HOOK', so we need to mock it.
+      // Actually, let's use a recommendation where target is HOOK
+      // which will go through the applier — generateHook always produces
+      // a valid artifact for HOOK targets. We'll test this by verifying
+      // the error handling path works when something goes wrong.
+      // Since generateHook is a pure function that always succeeds for HOOK,
+      // let's test error handling via a different scenario.
+      // Test that the applier handles target correctly
+      const applier = new HookApplier();
+      const rec = makeRecommendation({
+        id: 'rec-hook-null',
+        target: 'SETTINGS', // Wrong target -> generateHook returns null
+        confidence: 'HIGH',
+        pattern_type: 'permission-always-approved',
+      });
+
+      const result = await applier.apply(rec, { settingsPath, hooksDir });
+      expect(result.success).toBe(false);
+      expect(result.details).toContain('Generator returned null');
+    });
+
+    it('apply extracts hook event from generated script comment', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig(true));
+      mockGetStatusMap.mockResolvedValue(new Map());
+
+      await writeFile(settingsPath, JSON.stringify({}));
+
+      const rec = makeRecommendation({
+        id: 'rec-hook-event',
+        target: 'HOOK',
+        confidence: 'HIGH',
+        pattern_type: 'scan_missing_mechanization',
+        title: 'Mechanize permission checks',
+        description: 'Pattern suitable for a PermissionRequest hook',
+        suggested_action: 'Create a PermissionRequest hook',
+      });
+
+      const results = await autoApplyRecommendations([rec], {
+        settingsPath,
+        hooksDir,
+      });
+
+      expect(results).toHaveLength(1);
+      expect(results[0].success).toBe(true);
+
+      // Verify the hook was registered under the correct event
+      const updatedSettings = JSON.parse(await readFile(settingsPath, 'utf-8'));
+      expect(updatedSettings.hooks).toBeDefined();
+      expect(updatedSettings.hooks.PermissionRequest).toBeDefined();
     });
   });
 });

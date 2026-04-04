@@ -11,6 +11,10 @@ export interface ApplierOptions {
   settingsPath?: string;
   /** Override rules directory (used in testing) */
   rulesDir?: string;
+  /** Override hooks directory (used in testing) */
+  hooksDir?: string;
+  /** Override CLAUDE.md path (used in testing) */
+  claudeMdPath?: string;
 }
 
 export interface Applier {
