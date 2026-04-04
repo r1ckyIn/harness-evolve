@@ -13,9 +13,10 @@ import { paths } from '../../storage/dirs.js';
 export class SettingsApplier implements Applier {
   readonly target = 'SETTINGS';
 
-  canApply(rec: Recommendation): boolean {
+  canApply(rec: Recommendation, options?: ApplierOptions): boolean {
+    const confidenceOk = options?.skipConfidenceGate || rec.confidence === 'HIGH';
     return (
-      rec.confidence === 'HIGH' &&
+      confidenceOk &&
       rec.target === 'SETTINGS' &&
       rec.pattern_type === 'permission-always-approved'
     );

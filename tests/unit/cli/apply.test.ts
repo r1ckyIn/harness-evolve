@@ -325,6 +325,106 @@ describe('CLI apply-one command', () => {
     expect(output.details).toContain('No applicable applier');
   });
 
+  it('apply-one applies MEDIUM confidence recommendation successfully', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const { getApplier } = await import('../../../src/delivery/appliers/index.js');
+    const { updateStatus } = await import('../../../src/delivery/state.js');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedGetApplier = vi.mocked(getApplier);
+    const mockedUpdateStatus = vi.mocked(updateStatus);
+
+    mockedReadFile.mockResolvedValueOnce(analysisResultJson);
+
+    const mockCanApply = vi.fn().mockReturnValue(true);
+    const mockApply = vi.fn().mockResolvedValue({
+      recommendation_id: 'rec-2',
+      success: true,
+      details: 'Rule created for MEDIUM confidence rec',
+    });
+    mockedGetApplier.mockReturnValueOnce({
+      target: 'RULE',
+      canApply: mockCanApply,
+      apply: mockApply,
+    });
+    mockedUpdateStatus.mockResolvedValueOnce(undefined);
+
+    const { registerApplyOneCommand } = await import('../../../src/cli/apply.js');
+    const program = new Command();
+    program.exitOverride();
+    registerApplyOneCommand(program);
+
+    await program.parseAsync(['apply-one', 'rec-2'], { from: 'user' });
+
+    // Verify canApply was called with skipConfidenceGate: true
+    expect(mockCanApply).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'rec-2', confidence: 'MEDIUM' }),
+      expect.objectContaining({ skipConfidenceGate: true }),
+    );
+    // Verify apply was called with skipConfidenceGate: true
+    expect(mockApply).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'rec-2' }),
+      expect.objectContaining({ skipConfidenceGate: true }),
+    );
+
+    expect(logs.length).toBeGreaterThan(0);
+    const output = JSON.parse(logs.join(''));
+    expect(output.success).toBe(true);
+    expect(output.recommendation_id).toBe('rec-2');
+  });
+
+  it('apply-one applies LOW confidence recommendation successfully', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const { getApplier } = await import('../../../src/delivery/appliers/index.js');
+    const { updateStatus } = await import('../../../src/delivery/state.js');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedGetApplier = vi.mocked(getApplier);
+    const mockedUpdateStatus = vi.mocked(updateStatus);
+
+    // Create analysis result with a LOW confidence rec
+    const lowRec = {
+      ...sampleRecommendations[1],
+      id: 'rec-low',
+      confidence: 'LOW',
+    };
+    const analysisWithLow = JSON.stringify({
+      generated_at: '2026-04-04T00:00:00.000Z',
+      summary_period: { since: '2026-04-01', until: '2026-04-04', days: 3 },
+      recommendations: [lowRec],
+      metadata: { classifier_count: 8, patterns_evaluated: 10, environment_ecosystems: [], claude_code_version: '1.0.0' },
+    });
+    mockedReadFile.mockResolvedValueOnce(analysisWithLow);
+
+    const mockCanApply = vi.fn().mockReturnValue(true);
+    const mockApply = vi.fn().mockResolvedValue({
+      recommendation_id: 'rec-low',
+      success: true,
+      details: 'Applied LOW confidence rec',
+    });
+    mockedGetApplier.mockReturnValueOnce({
+      target: 'RULE',
+      canApply: mockCanApply,
+      apply: mockApply,
+    });
+    mockedUpdateStatus.mockResolvedValueOnce(undefined);
+
+    const { registerApplyOneCommand } = await import('../../../src/cli/apply.js');
+    const program = new Command();
+    program.exitOverride();
+    registerApplyOneCommand(program);
+
+    await program.parseAsync(['apply-one', 'rec-low'], { from: 'user' });
+
+    // Verify canApply was called with skipConfidenceGate: true
+    expect(mockCanApply).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'rec-low', confidence: 'LOW' }),
+      expect.objectContaining({ skipConfidenceGate: true }),
+    );
+
+    expect(logs.length).toBeGreaterThan(0);
+    const output = JSON.parse(logs.join(''));
+    expect(output.success).toBe(true);
+  });
+
   it('updates status to applied on success', async () => {
     const { readFile } = await import('node:fs/promises');
     const { getApplier } = await import('../../../src/delivery/appliers/index.js');

@@ -19,8 +19,9 @@ import { paths } from '../../storage/dirs.js';
 export class HookApplier implements Applier {
   readonly target = 'HOOK';
 
-  canApply(rec: Recommendation): boolean {
-    return rec.confidence === 'HIGH' && rec.target === 'HOOK';
+  canApply(rec: Recommendation, options?: ApplierOptions): boolean {
+    const confidenceOk = options?.skipConfidenceGate || rec.confidence === 'HIGH';
+    return confidenceOk && rec.target === 'HOOK';
   }
 
   async apply(

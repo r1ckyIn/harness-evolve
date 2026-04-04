@@ -52,6 +52,12 @@ const { HookApplier } = await import(
 const { ClaudeMdApplier } = await import(
   '../../../src/delivery/appliers/claude-md-applier.js'
 );
+const { SettingsApplier } = await import(
+  '../../../src/delivery/appliers/settings-applier.js'
+);
+const { RuleApplier } = await import(
+  '../../../src/delivery/appliers/rule-applier.js'
+);
 
 // --- Helpers ---
 
@@ -315,6 +321,61 @@ describe('auto-apply', () => {
     expect(results[0].recommendation_id).toBe('rec-pending');
   });
 
+  it('autoApplyRecommendations skips MEDIUM confidence recommendations (regression)', async () => {
+    mockLoadConfig.mockResolvedValue(makeConfig(true));
+    mockGetStatusMap.mockResolvedValue(new Map());
+
+    await writeFile(settingsPath, JSON.stringify({ allowedTools: [] }));
+
+    const recs = [
+      makeRecommendation({ id: 'rec-med-regression', confidence: 'MEDIUM', target: 'SETTINGS' }),
+      makeRecommendation({ id: 'rec-low-regression', confidence: 'LOW', target: 'RULE' }),
+    ];
+
+    const results = await autoApplyRecommendations(recs, { settingsPath });
+
+    // MEDIUM and LOW should never be auto-applied, only HIGH
+    expect(results).toEqual([]);
+  });
+
+  // --- SettingsApplier skipConfidenceGate Tests ---
+
+  describe('SettingsApplier skipConfidenceGate', () => {
+    it('canApply returns true for MEDIUM confidence when skipConfidenceGate is true', () => {
+      const applier = new SettingsApplier();
+      const rec = makeRecommendation({
+        target: 'SETTINGS',
+        confidence: 'MEDIUM',
+        pattern_type: 'permission-always-approved',
+      });
+      expect(applier.canApply(rec, { skipConfidenceGate: true })).toBe(true);
+    });
+
+    it('canApply returns false for MEDIUM confidence when skipConfidenceGate is not set', () => {
+      const applier = new SettingsApplier();
+      const rec = makeRecommendation({
+        target: 'SETTINGS',
+        confidence: 'MEDIUM',
+        pattern_type: 'permission-always-approved',
+      });
+      expect(applier.canApply(rec)).toBe(false);
+    });
+  });
+
+  // --- RuleApplier skipConfidenceGate Tests ---
+
+  describe('RuleApplier skipConfidenceGate', () => {
+    it('canApply returns true for LOW confidence when skipConfidenceGate is true', () => {
+      const applier = new RuleApplier();
+      const rec = makeRecommendation({
+        id: 'rec-rule-skip',
+        target: 'RULE',
+        confidence: 'LOW',
+      });
+      expect(applier.canApply(rec, { skipConfidenceGate: true })).toBe(true);
+    });
+  });
+
   // --- RULE Applier Tests ---
 
   describe('RULE applier', () => {
@@ -537,6 +598,16 @@ describe('auto-apply', () => {
         confidence: 'MEDIUM',
       });
       expect(applier.canApply(rec)).toBe(false);
+    });
+
+    it('canApply returns true for MEDIUM confidence + HOOK when skipConfidenceGate is true', () => {
+      const applier = new HookApplier();
+      const rec = makeRecommendation({
+        target: 'HOOK',
+        confidence: 'MEDIUM',
+        pattern_type: 'scan_missing_mechanization',
+      });
+      expect(applier.canApply(rec, { skipConfidenceGate: true })).toBe(true);
     });
 
     it('canApply returns false for non-HOOK target', () => {
@@ -904,6 +975,26 @@ describe('auto-apply', () => {
       // Verify file was created
       const content = await readFile(claudeMdPath, 'utf-8');
       expect(content).toContain('## Initialize config section');
+    });
+
+    it('canApply returns true for MEDIUM confidence + CLAUDE_MD when skipConfidenceGate is true', () => {
+      const applier = new ClaudeMdApplier();
+      const rec = makeRecommendation({
+        target: 'CLAUDE_MD',
+        confidence: 'MEDIUM',
+        pattern_type: 'config_drift',
+      });
+      expect(applier.canApply(rec, { skipConfidenceGate: true })).toBe(true);
+    });
+
+    it('canApply returns true for LOW confidence + CLAUDE_MD when skipConfidenceGate is true', () => {
+      const applier = new ClaudeMdApplier();
+      const rec = makeRecommendation({
+        target: 'CLAUDE_MD',
+        confidence: 'LOW',
+        pattern_type: 'config_drift',
+      });
+      expect(applier.canApply(rec, { skipConfidenceGate: true })).toBe(true);
     });
 
     it('apply uses write-file-atomic for the write', async () => {

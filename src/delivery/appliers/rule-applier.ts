@@ -12,8 +12,9 @@ import type { AutoApplyResult } from '../auto-apply.js';
 export class RuleApplier implements Applier {
   readonly target = 'RULE';
 
-  canApply(rec: Recommendation): boolean {
-    return rec.confidence === 'HIGH' && rec.target === 'RULE';
+  canApply(rec: Recommendation, options?: ApplierOptions): boolean {
+    const confidenceOk = options?.skipConfidenceGate || rec.confidence === 'HIGH';
+    return confidenceOk && rec.target === 'RULE';
   }
 
   async apply(

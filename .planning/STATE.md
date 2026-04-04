@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Reliability & Config Audit
 status: executing
-stopped_at: Completed 17-01-PLAN.md
-last_updated: "2026-04-04T13:28:56.000Z"
-last_activity: 2026-04-04 -- Phase 17 Plan 01 completed
+stopped_at: Completed 17-02-PLAN.md
+last_updated: "2026-04-05T00:00:00.000Z"
+last_activity: 2026-04-05 -- Phase 17 all plans completed (FIX-01 through FIX-04)
 progress:
   total_phases: 3
   completed_phases: 0
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 Phase: 17 of 19 (Bug Fixes & Reliability)
 Plan: 2 of 2
 Status: Executing Phase 17
-Last activity: 2026-04-04 -- Phase 17 Plan 01 completed (FIX-01, FIX-02)
+Last activity: 2026-04-05 -- Phase 17 all plans completed (FIX-01 through FIX-04)
 
-Progress: [=.........] 17% (v3.0 scope)
+Progress: [==........] 33% (v3.0 scope)
 
 ## Performance Metrics
 
@@ -51,6 +51,11 @@ Progress: [=.........] 17% (v3.0 scope)
 - Total plans completed: 10
 - Timeline: 1 day (2026-04-04)
 
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| 17-bug-fixes-reliability | 01 | 6min | 2 | 4 |
+| 17-bug-fixes-reliability | 02 | 5min | 2 | 10 |
+
 ## Accumulated Context
 
 ### Decisions
@@ -63,6 +68,9 @@ See `.planning/milestones/v2.0-ROADMAP.md` for v2.0 history.
 - v3.0 roadmap: Phase 19 depends on Phase 17 (FIX-01 moves commands to global before workflow docs target that path)
 - 17-01: Trailing dot cleanup must precede npm scope check in extractReferences to avoid false negatives from sentence punctuation
 - 17-01: npm scope detection uses segment count + extension heuristic; URL path detection uses prev-char check
+- 17-02: skipConfidenceGate as optional boolean in ApplierOptions -- minimal interface change, backward compatible
+- 17-02: Notification flag writes wrapped in silent try/catch so failures never block analysis flow
+- 17-02: getStatusMap used to count only truly pending recommendations for accurate notification count
 
 ### Pending Todos
 
@@ -74,6 +82,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04
-Stopped at: Completed 17-01-PLAN.md
+Last session: 2026-04-05
+Stopped at: Phase 17 all plans completed
 Resume file: None

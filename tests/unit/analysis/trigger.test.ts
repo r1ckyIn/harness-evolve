@@ -22,6 +22,8 @@ const mockReadFile = vi.fn();
 const mockTrackOutcomes = vi.fn();
 const mockLoadOutcomeHistory = vi.fn();
 const mockComputeOutcomeSummaries = vi.fn();
+const mockWriteNotificationFlag = vi.fn<(count: number) => Promise<void>>();
+const mockGetStatusMap = vi.fn<() => Promise<Map<string, string>>>();
 
 vi.mock('../../../src/storage/counter.js', () => ({
   readCounter: (...args: unknown[]) => mockReadCounter(...args),
@@ -48,6 +50,14 @@ vi.mock('../../../src/analysis/outcome-tracker.js', () => ({
   trackOutcomes: (...args: unknown[]) => mockTrackOutcomes(...args),
   loadOutcomeHistory: (...args: unknown[]) => mockLoadOutcomeHistory(...args),
   computeOutcomeSummaries: (...args: unknown[]) => mockComputeOutcomeSummaries(...args),
+}));
+
+vi.mock('../../../src/delivery/notification.js', () => ({
+  writeNotificationFlag: (...args: unknown[]) => mockWriteNotificationFlag(...(args as [number])),
+}));
+
+vi.mock('../../../src/delivery/state.js', () => ({
+  getStatusMap: (...args: unknown[]) => mockGetStatusMap(...args),
 }));
 
 vi.mock('write-file-atomic', () => ({
@@ -145,6 +155,10 @@ describe('trigger', () => {
     mockLoadOutcomeHistory.mockResolvedValue([]);
     mockComputeOutcomeSummaries.mockReturnValue([]);
 
+    // Notification mocks
+    mockWriteNotificationFlag.mockResolvedValue(undefined);
+    mockGetStatusMap.mockResolvedValue(new Map());
+
     // Lock mock returns a release function
     const mockRelease = vi.fn().mockResolvedValue(undefined);
     mockLock.mockResolvedValue(mockRelease);
@@ -238,6 +252,91 @@ describe('trigger', () => {
       expect(writtenData.total).toBe(0);
       expect(writtenData.session).toEqual({});
       expect(writtenData.last_analysis).toBeDefined();
+    });
+
+    it('writes notification flag when analysis has pending recommendations', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig({ threshold: 50 }));
+      mockReadCounter.mockResolvedValue(makeCounter({ total: 50 }));
+      mockPreProcess.mockResolvedValue({});
+      mockScanEnvironment.mockResolvedValue({});
+
+      const resultWithRecs = {
+        ...makeMockResult(),
+        recommendations: [
+          { id: 'rec-1', confidence: 'HIGH', target: 'SETTINGS', pattern_type: 'perm', title: 'T', description: 'D', evidence: { count: 1, examples: [] }, suggested_action: 'A' },
+          { id: 'rec-2', confidence: 'MEDIUM', target: 'RULE', pattern_type: 'code', title: 'T', description: 'D', evidence: { count: 1, examples: [] }, suggested_action: 'A' },
+        ],
+      };
+      mockAnalyze.mockReturnValue(resultWithRecs);
+      mockGetStatusMap.mockResolvedValue(new Map()); // all pending
+      mockReadFile.mockResolvedValue(JSON.stringify(makeCounter({ total: 50 })));
+
+      const result = await checkAndTriggerAnalysis('/test/cwd');
+
+      expect(result).toBe(true);
+      expect(mockWriteNotificationFlag).toHaveBeenCalledWith(2);
+    });
+
+    it('does not write notification flag when all recommendations are applied', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig({ threshold: 50 }));
+      mockReadCounter.mockResolvedValue(makeCounter({ total: 50 }));
+      mockPreProcess.mockResolvedValue({});
+      mockScanEnvironment.mockResolvedValue({});
+
+      const resultWithRecs = {
+        ...makeMockResult(),
+        recommendations: [
+          { id: 'rec-applied-1', confidence: 'HIGH', target: 'SETTINGS', pattern_type: 'perm', title: 'T', description: 'D', evidence: { count: 1, examples: [] }, suggested_action: 'A' },
+          { id: 'rec-applied-2', confidence: 'HIGH', target: 'RULE', pattern_type: 'code', title: 'T', description: 'D', evidence: { count: 1, examples: [] }, suggested_action: 'A' },
+        ],
+      };
+      mockAnalyze.mockReturnValue(resultWithRecs);
+      mockGetStatusMap.mockResolvedValue(new Map([
+        ['rec-applied-1', 'applied'],
+        ['rec-applied-2', 'applied'],
+      ]));
+      mockReadFile.mockResolvedValue(JSON.stringify(makeCounter({ total: 50 })));
+
+      await checkAndTriggerAnalysis('/test/cwd');
+
+      expect(mockWriteNotificationFlag).not.toHaveBeenCalled();
+    });
+
+    it('does not write notification flag when analysis returns zero recommendations', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig({ threshold: 50 }));
+      mockReadCounter.mockResolvedValue(makeCounter({ total: 50 }));
+      mockPreProcess.mockResolvedValue({});
+      mockScanEnvironment.mockResolvedValue({});
+      mockAnalyze.mockReturnValue(makeMockResult()); // empty recommendations
+      mockReadFile.mockResolvedValue(JSON.stringify(makeCounter({ total: 50 })));
+
+      await checkAndTriggerAnalysis('/test/cwd');
+
+      expect(mockWriteNotificationFlag).not.toHaveBeenCalled();
+    });
+
+    it('returns true even when notification flag write fails', async () => {
+      mockLoadConfig.mockResolvedValue(makeConfig({ threshold: 50 }));
+      mockReadCounter.mockResolvedValue(makeCounter({ total: 50 }));
+      mockPreProcess.mockResolvedValue({});
+      mockScanEnvironment.mockResolvedValue({});
+
+      const resultWithRecs = {
+        ...makeMockResult(),
+        recommendations: [
+          { id: 'rec-flag-fail', confidence: 'HIGH', target: 'SETTINGS', pattern_type: 'perm', title: 'T', description: 'D', evidence: { count: 1, examples: [] }, suggested_action: 'A' },
+        ],
+      };
+      mockAnalyze.mockReturnValue(resultWithRecs);
+      mockGetStatusMap.mockResolvedValue(new Map());
+      mockWriteNotificationFlag.mockRejectedValue(new Error('Write permission denied'));
+      mockReadFile.mockResolvedValue(JSON.stringify(makeCounter({ total: 50 })));
+
+      const result = await checkAndTriggerAnalysis('/test/cwd');
+
+      // Must return true even though notification write failed
+      expect(result).toBe(true);
+      expect(mockWriteNotificationFlag).toHaveBeenCalledWith(1);
     });
 
     it('does NOT reset counter when runAnalysis fails', async () => {
