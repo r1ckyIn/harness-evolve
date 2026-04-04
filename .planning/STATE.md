@@ -1,8 +1,8 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Deep Scan & Auto-Generation
-status: verifying
+milestone: v3.0
+milestone_name: Reliability & Config Audit
+status: planning
 stopped_at: Completed 16-01-PLAN.md
 last_updated: "2026-04-04T11:59:26.114Z"
 last_activity: 2026-04-04
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 16 — ux-polish
+**Current focus:** Defining requirements for v3.0
 
 ## Current Position
 
-Phase: 16
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-04
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-04 — Milestone v3.0 started
 
 Progress: [========░░] 88% (v2.0 scope)
 

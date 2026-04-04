@@ -72,7 +72,19 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(No active milestone — run `/gsd:new-milestone` to define v3.0)
+(Defined in REQUIREMENTS.md for v3.0)
+
+## Current Milestone: v3.0 Reliability & Config Audit
+
+**Goal:** 修复 v2.0 dogfooding 发现的 bug，将 scanner 从浅层检测升级为全面配置审计
+
+**Target features:**
+- 斜杠命令全局安装（~/.claude/commands/）
+- Scanner 误报修复（过滤 npm 包名、URL 中的 @）
+- apply-one 移除 confidence 门槛（用户主动选择不限制）
+- Stop hook 分析后自动设置通知标记
+- 全面配置审计（整体质量分析，不只 stale reference）
+- GSD 风格 workflow 文档（每个命令有完整 .md 规范行为）
 
 ## Shipped Milestones
 
@@ -187,4 +199,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — v2.0 shipped, published to npm as harness-evolve@1.0.0*
+*Last updated: 2026-04-04 — v3.0 milestone started*
