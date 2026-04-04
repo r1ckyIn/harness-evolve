@@ -18,8 +18,8 @@ Make Claude Code harnesses self-improving without manual analysis — now with D
 ### Auto-Generation (自动生成能力)
 
 - [ ] **GEN-01**: 检测到重复长提示词模式时，自动生成 `.claude/commands/<name>.md` skill 文件草稿
-- [ ] **GEN-02**: 检测到应机械化的操作模式时，自动生成 hook 脚本草稿（shell command 类型）
-- [ ] **GEN-03**: 检测到项目级配置建议时，自动生成 CLAUDE.md 补丁（diff 格式，用户确认后应用）
+- [x] **GEN-02**: 检测到应机械化的操作模式时，自动生成 hook 脚本草稿（shell command 类型）
+- [x] **GEN-03**: 检测到项目级配置建议时，自动生成 CLAUDE.md 补丁（diff 格式，用户确认后应用）
 - [ ] **GEN-04**: HOOK auto-applier 注册到策略模式 applier registry，HIGH 置信度推荐可自动应用
 - [ ] **GEN-05**: CLAUDE_MD auto-applier 注册到策略模式 applier registry，HIGH 置信度推荐可自动应用
 

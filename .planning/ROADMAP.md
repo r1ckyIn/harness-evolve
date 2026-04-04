@@ -36,7 +36,7 @@
 **Milestone Goal:** Eliminate cold-start problem, close the auto-apply loop for all target types, and upgrade harness-evolve from a background tool to an interactive optimization assistant.
 
 - [x] **Phase 12: Deep Scan Infrastructure** - Scan existing user config to detect redundancy, missing mechanization, and stale references (completed 2026-04-04)
-- [ ] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns
+- [x] **Phase 13: Auto-Generators** - Generate skill, hook, and CLAUDE.md draft artifacts from detected patterns (completed 2026-04-04)
 - [ ] **Phase 14: Auto-Apply Closure** - Register HOOK and CLAUDE_MD appliers into the strategy pattern registry for full auto-apply coverage
 - [ ] **Phase 15: Slash Commands & Interactive Apply** - Install slash commands and provide interactive recommendation review workflow
 - [ ] **Phase 16: UX Polish** - Concise notifications, improved init display, impact-ordered recommendations
@@ -70,7 +70,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 13-01-PLAN.md — Generator schemas, shared utilities, and skill generator (GEN-01)
-- [ ] 13-02-PLAN.md — Hook generator, CLAUDE.md patch generator, and public API exports (GEN-02, GEN-03)
+- [x] 13-02-PLAN.md — Hook generator, CLAUDE.md patch generator, and public API exports (GEN-02, GEN-03)
 
 ### Phase 14: Auto-Apply Closure
 **Goal**: HIGH-confidence HOOK and CLAUDE_MD recommendations can be automatically applied without user intervention, completing the auto-apply loop for all generated artifact types
@@ -122,7 +122,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 10. npm Package & CI/CD Pipeline | v1.1 | 2/2 | Complete | 2026-04-03 |
 | 11. CLI Commands & Install Experience | v1.1 | 2/2 | Complete | 2026-04-04 |
 | 12. Deep Scan Infrastructure | v2.0 | 3/3 | Complete | 2026-04-04 |
-| 13. Auto-Generators | v2.0 | 1/2 | In progress | - |
+| 13. Auto-Generators | v2.0 | 2/2 | Complete   | 2026-04-04 |
 | 14. Auto-Apply Closure | v2.0 | 0/? | Not started | - |
 | 15. Slash Commands & Interactive Apply | v2.0 | 0/? | Not started | - |
 | 16. UX Polish | v2.0 | 0/? | Not started | - |
