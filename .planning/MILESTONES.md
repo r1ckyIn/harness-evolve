@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.1 Stabilization & Production (Shipped: 2026-04-04)
+
+**Phases completed:** 3 phases, 7 plans, 12 tasks
+
+**Key accomplishments:**
+
+- PatternType Zod enum with 13 values fixes broken self-iteration feedback loop by correcting inferPatternType string mismatches for 7/8 classifiers
+- Hardened proper-lockfile retry config (50 retries, 20-1000ms jitter backoff) to eliminate ELOCKED flakes in concurrent-counter integration test
+- 1. [Rule 1 - Bug] Updated existing test for non-applier target filtering
+- Complete npm package.json with metadata, files whitelist, ESM exports map, CLI stub bin entry, and validation tooling (publint + attw)
+- Commander.js CLI framework with init command for hook registration in settings.json, supporting global/npx/git-clone install paths via import.meta.dirname resolution
+- Status command displaying interaction metrics and hook registration, uninstall command with selective hook removal and --purge data cleanup, integration-tested end-to-end
+
+---
+
 ## v1.0 Self-Iteration Engine (Shipped: 2026-04-02)
 
 **Phases completed:** 8 phases, 21 plans, 39 tasks

@@ -37,6 +37,13 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Tiered onboarding: detect existing config level (zero-config for new users, enhancement for power users) — Validated in Phase 6: onboarding-quality-polish
 - [x] Recommendation outcome tracking: monitor persistence/reversion, adjust future confidence — Validated in Phase 6: onboarding-quality-polish
 
+- [x] Fix inferPatternType string mismatches for 7/8 classifiers via shared PatternType enum — Validated in Phase 9: tech-debt-auto-apply
+- [x] Fix flaky concurrent-counter test with hardened lock retry config — Validated in Phase 9: tech-debt-auto-apply
+- [x] Expand auto-apply with strategy pattern applier registry (SETTINGS + RULE targets) — Validated in Phase 9: tech-debt-auto-apply
+- [x] Complete npm package.json metadata, files whitelist, ESM exports map — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] CLI bin entry pointing to compiled Commander.js program — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] GitHub Actions CI (build+test+typecheck+publint+attw) — Validated in Phase 10: npm-package-ci-cd-pipeline
+- [x] Automated npm publish via OIDC trusted publishing on v* tags — Validated in Phase 10: npm-package-ci-cd-pipeline
 - [x] Commander.js CLI with init subcommand for hook registration — Validated in Phase 11: cli-commands-install-experience
 - [x] Hook path resolution for global, npx, and git clone installs — Validated in Phase 11: cli-commands-install-experience
 - [x] Status command showing interaction count, last analysis, pending recommendations, hook registration — Validated in Phase 11: cli-commands-install-experience
@@ -45,20 +52,15 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(v1.1 complete — no active requirements)
+(No active milestone — all v1.0 and v1.1 requirements shipped)
 
-## Current Milestone: v1.1 Stabilization & Production
+## Shipped Milestones
 
-**Goal:** Fix tech debt from v1.0 audit, make the project production-ready for npm publish with CI/CD
+### v1.0 Self-Iteration Engine (shipped 2026-04-02)
+Full pipeline: capture -> store -> pre-process -> classify -> route -> deliver -> track outcomes. 8 phases, 21 plans, 2 days.
 
-**Target features:**
-- Fix inferPatternType string mismatch (7/8 classifiers)
-- Expand auto-apply scope beyond permissions-only
-- Fix flaky concurrent-counter test
-- npm publish setup (package.json metadata, bin entry, install docs)
-- CI/CD pipeline (GitHub Actions: build + test + typecheck)
-- CLI command (`harness-evolve init` for hook registration)
-- Installation experience optimization (npx support)
+### v1.1 Stabilization & Production (shipped 2026-04-04)
+Tech debt fixes, npm publish readiness, CI/CD pipeline, Commander.js CLI with init/status/uninstall. 3 phases, 7 plans.
 
 ### Out of Scope
 
@@ -114,6 +116,10 @@ Agnostic layer — works with any combination of workflow tools:
 | Zod v4 for all schemas | 14x faster than v3, TypeScript-first | Good — clean inference with .default() pattern |
 | proper-lockfile for cross-process locking | macOS Ventura lacks flock | Good — retry-based with stale detection |
 | v1 auto-apply scope limited to permissions only | Minimize blast radius for auto-modifications | Expanded in Phase 9 — strategy pattern applier registry with SETTINGS + RULE appliers |
+| ESM-only npm publish | Node 22+ target, Claude Code is ESM | Good — publint + attw validate exports |
+| npm OIDC trusted publishing | No static tokens in CI | Good — v* tag triggers automated publish |
+| Commander.js 14 over oclif | Lightweight for ~5 commands | Good — 3 commands registered, extensible |
+| import.meta.dirname for hook path resolution | ESM-native, works across install methods | Good — global, npx, git clone all resolve correctly |
 
 ## Technical Gray Areas (v1.0 Resolution)
 
@@ -124,9 +130,9 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (v1.1 complete)
+## Current State (v1.1 shipped)
 
-- **Codebase:** ~13,000 LOC TypeScript (src + tests)
+- **Codebase:** 14,246 LOC TypeScript (src + tests)
 - **Tests:** 441 passing across 44 test files
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
@@ -152,4 +158,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after Phase 11 completion — CLI commands complete, v1.1 milestone finished*
+*Last updated: 2026-04-04 after v1.1 milestone — Stabilization & Production shipped*
