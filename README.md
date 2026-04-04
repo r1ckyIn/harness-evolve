@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/harness-evolve?style=flat-square)](https://www.npmjs.com/package/harness-evolve)
 [![CI](https://img.shields.io/github/actions/workflow/status/r1ckyIn/harness-evolve/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/r1ckyIn/harness-evolve/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-336_passing-brightgreen?style=flat-square)](.)
+[![Tests](https://img.shields.io/github/actions/workflow/status/r1ckyIn/harness-evolve/ci.yml?branch=main&style=flat-square&label=Tests)](https://github.com/r1ckyIn/harness-evolve/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![Node.js](https://img.shields.io/badge/Node.js-22_LTS-339933?style=flat-square&logo=node.js)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
@@ -168,7 +168,7 @@ Add to your Claude Code `settings.json`:
 |--------|-------|
 | Source Code | 3,765 LOC TypeScript |
 | Tests | 7,968 LOC across 37 test files |
-| Test Count | 336 passing tests |
+| Test Count | 600+ passing tests |
 | Classifiers | 8 pattern classifiers |
 | Routing Targets | 7+ configuration tools |
 | Total Commits | 96 |
