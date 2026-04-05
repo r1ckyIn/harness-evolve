@@ -79,9 +79,13 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Each audit finding includes concrete optimization suggestion with expected effect text — Validated in Phase 18: comprehensive-config-audit
 - [x] Audit output separates problems (broken/conflicting) from suggestions (optional improvements) with severity labels — Validated in Phase 18: comprehensive-config-audit
 
+- [x] Each slash command (/evolve:scan, /evolve:apply) has a comprehensive workflow .md document with structured sections (Prerequisites, Instructions, Output Format, Error Handling, Edge Cases) — Validated in Phase 19: workflow-documentation
+- [x] Workflow documentation injected via slash command template (self-contained, no CLAUDE.md preload dependency), with allowed-tools frontmatter and version tracking — Validated in Phase 19: workflow-documentation
+- [x] Version-aware template update mechanism ensures existing users get updated workflow docs on next init — Validated in Phase 19: workflow-documentation
+
 ### Active
 
-(Remaining v3.0: WFL-01/02 — defined in REQUIREMENTS.md)
+(All v3.0 requirements validated — milestone complete)
 
 ## Current Milestone: v3.0 Reliability & Config Audit
 
@@ -94,6 +98,7 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - Stop hook 分析后自动设置通知标记
 - 全面配置审计（整体质量分析，不只 stale reference）
 - GSD 风格 workflow 文档（每个命令有完整 .md 规范行为）
+- Version-aware 模板更新（已有用户 re-init 后自动获取新版 workflow）
 
 ## Shipped Milestones
 
@@ -174,10 +179,10 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (Phase 18 complete)
+## Current State (Phase 19 complete — v3.0 milestone complete)
 
-- **Codebase:** ~20,500 LOC TypeScript (src + tests)
-- **Tests:** 685 passing across 62 test files
+- **Codebase:** ~21,000 LOC TypeScript (src + tests)
+- **Tests:** 708 passing across 62 test files
 - **npm:** Published as `harness-evolve@1.0.0`
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
@@ -187,8 +192,8 @@ Agnostic layer — works with any combination of workflow tools:
 - **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
 - **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
 - **CLI:** Commander.js with 3 commands (init, status, uninstall), hook path resolution for all install methods
-- **Slash commands:** /evolve:scan and /evolve:apply installed via init
-- **UX:** Concise notifications, hook descriptions in init, confidence-sorted output
+- **Slash commands:** /evolve:scan and /evolve:apply with comprehensive GSD-style workflow documents (143/163 lines), version-aware template updates, allowed-tools frontmatter
+- **UX:** Concise notifications, hook descriptions in init, severity-grouped output, self-contained slash command behavior
 
 ## Evolution
 
@@ -208,4 +213,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-05 — Phase 18 complete, comprehensive config audit with 7 scanners*
+*Last updated: 2026-04-05 — Phase 19 complete, v3.0 milestone complete. All 19 phases shipped across 4 milestones.*
