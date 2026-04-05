@@ -18,7 +18,7 @@ Make Claude Code harnesses self-improving without manual analysis — now reliab
 ### Config Audit (全面配置审计)
 
 - [x] **AUD-01**: Scanner 全面分析 Claude Code 配置质量：CLAUDE.md 规则冲突检测、rules 目录结构审计、settings.json hooks 冗余分析、commands 目录规范检查
-- [ ] **AUD-02**: 配置审计输出包含具体的优化建议和预期效果，用户确认后才应用变更
+- [x] **AUD-02**: 配置审计输出包含具体的优化建议和预期效果，用户确认后才应用变更
 - [x] **AUD-03**: Scanner 结果区分 "问题"（需要修复）和 "优化建议"（可选改进），不混为一谈
 
 ### Workflow Docs (GSD 风格命令规范)

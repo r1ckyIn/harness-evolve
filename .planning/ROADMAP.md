@@ -48,7 +48,7 @@
 **Milestone Goal:** Fix v2.0 dogfooding bugs, upgrade scanner from shallow detection to comprehensive config audit, and make slash commands globally accessible with proper workflow documentation.
 
 - [x] **Phase 17: Bug Fixes & Reliability** - Fix 4 dogfooding bugs: global slash commands, scanner false positives, apply-one confidence gate, stop hook notification (completed 2026-04-04)
-- [ ] **Phase 18: Comprehensive Config Audit** - Upgrade scanner from shallow stale/redundancy checks to full Claude Code configuration quality analysis
+- [x] **Phase 18: Comprehensive Config Audit** - Upgrade scanner from shallow stale/redundancy checks to full Claude Code configuration quality analysis (completed 2026-04-05)
 - [ ] **Phase 19: Workflow Documentation** - GSD-style workflow .md for each slash command, injected via command template rather than CLAUDE.md preload
 
 ## Phase Details
@@ -76,10 +76,10 @@ Plans:
   2. Each audit finding includes a concrete optimization suggestion with expected effect (e.g., "Move this rule to a hook for 100% enforcement -- currently probabilistic")
   3. Audit output clearly separates "problems" (things that are broken or conflicting) from "optimization suggestions" (things that work but could be better), with distinct severity labels
   4. User reviews audit findings and confirms before any changes are applied -- no silent modifications
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 18-01-PLAN.md -- Schema extension (severity field + audit pattern types) + conflict scanner + structure scanner
-- [ ] 18-02-PLAN.md -- Hooks redundancy scanner + commands scanner + registry wiring + CLI output grouping
+- [x] 18-02-PLAN.md -- Hooks redundancy scanner + commands scanner + registry wiring + CLI output grouping
 
 ### Phase 19: Workflow Documentation
 **Goal**: Each slash command has a complete workflow .md that defines Claude's behavior, eliminating context pollution from CLAUDE.md preloading
@@ -115,5 +115,5 @@ Phases execute in numeric order: 17 -> 18 -> 19
 | 15. Slash Commands & Interactive Apply | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 16. UX Polish | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 17. Bug Fixes & Reliability | v3.0 | 2/2 | Complete    | 2026-04-04 |
-| 18. Comprehensive Config Audit | v3.0 | 1/2 | In Progress|  |
+| 18. Comprehensive Config Audit | v3.0 | 2/2 | Complete   | 2026-04-05 |
 | 19. Workflow Documentation | v3.0 | 0/0 | Not started | - |
