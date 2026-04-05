@@ -110,4 +110,56 @@ describe('deep scan integration', () => {
     expect(result.scan_context.claude_md_files).toEqual([]);
     expect(result.scan_context.rules).toEqual([]);
   });
+
+  it('detects structure issues from real rule files', async () => {
+    // Create a CLAUDE.md (required for scan to have something)
+    await writeFile(join(tempDir, 'CLAUDE.md'), '# Config\nProject config.\n');
+
+    // Create an empty rule file (triggers structure scanner)
+    await mkdir(join(tempDir, '.claude', 'rules'), { recursive: true });
+    await writeFile(join(tempDir, '.claude', 'rules', 'empty-rule.md'), '');
+
+    const result = await runDeepScan(tempDir, fakeHome);
+
+    const structureRecs = result.recommendations.filter(
+      (r) => r.pattern_type === 'scan_structure_issue',
+    );
+    expect(structureRecs.length).toBeGreaterThanOrEqual(1);
+    expect(structureRecs[0].severity).toBe('problem');
+
+    // All recommendations must pass schema validation
+    for (const rec of result.recommendations) {
+      expect(() => recommendationSchema.parse(rec)).not.toThrow();
+    }
+  });
+
+  it('detects hooks redundancy from real settings files', async () => {
+    await writeFile(join(tempDir, 'CLAUDE.md'), '# Config\n');
+
+    // Create settings.json with duplicate hooks
+    await mkdir(join(tempDir, '.claude'), { recursive: true });
+    await writeFile(
+      join(tempDir, '.claude', 'settings.json'),
+      JSON.stringify({
+        hooks: {
+          PreToolUse: [
+            { type: 'command', command: 'node check.js' },
+            { type: 'command', command: 'node check.js' },
+          ],
+        },
+      }),
+    );
+
+    const result = await runDeepScan(tempDir, fakeHome);
+
+    const hooksRecs = result.recommendations.filter(
+      (r) => r.pattern_type === 'scan_hooks_redundancy',
+    );
+    expect(hooksRecs.length).toBeGreaterThanOrEqual(1);
+    expect(hooksRecs[0].severity).toBe('problem');
+
+    for (const rec of result.recommendations) {
+      expect(() => recommendationSchema.parse(rec)).not.toThrow();
+    }
+  });
 });

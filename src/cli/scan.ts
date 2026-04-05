@@ -25,11 +25,17 @@ export function registerScanCommand(program: Command): void {
         const sorted = [...result.recommendations].sort((a, b) =>
           (CONFIDENCE_ORDER[a.confidence] ?? 3) - (CONFIDENCE_ORDER[b.confidence] ?? 3)
         );
+        // Partition into problems and suggestions based on severity field
+        const problems = sorted.filter(r => (r as Record<string, unknown>).severity === 'problem');
+        const suggestions = sorted.filter(r => (r as Record<string, unknown>).severity !== 'problem');
+
         // Output minimal JSON (no scan_context to keep output clean for slash command)
         const output = {
           generated_at: result.generated_at,
           recommendation_count: sorted.length,
-          recommendations: sorted,
+          problems,
+          suggestions,
+          recommendations: sorted,  // Keep full list for backward compatibility
         };
         console.log(JSON.stringify(output, null, 2));
       } catch (err) {

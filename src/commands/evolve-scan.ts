@@ -23,7 +23,10 @@ Analyzes your Claude Code configuration files to detect:
 - **Redundant rules** -- same constraint defined in multiple files (CLAUDE.md, .claude/rules/, settings.json)
 - **Missing mechanization** -- operations in rules or CLAUDE.md that should be hooks for 100% reliability
 - **Stale config** -- references to non-existent files, outdated commands, or unused settings
-- **Configuration drift** -- inconsistencies between .claude/commands/, rules, and settings
+- **Rule conflicts** -- contradictory directives across CLAUDE.md and rules files
+- **Structure issues** -- empty rules, oversized rules, unscoped subdirectory rules
+- **Hook redundancy** -- duplicate or overlapping hook registrations in settings.json
+- **Command conventions** -- missing frontmatter, empty commands, missing descriptions
 
 Files scanned: CLAUDE.md, .claude/rules/, settings.json, .claude/commands/
 
@@ -43,20 +46,31 @@ harness-evolve scan
 
 ## Presenting Results
 
-Present the results grouped by confidence level (HIGH first, then MEDIUM, then LOW):
+Present the results in two clearly separated sections:
 
-1. **HIGH confidence** -- Issues that are very likely real problems. Recommend immediate action.
-2. **MEDIUM confidence** -- Probable issues worth reviewing. Present with context for user to decide.
-3. **LOW confidence** -- Possible improvements. Mention briefly and let user prioritize.
+### 1. Problems (must fix)
+Issues that are broken, conflicting, or misconfigured. These need attention.
+Show items where \`severity\` is \`"problem"\` (found in the \`problems\` array).
 
-For each issue, show:
-- Confidence level and category
-- Description of the problem
+For each problem, show:
+- **PROBLEM** badge with confidence level (HIGH/MEDIUM/LOW)
+- Description of what's wrong
 - Affected file(s)
-- Suggested fix
+- Suggested fix with expected effect
+
+### 2. Optimization Suggestions (optional improvements)
+Things that work but could be better. These are optional.
+Show items where \`severity\` is \`"suggestion"\` (found in the \`suggestions\` array).
+
+For each suggestion, show:
+- **SUGGESTION** badge with confidence level (HIGH/MEDIUM/LOW)
+- Description of the opportunity
+- Affected file(s)
+- Suggested improvement with expected effect
+
+If no problems are found, congratulate the user on a clean configuration.
+If suggestions exist, mention them as optional improvements.
 
 If issues are found, suggest running \`/evolve:apply\` to review and apply the recommendations interactively.
-
-If no issues are found, congratulate the user on a clean configuration.
 `;
 }

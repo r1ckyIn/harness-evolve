@@ -262,6 +262,6 @@ describe('Scanner type and registry', () => {
 
   it('scanners array contains registered scanners', () => {
     expect(Array.isArray(scanners)).toBe(true);
-    expect(scanners.length).toBe(3);
+    expect(scanners.length).toBe(7);
   });
 });

@@ -237,8 +237,8 @@ describe('scanStaleness', () => {
 });
 
 describe('scanner registry', () => {
-  it('scanners array contains exactly 3 entries', () => {
-    expect(scanners).toHaveLength(3);
+  it('scanners array contains exactly 7 entries', () => {
+    expect(scanners).toHaveLength(7);
   });
 
   it('each scanner in array is a function', () => {
