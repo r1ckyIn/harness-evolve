@@ -1,7 +1,7 @@
 // Init command implementation -- registers harness-evolve hooks in Claude Code settings.json
 // and runs a deep scan of existing configuration for quality issues.
 
-import { copyFile, mkdir, access, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, access, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Command } from '@commander-js/extra-typings';
 import {
@@ -14,8 +14,8 @@ import {
   confirm,
 } from './utils.js';
 import { runDeepScan } from '../scan/index.js';
-import { generateScanCommand } from '../commands/evolve-scan.js';
-import { generateApplyCommand } from '../commands/evolve-apply.js';
+import { generateScanCommand, getScanTemplateVersion } from '../commands/evolve-scan.js';
+import { generateApplyCommand, getApplyTemplateVersion } from '../commands/evolve-apply.js';
 
 /**
  * Options for runInit, with test overrides.
@@ -40,8 +40,23 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 /**
+ * Extract the template-version from an installed slash command file.
+ * Returns the version string if found, or null if file doesn't exist or has no version comment.
+ */
+async function extractInstalledVersion(filePath: string): Promise<string | null> {
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    const match = content.match(/<!-- template-version: (\d+) -->/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Install slash command Markdown files into the global ~/.claude/commands/evolve/ directory.
- * Creates the directory if it doesn't exist. Skips files that already exist (create-only guard).
+ * Creates the directory if it doesn't exist. Version-aware: overwrites stale templates,
+ * skips files that are already at the current version.
  */
 async function installSlashCommands(): Promise<void> {
   const home = process.env.HOME ?? '';
@@ -49,16 +64,25 @@ async function installSlashCommands(): Promise<void> {
   await mkdir(commandsDir, { recursive: true });
 
   const commands = [
-    { name: 'scan', generate: generateScanCommand, path: join(commandsDir, 'scan.md') },
-    { name: 'apply', generate: generateApplyCommand, path: join(commandsDir, 'apply.md') },
+    { name: 'scan', generate: generateScanCommand, version: getScanTemplateVersion(), path: join(commandsDir, 'scan.md') },
+    { name: 'apply', generate: generateApplyCommand, version: getApplyTemplateVersion(), path: join(commandsDir, 'apply.md') },
   ];
 
   for (const cmd of commands) {
-    if (await fileExists(cmd.path)) {
-      console.log(`  /evolve:${cmd.name} already installed, skipping`);
-    } else {
+    const installedVersion = await extractInstalledVersion(cmd.path);
+
+    if (installedVersion === null) {
+      // File doesn't exist or has no version -- install/overwrite
+      const existed = await fileExists(cmd.path);
       await writeFile(cmd.path, cmd.generate(), 'utf-8');
-      console.log(`  /evolve:${cmd.name} installed`);
+      console.log(`  /evolve:${cmd.name} ${existed ? 'updated (was unversioned)' : 'installed'}`);
+    } else if (parseInt(installedVersion, 10) < parseInt(cmd.version, 10)) {
+      // Stale version -- update
+      await writeFile(cmd.path, cmd.generate(), 'utf-8');
+      console.log(`  /evolve:${cmd.name} updated (v${installedVersion} -> v${cmd.version})`);
+    } else {
+      // Current or newer -- skip
+      console.log(`  /evolve:${cmd.name} up to date (v${cmd.version})`);
     }
   }
 }

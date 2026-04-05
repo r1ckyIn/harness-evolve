@@ -571,9 +571,11 @@ describe('CLI init slash commands', () => {
     expect(applyContent).toContain('name: apply');
   });
 
-  it('skips existing command files', async () => {
+  it('skips command files with current template-version', async () => {
     const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
     const writeFileAtomic = (await import('write-file-atomic')).default;
+    const { getScanTemplateVersion } = await import('../../../src/commands/evolve-scan.js');
+    const { getApplyTemplateVersion } = await import('../../../src/commands/evolve-apply.js');
     const mockedReadFile = vi.mocked(readFile);
     const mockedMkdir = vi.mocked(mkdir);
     const mockedAccess = vi.mocked(access);
@@ -586,6 +588,21 @@ describe('CLI init slash commands', () => {
     mockedReadFile.mockRejectedValueOnce(err);
     mockedMkdir.mockResolvedValue(undefined as never);
     mockedWrite.mockResolvedValueOnce(undefined);
+
+    const scanVersion = getScanTemplateVersion();
+    const applyVersion = getApplyTemplateVersion();
+
+    // readFile for version extraction returns current version
+    mockedReadFile.mockImplementation(async (p: Parameters<typeof readFile>[0]) => {
+      const pathStr = String(p);
+      if (pathStr.includes('scan.md')) {
+        return `<!-- template-version: ${scanVersion} -->\nold content`;
+      }
+      if (pathStr.includes('apply.md')) {
+        return `<!-- template-version: ${applyVersion} -->\nold content`;
+      }
+      throw new Error('ENOENT');
+    });
 
     // All access() calls resolve (files exist -- including stale project-level dir)
     mockedAccess.mockResolvedValue(undefined);
@@ -611,11 +628,193 @@ describe('CLI init slash commands', () => {
       process.env.HOME = originalHome;
     }
 
-    // writeFile should NOT have been called for command files
+    // writeFile should NOT have been called for command files (current version)
     expect(mockedWriteFile).not.toHaveBeenCalled();
 
-    // Should log "already installed"
-    expect(logs.some((l) => l.includes('already installed'))).toBe(true);
+    // Should log "up to date"
+    expect(logs.some((l) => l.includes('up to date'))).toBe(true);
+  });
+
+  it('overwrites installed file with no template-version comment', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // readFile for version extraction returns old content with no version comment
+    mockedReadFile.mockImplementation(async (p: Parameters<typeof readFile>[0]) => {
+      const pathStr = String(p);
+      if (pathStr.includes('scan.md') || pathStr.includes('apply.md')) {
+        return '---\nname: scan\n---\nOld content without version comment';
+      }
+      throw new Error('ENOENT');
+    });
+
+    // access resolves (files exist)
+    mockedAccess.mockResolvedValue(undefined);
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-noversion-home';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-noversion/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/test-noversion',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // writeFile should have been called for both files (overwrite unversioned)
+    expect(mockedWriteFile).toHaveBeenCalledTimes(2);
+
+    // Written content should contain template-version
+    const scanContent = mockedWriteFile.mock.calls.find((c) =>
+      String(c[0]).includes('scan.md'),
+    )?.[1] as string;
+    expect(scanContent).toContain('template-version');
+
+    // Should log "updated (was unversioned)"
+    expect(logs.some((l) => l.includes('updated') && l.includes('unversioned'))).toBe(true);
+  });
+
+  it('overwrites installed file with older template-version', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // readFile for version extraction returns older version
+    mockedReadFile.mockImplementation(async (p: Parameters<typeof readFile>[0]) => {
+      const pathStr = String(p);
+      if (pathStr.includes('scan.md') || pathStr.includes('apply.md')) {
+        return '<!-- template-version: 1 -->\nOld stale content';
+      }
+      throw new Error('ENOENT');
+    });
+
+    // access resolves (files exist)
+    mockedAccess.mockResolvedValue(undefined);
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-oldver-home';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-oldver/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/test-oldver',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // writeFile should have been called for both files (overwrite stale)
+    expect(mockedWriteFile).toHaveBeenCalledTimes(2);
+
+    // Written content should contain the newer template-version
+    const scanContent = mockedWriteFile.mock.calls.find((c) =>
+      String(c[0]).includes('scan.md'),
+    )?.[1] as string;
+    expect(scanContent).toContain('template-version');
+
+    // Should log "updated (v1 -> v2)" or similar
+    expect(logs.some((l) => l.includes('updated') && l.includes('v1'))).toBe(true);
+  });
+
+  it('logs updated message for stale templates', async () => {
+    const { readFile, mkdir, access, writeFile } = await import('node:fs/promises');
+    const writeFileAtomic = (await import('write-file-atomic')).default;
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedMkdir = vi.mocked(mkdir);
+    const mockedAccess = vi.mocked(access);
+    const mockedWriteFile = vi.mocked(writeFile);
+    const mockedWrite = vi.mocked(writeFileAtomic);
+
+    // Settings file does not exist
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    mockedReadFile.mockRejectedValueOnce(err);
+    mockedMkdir.mockResolvedValue(undefined as never);
+    mockedWrite.mockResolvedValueOnce(undefined);
+
+    // readFile for version extraction returns older version
+    mockedReadFile.mockImplementation(async (p: Parameters<typeof readFile>[0]) => {
+      const pathStr = String(p);
+      if (pathStr.includes('scan.md') || pathStr.includes('apply.md')) {
+        return '<!-- template-version: 1 -->\nStale content';
+      }
+      throw new Error('ENOENT');
+    });
+
+    mockedAccess.mockResolvedValue(undefined);
+    mockedWriteFile.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-stalelog-home';
+
+    const { runInit } = await import('../../../src/cli/init.js');
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+    try {
+      await runInit({
+        yes: true,
+        settingsPath: '/tmp/test-stalelog/.claude/settings.json',
+        baseDirOverride: '/opt/harness-evolve/dist',
+        projectDir: '/tmp/test-stalelog',
+      });
+    } finally {
+      console.log = originalLog;
+      process.env.HOME = originalHome;
+    }
+
+    // Should log "updated" for both scan and apply
+    const updatedLogs = logs.filter((l) => l.includes('updated'));
+    expect(updatedLogs.length).toBeGreaterThanOrEqual(2);
+    expect(logs.some((l) => l.includes('/evolve:scan') && l.includes('updated'))).toBe(true);
+    expect(logs.some((l) => l.includes('/evolve:apply') && l.includes('updated'))).toBe(true);
   });
 
   it('installs slash commands to global HOME path instead of projectDir', async () => {
