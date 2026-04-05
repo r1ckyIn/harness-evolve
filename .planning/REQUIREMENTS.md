@@ -23,8 +23,8 @@ Make Claude Code harnesses self-improving without manual analysis — now reliab
 
 ### Workflow Docs (GSD 风格命令规范)
 
-- [ ] **WFL-01**: 每个斜杠命令（/evolve:scan、/evolve:apply）有对应的 workflow .md 文档，完整定义 Claude 的行为流程，解决上下文污染问题
-- [ ] **WFL-02**: Workflow 文档通过斜杠命令模板自动注入 Claude 上下文，而非依赖 CLAUDE.md 预加载
+- [x] **WFL-01**: 每个斜杠命令（/evolve:scan、/evolve:apply）有对应的 workflow .md 文档，完整定义 Claude 的行为流程，解决上下文污染问题
+- [x] **WFL-02**: Workflow 文档通过斜杠命令模板自动注入 Claude 上下文，而非依赖 CLAUDE.md 预加载
 
 ---
 
