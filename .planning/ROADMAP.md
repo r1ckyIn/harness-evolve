@@ -89,7 +89,10 @@ Plans:
   1. `/evolve:scan` and `/evolve:apply` each have a corresponding workflow .md document that fully specifies Claude's step-by-step behavior when the command is invoked
   2. The workflow documentation is injected into Claude's context via the slash command template itself (embedded in the .md file that IS the command), not via CLAUDE.md rules or preloaded files
   3. Invoking a slash command produces consistent, predictable Claude behavior as defined by the workflow doc, regardless of what project CLAUDE.md contains
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 19-01-PLAN.md -- Rewrite scan and apply template generators with comprehensive workflow content
+- [ ] 19-02-PLAN.md -- Version-aware template update mechanism + global uninstall cleanup
 
 ## Progress
 
@@ -116,4 +119,4 @@ Phases execute in numeric order: 17 -> 18 -> 19
 | 16. UX Polish | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 17. Bug Fixes & Reliability | v3.0 | 2/2 | Complete    | 2026-04-04 |
 | 18. Comprehensive Config Audit | v3.0 | 2/2 | Complete    | 2026-04-05 |
-| 19. Workflow Documentation | v3.0 | 0/0 | Not started | - |
+| 19. Workflow Documentation | v3.0 | 0/2 | In progress | - |
