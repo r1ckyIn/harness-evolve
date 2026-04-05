@@ -76,7 +76,10 @@ Plans:
   2. Each audit finding includes a concrete optimization suggestion with expected effect (e.g., "Move this rule to a hook for 100% enforcement -- currently probabilistic")
   3. Audit output clearly separates "problems" (things that are broken or conflicting) from "optimization suggestions" (things that work but could be better), with distinct severity labels
   4. User reviews audit findings and confirms before any changes are applied -- no silent modifications
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 18-01-PLAN.md -- Schema extension (severity field + audit pattern types) + conflict scanner + structure scanner
+- [ ] 18-02-PLAN.md -- Hooks redundancy scanner + commands scanner + registry wiring + CLI output grouping
 
 ### Phase 19: Workflow Documentation
 **Goal**: Each slash command has a complete workflow .md that defines Claude's behavior, eliminating context pollution from CLAUDE.md preloading
@@ -112,5 +115,5 @@ Phases execute in numeric order: 17 -> 18 -> 19
 | 15. Slash Commands & Interactive Apply | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 16. UX Polish | v2.0 | 2/2 | Complete | 2026-04-04 |
 | 17. Bug Fixes & Reliability | v3.0 | 2/2 | Complete    | 2026-04-04 |
-| 18. Comprehensive Config Audit | v3.0 | 0/0 | Not started | - |
+| 18. Comprehensive Config Audit | v3.0 | 0/2 | In progress | - |
 | 19. Workflow Documentation | v3.0 | 0/0 | Not started | - |
