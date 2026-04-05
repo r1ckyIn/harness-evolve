@@ -38,6 +38,45 @@ describe('generateScanCommand', () => {
   it('suggests running /evolve:apply if issues are found', () => {
     expect(output).toContain('/evolve:apply');
   });
+
+  // --- Workflow completeness tests (Phase 19) ---
+
+  it('contains ## Prerequisites section', () => {
+    expect(output).toContain('## Prerequisites');
+  });
+
+  it('contains ## Instructions with step-by-step process', () => {
+    expect(output).toContain('## Instructions');
+    expect(output).toContain('### Step 1');
+  });
+
+  it('contains ## Output Format with exact formatting rules', () => {
+    expect(output).toContain('## Output Format');
+  });
+
+  it('contains ## Error Handling with CLI failure, no results, and parse error scenarios', () => {
+    expect(output).toContain('## Error Handling');
+    expect(output).toMatch(/CLI.*Fail|Command Fails/i);
+    expect(output).toMatch(/No Results|No Issues|No Problems/i);
+    expect(output).toMatch(/JSON Parse|Parse Error/i);
+  });
+
+  it('contains ## Edge Cases section', () => {
+    expect(output).toContain('## Edge Cases');
+  });
+
+  it('contains allowed-tools in frontmatter', () => {
+    const frontmatter = output.split('---')[1];
+    expect(frontmatter).toContain('allowed-tools:');
+  });
+
+  it('is self-contained with no CLAUDE.md preload dependency', () => {
+    expect(output).not.toMatch(/preload.*CLAUDE\.md|load.*CLAUDE\.md|requires.*CLAUDE\.md/i);
+  });
+
+  it('contains template version comment', () => {
+    expect(output).toMatch(/<!-- template-version: \d+ -->/);
+  });
 });
 
 describe('generateApplyCommand', () => {
