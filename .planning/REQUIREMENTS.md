@@ -54,11 +54,11 @@ Make Claude Code harnesses self-improving without manual analysis — now reliab
 | FIX-02 | Phase 17 | Complete |
 | FIX-03 | Phase 17 | Complete |
 | FIX-04 | Phase 17 | Complete |
-| AUD-01 | Phase 18 | Planned |
-| AUD-02 | Phase 18 | Planned |
-| AUD-03 | Phase 18 | Planned |
+| AUD-01 | Phase 18 | Complete |
+| AUD-02 | Phase 18 | Complete |
+| AUD-03 | Phase 18 | Complete |
 | WFL-01 | Phase 19 | Planned |
 | WFL-02 | Phase 19 | Planned |
 
 ---
-*Last updated: 2026-04-05 — All FIX-01 through FIX-04 completed in Phase 17*
+*Last updated: 2026-04-05 — AUD-01/02/03 completed in Phase 18*

@@ -75,9 +75,13 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] apply-one CLI skips confidence gate for user-initiated applies — Validated in Phase 17: bug-fixes-reliability
 - [x] Stop hook analysis writes notification flag for UserPromptSubmit — Validated in Phase 17: bug-fixes-reliability
 
+- [x] Scanner performs full-spectrum config audit: CLAUDE.md conflict detection, rules structure audit, hooks redundancy analysis, commands convention check — Validated in Phase 18: comprehensive-config-audit
+- [x] Each audit finding includes concrete optimization suggestion with expected effect text — Validated in Phase 18: comprehensive-config-audit
+- [x] Audit output separates problems (broken/conflicting) from suggestions (optional improvements) with severity labels — Validated in Phase 18: comprehensive-config-audit
+
 ### Active
 
-(Remaining v3.0: AUD-01/02/03, WFL-01/02 — defined in REQUIREMENTS.md)
+(Remaining v3.0: WFL-01/02 — defined in REQUIREMENTS.md)
 
 ## Current Milestone: v3.0 Reliability & Config Audit
 
@@ -170,14 +174,14 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (Phase 17 complete)
+## Current State (Phase 18 complete)
 
-- **Codebase:** ~19,500 LOC TypeScript (src + tests)
-- **Tests:** 632 passing across 58 test files
+- **Codebase:** ~20,500 LOC TypeScript (src + tests)
+- **Tests:** 685 passing across 62 test files
 - **npm:** Published as `harness-evolve@1.0.0`
 - **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
-- **Scanners:** 3 (redundancy, mechanization, staleness) — deep scan infrastructure
+- **Scanners:** 7 (redundancy, mechanization, staleness, conflict, structure, hooks-redundancy, commands) — comprehensive config audit
 - **Generators:** 3 (skill, hook, claude-md-patch) — pure functions, no filesystem access
 - **Appliers:** 4 (settings, rule, hook, claude-md) — strategy pattern registry, auto-apply pipeline complete
 - **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
@@ -204,4 +208,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-05 — Phase 17 complete, 4 dogfooding bugs fixed*
+*Last updated: 2026-04-05 — Phase 18 complete, comprehensive config audit with 7 scanners*
