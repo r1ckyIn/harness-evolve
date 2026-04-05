@@ -17,6 +17,9 @@ export type RoutingTarget = z.infer<typeof routingTargetSchema>;
 export const confidenceSchema = z.enum(['HIGH', 'MEDIUM', 'LOW']);
 export type Confidence = z.infer<typeof confidenceSchema>;
 
+export const severitySchema = z.enum(['problem', 'suggestion']);
+export type Severity = z.infer<typeof severitySchema>;
+
 export const patternTypeSchema = z.enum([
   'repeated_prompt',
   'long_prompt',
@@ -34,6 +37,10 @@ export const patternTypeSchema = z.enum([
   'scan_redundancy',
   'scan_missing_mechanization',
   'scan_stale_reference',
+  'scan_rule_conflict',
+  'scan_structure_issue',
+  'scan_hooks_redundancy',
+  'scan_command_convention',
 ]);
 export type PatternType = z.infer<typeof patternTypeSchema>;
 
@@ -50,6 +57,7 @@ export const recommendationSchema = z.object({
     examples: z.array(z.string()).max(3),
   }),
   suggested_action: z.string(),
+  severity: severitySchema.optional().default('suggestion'),
   ecosystem_context: z.string().optional(),
 });
 export type Recommendation = z.infer<typeof recommendationSchema>;
