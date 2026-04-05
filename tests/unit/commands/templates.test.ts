@@ -132,4 +132,42 @@ describe('generateApplyCommand', () => {
   it('suggests running /evolve:scan when no pending recommendations', () => {
     expect(output).toContain('/evolve:scan');
   });
+
+  // --- Workflow completeness tests (Phase 19) ---
+
+  it('contains ## Prerequisites section', () => {
+    expect(output).toContain('## Prerequisites');
+  });
+
+  it('contains ## Instructions with step-by-step process', () => {
+    expect(output).toContain('## Instructions');
+    expect(output).toContain('### Step 1');
+  });
+
+  it('contains ## Output Format section', () => {
+    expect(output).toContain('## Output Format');
+  });
+
+  it('contains ## Error Handling with multiple scenarios', () => {
+    expect(output).toContain('## Error Handling');
+    expect(output).toMatch(/CLI.*Fail|Command Fails/i);
+    expect(output).toMatch(/Apply.*Fail|Apply.*Error/i);
+  });
+
+  it('contains ## Edge Cases section', () => {
+    expect(output).toContain('## Edge Cases');
+  });
+
+  it('contains allowed-tools in frontmatter', () => {
+    const frontmatter = output.split('---')[1];
+    expect(frontmatter).toContain('allowed-tools:');
+  });
+
+  it('is self-contained with no CLAUDE.md preload dependency', () => {
+    expect(output).not.toMatch(/preload.*CLAUDE\.md|load.*CLAUDE\.md|requires.*CLAUDE\.md/i);
+  });
+
+  it('contains template version comment', () => {
+    expect(output).toMatch(/<!-- template-version: \d+ -->/);
+  });
 });
