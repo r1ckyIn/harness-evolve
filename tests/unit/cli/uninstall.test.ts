@@ -408,4 +408,140 @@ describe('CLI uninstall slash commands', () => {
       }),
     ).resolves.not.toThrow();
   });
+
+  it('removes slash commands from global ~/.claude/commands/evolve/ path', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    // No hooks in settings
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
+    mockedRmdir.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-global-uninstall-home';
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+    try {
+      await runUninstall({
+        purge: false,
+        yes: true,
+        settingsPath: '/tmp/test-global-uninstall/.claude/settings.json',
+        projectDir: '/tmp/test-global-uninstall',
+      });
+    } finally {
+      process.env.HOME = originalHome;
+    }
+
+    // rm should have been called for global path files
+    const rmCalls = mockedRm.mock.calls.map((c) => c[0]);
+    expect(rmCalls).toContain('/tmp/test-global-uninstall-home/.claude/commands/evolve/scan.md');
+    expect(rmCalls).toContain('/tmp/test-global-uninstall-home/.claude/commands/evolve/apply.md');
+  });
+
+  it('cleans both global and project-level slash command paths', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    // No hooks in settings
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
+    mockedRmdir.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-both-home';
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+    try {
+      await runUninstall({
+        purge: false,
+        yes: true,
+        settingsPath: '/tmp/test-both/.claude/settings.json',
+        projectDir: '/tmp/test-both',
+      });
+    } finally {
+      process.env.HOME = originalHome;
+    }
+
+    const rmCalls = mockedRm.mock.calls.map((c) => c[0]);
+
+    // Should clean global path
+    expect(rmCalls).toContain('/tmp/test-both-home/.claude/commands/evolve/scan.md');
+    expect(rmCalls).toContain('/tmp/test-both-home/.claude/commands/evolve/apply.md');
+
+    // Should also clean project-level path (backward compat)
+    expect(rmCalls).toContain('/tmp/test-both/.claude/commands/evolve/scan.md');
+    expect(rmCalls).toContain('/tmp/test-both/.claude/commands/evolve/apply.md');
+  });
+
+  it('handles missing global directory gracefully', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+
+    // All rm/rmdir throw ENOENT
+    const enoent = new Error('ENOENT') as NodeJS.ErrnoException;
+    enoent.code = 'ENOENT';
+    mockedRm.mockRejectedValue(enoent);
+    mockedRmdir.mockRejectedValue(enoent);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-noglobal-home';
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+
+    // Should not throw
+    await expect(
+      (async () => {
+        try {
+          await runUninstall({
+            purge: false,
+            yes: true,
+            settingsPath: '/tmp/test-noglobal/.claude/settings.json',
+            projectDir: '/tmp/test-noglobal',
+          });
+        } finally {
+          process.env.HOME = originalHome;
+        }
+      })(),
+    ).resolves.not.toThrow();
+  });
+
+  it('attempts to remove empty global evolve/ directory', async () => {
+    const { readFile, rm, rmdir } = await import('node:fs/promises');
+    const mockedReadFile = vi.mocked(readFile);
+    const mockedRm = vi.mocked(rm);
+    const mockedRmdir = vi.mocked(rmdir);
+
+    // No hooks in settings
+    mockedReadFile.mockResolvedValueOnce(JSON.stringify({}));
+    mockedRm.mockResolvedValue(undefined);
+    mockedRmdir.mockResolvedValue(undefined);
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = '/tmp/test-rmdir-global-home';
+
+    const { runUninstall } = await import('../../../src/cli/uninstall.js');
+    try {
+      await runUninstall({
+        purge: false,
+        yes: true,
+        settingsPath: '/tmp/test-rmdir-global/.claude/settings.json',
+        projectDir: '/tmp/test-rmdir-global',
+      });
+    } finally {
+      process.env.HOME = originalHome;
+    }
+
+    // rmdir should have been called for global path
+    const rmdirCalls = mockedRmdir.mock.calls.map((c) => c[0]);
+    expect(rmdirCalls).toContain('/tmp/test-rmdir-global-home/.claude/commands/evolve');
+  });
 });

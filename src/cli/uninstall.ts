@@ -24,16 +24,17 @@ export interface UninstallOptions {
 }
 
 /**
- * Remove slash command files from the project's .claude/commands/evolve/ directory.
+ * Remove slash command files from a single directory.
  * Handles missing files gracefully. Attempts to remove the evolve/ directory if empty.
+ * Returns the number of files actually removed.
  */
-async function removeSlashCommands(projectDir: string): Promise<void> {
-  const commandsDir = join(projectDir, '.claude', 'commands', 'evolve');
-
+async function removeSlashCommandsFromDir(dir: string): Promise<number> {
+  let removedCount = 0;
   for (const file of ['scan.md', 'apply.md']) {
     try {
-      await rm(join(commandsDir, file));
-      console.log(`  Removed /evolve:${file.replace('.md', '')}`);
+      await rm(join(dir, file));
+      console.log(`  Removed /evolve:${file.replace('.md', '')} from ${dir}`);
+      removedCount++;
     } catch {
       // File doesn't exist -- nothing to remove
     }
@@ -41,10 +42,28 @@ async function removeSlashCommands(projectDir: string): Promise<void> {
 
   // Try to remove empty directory
   try {
-    await rmdir(commandsDir);
+    await rmdir(dir);
   } catch {
     // Directory not empty (user added files) or doesn't exist
   }
+
+  return removedCount;
+}
+
+/**
+ * Remove slash command files from both global and project-level paths.
+ * Global path: ~/.claude/commands/evolve/ (Phase 17+ installation target)
+ * Project path: <projectDir>/.claude/commands/evolve/ (backward compat with pre-Phase 17)
+ */
+async function removeSlashCommands(projectDir: string): Promise<void> {
+  // Clean global path (Phase 17+ installation target)
+  const home = process.env.HOME ?? '';
+  const globalDir = join(home, '.claude', 'commands', 'evolve');
+  await removeSlashCommandsFromDir(globalDir);
+
+  // Clean project-level path (backward compatibility with pre-Phase 17 installs)
+  const projectCommandsDir = join(projectDir, '.claude', 'commands', 'evolve');
+  await removeSlashCommandsFromDir(projectCommandsDir);
 }
 
 /**
