@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Reliability & Config Audit
 status: executing
-stopped_at: Phase 17 all plans completed
-last_updated: "2026-04-04T13:38:59.661Z"
-last_activity: 2026-04-04
+stopped_at: Completed 18-01-PLAN.md
+last_updated: "2026-04-05T04:01:05.927Z"
+last_activity: 2026-04-05
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
   percent: 33
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** v3.0 Phase 17 -- Bug Fixes & Reliability
+**Current focus:** Phase 18 — comprehensive-config-audit
 
 ## Current Position
 
-Phase: 18 of 19 (comprehensive config audit)
-Plan: Not started
-Status: Executing Phase 17
-Last activity: 2026-04-04
+Phase: 18 (comprehensive-config-audit) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-05
 
 Progress: [==........] 33% (v3.0 scope)
 
@@ -55,6 +55,7 @@ Progress: [==........] 33% (v3.0 scope)
 |-------|------|----------|-------|-------|
 | 17-bug-fixes-reliability | 01 | 6min | 2 | 4 |
 | 17-bug-fixes-reliability | 02 | 5min | 2 | 10 |
+| Phase 18-comprehensive-config-audit P01 | 5min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,9 @@ See `.planning/milestones/v2.0-ROADMAP.md` for v2.0 history.
 - 17-02: skipConfidenceGate as optional boolean in ApplierOptions -- minimal interface change, backward compatible
 - 17-02: Notification flag writes wrapped in silent try/catch so failures never block analysis flow
 - 17-02: getStatusMap used to count only truly pending recommendations for accurate notification count
+- [Phase 18]: Opposition pair regexes skip intermediate verbs (allow, always, use) for accurate contradiction subject matching
+- [Phase 18]: Structure scanner uses continue-after-empty pattern to avoid redundant findings on same file
+- [Phase 18]: Severity field uses optional().default('suggestion') for backward compat with existing stored recommendations
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Phase 17 all plans completed
+Last session: 2026-04-05T04:01:05.921Z
+Stopped at: Completed 18-01-PLAN.md
 Resume file: None
