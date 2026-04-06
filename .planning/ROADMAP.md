@@ -97,7 +97,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 17 -> 18 -> 19
+Phases execute in numeric order: 17 -> 18 -> 19 -> 19.1
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -120,3 +120,21 @@ Phases execute in numeric order: 17 -> 18 -> 19
 | 17. Bug Fixes & Reliability | v3.0 | 2/2 | Complete    | 2026-04-04 |
 | 18. Comprehensive Config Audit | v3.0 | 2/2 | Complete    | 2026-04-05 |
 | 19. Workflow Documentation | v3.0 | 2/2 | Complete    | 2026-04-05 |
+
+### Phase 19.1: Developer Full Integration Testing (INSERTED)
+
+**Goal:** All v3.0 features verified end-to-end through real CLI execution and Claude Code runtime testing -- clean build, all 7 CLI subcommands, all 6 hooks, both slash commands, and the notification pipeline
+**Depends on:** Phase 19
+**Requirements**: INT-01, INT-02, INT-03, INT-04
+**Success Criteria** (what must be TRUE):
+  1. `npm run build` exits 0 (DTS build error resolved, all severity fields present)
+  2. All 7 CLI subcommands (init, status, scan, pending, apply-one, dismiss, uninstall) produce correct output against real file system state
+  3. All 6 hooks capture data when fed valid JSON via stdin simulation
+  4. Slash commands (/evolve:scan, /evolve:apply) render correctly in a live Claude Code session
+  5. Notification pipeline works: Stop hook analysis -> notification flag -> UserPromptSubmit notification injection
+**Plans:** 3 plans
+
+Plans:
+- [ ] 19.1-01-PLAN.md -- Fix DTS build error and pre-Phase-18 scanner severity gaps
+- [ ] 19.1-02-PLAN.md -- Create and execute automated CLI verification script (init through uninstall)
+- [ ] 19.1-03-PLAN.md -- Hook simulation + manual Claude Code runtime verification (checkpoint)
