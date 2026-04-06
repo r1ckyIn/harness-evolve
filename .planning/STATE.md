@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: Reliability & Config Audit
-status: verifying
-stopped_at: Completed 20-02-PLAN.md
-last_updated: "2026-04-06T07:49:31.340Z"
+milestone: v4.0
+milestone_name: Intelligent Scanner & Ecosystem Learning
+status: defining-requirements
+stopped_at: null
+last_updated: "2026-04-06T10:00:00.000Z"
 last_activity: 2026-04-06
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
-  percent: 33
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 20 — scanner-ux-coverage-polish
+**Current focus:** Milestone v4.0 — defining requirements
 
 ## Current Position
 
-Phase: 20
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-06
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-06 — Milestone v4.0 started
 
 Progress: [==........] 33% (v3.0 scope)
 

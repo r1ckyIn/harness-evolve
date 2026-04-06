@@ -92,22 +92,22 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 (All v3.0 requirements validated — milestone complete)
 
-## Current Milestone: v3.0 Reliability & Config Audit
+## Current Milestone: v4.0 Intelligent Scanner & Ecosystem Learning
 
-**Status:** Phase 20 complete (2026-04-06) — all phases shipped, milestone ready for completion
-
-**Goal:** 修复 v2.0 dogfooding 发现的 bug，将 scanner 从浅层检测升级为全面配置审计
+**Goal:** 将 scanner 从纯代码检测升级为用户模型驱动的智能分析，借鉴同类开源项目和 GSD 行为规范机制，全面提升项目质量
 
 **Target features:**
-- 斜杠命令全局安装（~/.claude/commands/）
-- Scanner 误报修复（过滤 npm 包名、URL 中的 @）
-- apply-one 移除 confidence 门槛（用户主动选择不限制）
-- Stop hook 分析后自动设置通知标记
-- 全面配置审计（整体质量分析，不只 stale reference）
-- GSD 风格 workflow 文档（每个命令有完整 .md 规范行为）
-- Version-aware 模板更新（已有用户 re-init 后自动获取新版 workflow）
+- 修复 hooks 嵌套结构解析 bug（BUG-01：context-builder 不支持 `{matcher, hooks: [{type, command}]}` 格式）
+- Scanner 架构重构：从纯代码 scanner 函数改为用户当前 Claude Code 模型驱动的分析，harness-evolve 提供指导文档和格式规范，模型执行实际分析判断
+- 创建详细的 scanner guidance docs（检查清单、严重性定义、输出格式、边界条件），嵌入 `/evolve:scan` 模板
+- 研究同类优秀开源项目，提取适合 harness-evolve 的设计模式和功能
+- 逆向分析 GSD 如何通过 workflow .md 和模板规范模型行为，将可借鉴的模式应用到 scan/apply 流程
+- 用真实用户配置验证 scanner 准确性，确保零误报
 
 ## Shipped Milestones
+
+### v3.0 Reliability & Config Audit (shipped 2026-04-06)
+Bug fixes (global slash commands, scanner false positives, apply-one confidence gate, stop hook notification), comprehensive config audit (7 scanners), workflow documentation, integration testing, scanner UX polish. 5 phases (17-20), 11 plans.
 
 ### v2.0 Deep Scan & Auto-Generation (shipped 2026-04-04)
 Deep scan infrastructure, auto-generators (skill/hook/CLAUDE.md), auto-apply closure (4 appliers), slash commands (/evolve:scan, /evolve:apply), UX polish. 5 phases, 10 plans. Published to npm as `harness-evolve@1.0.0`.
