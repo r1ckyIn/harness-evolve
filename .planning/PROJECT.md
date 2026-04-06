@@ -90,7 +90,13 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(All v3.0 requirements validated — milestone complete)
+(v4.0 Phase 23 code-level requirements validated — MODEL-01 through MODEL-04 human verification pending)
+
+- [x] All 7 legacy scanner TypeScript functions removed, test suite passes with model-driven replacements — Validated in Phase 23: model-driven-validation-legacy-cleanup (SCAN-03)
+- [ ] Model detects semantic config conflicts (ESM vs CommonJS) — Phase 23 (MODEL-01, awaiting human verification)
+- [ ] Model identifies cross-file inconsistencies — Phase 23 (MODEL-02, awaiting human verification)
+- [ ] Model identifies hookable operations from natural language — Phase 23 (MODEL-03, awaiting human verification)
+- [ ] User extends scan by editing guidance .md without code changes — Phase 23 (MODEL-04, awaiting human verification)
 
 ## Current Milestone: v4.0 Intelligent Scanner & Ecosystem Learning
 
