@@ -1,8 +1,8 @@
-# Requirements — harness-evolve
+# Requirements -- harness-evolve
 
 ## Core Value
 
-Make Claude Code harnesses self-improving without manual analysis — now with intelligent, model-driven config analysis.
+Make Claude Code harnesses self-improving without manual analysis -- now with intelligent, model-driven config analysis.
 
 ---
 
@@ -68,10 +68,10 @@ Make Claude Code harnesses self-improving without manual analysis — now with i
 
 ## Out of Scope
 
-- Web 可视化仪表盘 — CLI-native 定位不变
-- 直接调用 Anthropic API — harness-evolve 不调用 API，由用户的 Claude Code session 提供模型
-- 支持非 Claude Code 的 AI coding agents — Claude Code 专用
-- NLP 库做语义分析 — 模型本身就是 NLP 引擎
+- Web 可视化仪表盘 -- CLI-native 定位不变
+- 直接调用 Anthropic API -- harness-evolve 不调用 API，由用户的 Claude Code session 提供模型
+- 支持非 Claude Code 的 AI coding agents -- Claude Code 专用
+- NLP 库做语义分析 -- 模型本身就是 NLP 引擎
 
 ---
 
@@ -88,19 +88,19 @@ Make Claude Code harnesses self-improving without manual analysis — now with i
 | AUD-03 | Phase 18 | Complete |
 | WFL-01 | Phase 19 | Complete |
 | WFL-02 | Phase 19 | Complete |
-| INFRA-01 | — | Planned |
-| INFRA-02 | — | Planned |
-| INFRA-03 | — | Planned |
-| INFRA-04 | — | Planned |
-| SCAN-01 | — | Planned |
-| SCAN-02 | — | Planned |
-| SCAN-03 | — | Planned |
-| MODEL-01 | — | Planned |
-| MODEL-02 | — | Planned |
-| MODEL-03 | — | Planned |
-| MODEL-04 | — | Planned |
-| ECO-01 | — | Planned |
-| ECO-02 | — | Planned |
+| INFRA-01 | Phase 21 | Pending |
+| INFRA-02 | Phase 21 | Pending |
+| INFRA-03 | Phase 21 | Pending |
+| INFRA-04 | Phase 21 | Pending |
+| SCAN-01 | Phase 22 | Pending |
+| SCAN-02 | Phase 22 | Pending |
+| SCAN-03 | Phase 23 | Pending |
+| MODEL-01 | Phase 23 | Pending |
+| MODEL-02 | Phase 23 | Pending |
+| MODEL-03 | Phase 23 | Pending |
+| MODEL-04 | Phase 23 | Pending |
+| ECO-01 | Phase 22 | Pending |
+| ECO-02 | Phase 22 | Pending |
 
 ---
-*Last updated: 2026-04-06 — v4.0 requirements defined*
+*Last updated: 2026-04-06 -- v4.0 roadmap created, all 13 requirements mapped to phases 21-23*
