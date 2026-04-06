@@ -83,11 +83,18 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] Workflow documentation injected via slash command template (self-contained, no CLAUDE.md preload dependency), with allowed-tools frontmatter and version tracking — Validated in Phase 19: workflow-documentation
 - [x] Version-aware template update mechanism ensures existing users get updated workflow docs on next init — Validated in Phase 19: workflow-documentation
 
+- [x] Scan template contains explicit English-language output instruction regardless of session locale — Validated in Phase 20: scanner-ux-coverage-polish
+- [x] Apply template presents 4 numbered interactive options (Apply/Skip/Dismiss/Let Claude decide) replacing free-form format — Validated in Phase 20: scanner-ux-coverage-polish
+- [x] CLI scan JSON output includes scanner_summary with total_scanners, scanners_with_findings, areas_scanned, areas_with_findings — Validated in Phase 20: scanner-ux-coverage-polish
+- [x] E2E dirty-config integration test validates all 7 scanner types detect issues in a single pass — Validated in Phase 20: scanner-ux-coverage-polish
+
 ### Active
 
 (All v3.0 requirements validated — milestone complete)
 
 ## Current Milestone: v3.0 Reliability & Config Audit
+
+**Status:** Phase 20 complete (2026-04-06) — all phases shipped, milestone ready for completion
 
 **Goal:** 修复 v2.0 dogfooding 发现的 bug，将 scanner 从浅层检测升级为全面配置审计
 
