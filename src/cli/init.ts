@@ -13,7 +13,7 @@ import {
   mergeHooks,
   confirm,
 } from './utils.js';
-import { runDeepScan } from '../scan/index.js';
+import { buildScanContext } from '../scan/context-builder.js';
 import { generateScanCommand, getScanTemplateVersion } from '../commands/evolve-scan.js';
 import { generateApplyCommand, getApplyTemplateVersion } from '../commands/evolve-apply.js';
 
@@ -177,22 +177,15 @@ export async function runInit(options: InitOptions): Promise<void> {
     // No stale project-level commands -- nothing to warn about
   }
 
-  // Deep scan: analyze existing configuration for quality issues
+  // Scan configuration summary (v4.0: model-driven, no code scanners)
   try {
     console.log('\nScanning configuration...\n');
-    const scanResult = await runDeepScan(process.cwd());
-    if (scanResult.recommendations.length > 0) {
-      console.log(
-        `Found ${scanResult.recommendations.length} configuration suggestion(s):\n`,
-      );
-      for (const rec of scanResult.recommendations) {
-        console.log(`  [${rec.confidence}] ${rec.title}`);
-        console.log(`    ${rec.description}`);
-        console.log(`    Suggested: ${rec.suggested_action}\n`);
-      }
-    } else {
-      console.log('Configuration looks clean -- no issues detected.\n');
-    }
+    const context = await buildScanContext(process.cwd());
+    const totalFiles = context.claude_md_files.length + context.rules.length
+      + context.commands.length;
+    const hookCount = context.hooks_registered.length;
+    console.log(`Found ${totalFiles} config file(s) and ${hookCount} hook(s).`);
+    console.log('Run /evolve:scan for detailed analysis.\n');
   } catch (err) {
     // Scan is advisory -- don't block init on scan failures
     console.error(

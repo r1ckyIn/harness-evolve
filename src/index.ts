@@ -128,14 +128,11 @@ export {
   computeOutcomeSummaries,
 } from './analysis/outcome-tracker.js';
 
-// Phase 12: Deep Scan
-export { runDeepScan } from './scan/index.js';
-export type { ScanResult, ScanContext, Scanner } from './scan/index.js';
+// Phase 12: Deep Scan (v4.0: model-driven, scanner functions removed)
+export { buildScanResult } from './scan/index.js';
+export type { ScanResult, ScanContext } from './scan/index.js';
 export { scanContextSchema } from './scan/schemas.js';
 export { buildScanContext } from './scan/context-builder.js';
-export { scanRedundancy } from './scan/scanners/redundancy.js';
-export { scanMechanization } from './scan/scanners/mechanization.js';
-export { scanStaleness } from './scan/scanners/staleness.js';
 
 // Phase 13: Auto-Generators
 export { generateSkill } from './generators/skill-generator.js';

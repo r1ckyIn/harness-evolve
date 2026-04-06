@@ -8,9 +8,6 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { scanContextSchema } from '../../../src/scan/schemas.js';
 import { buildScanContext } from '../../../src/scan/context-builder.js';
-import type { Scanner } from '../../../src/scan/scanners/index.js';
-import { scanners } from '../../../src/scan/scanners/index.js';
-
 let fakeHome: string;
 let fakeCwd: string;
 
@@ -251,17 +248,3 @@ describe('extractReferences filtering', () => {
   });
 });
 
-describe('Scanner type and registry', () => {
-  it('Scanner type signature is (context: ScanContext) => Recommendation[]', () => {
-    // Type-level check: if Scanner doesn't match the expected signature,
-    // TypeScript compilation will fail. Runtime check: verify scanners is an array.
-    const mockScanner: Scanner = () => [];
-    expect(typeof mockScanner).toBe('function');
-    expect(mockScanner({} as Parameters<Scanner>[0])).toEqual([]);
-  });
-
-  it('scanners array contains registered scanners', () => {
-    expect(Array.isArray(scanners)).toBe(true);
-    expect(scanners.length).toBe(7);
-  });
-});

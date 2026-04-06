@@ -1,65 +1,31 @@
-// Deep scan orchestrator: builds context from config files and runs all scanners.
-// Entry point for the scan module -- coordinates context building with scanner
-// execution and returns merged recommendations.
+// Deep scan context builder: reads config files and returns structured context.
+// Scanner functions removed in v4.0 -- analysis is now model-driven via /evolve:scan.
 
 import { buildScanContext } from './context-builder.js';
-import { scanners, scannerNames } from './scanners/index.js';
 import type { ScanContext } from './schemas.js';
-import type { Recommendation } from '../schemas/recommendation.js';
-import type { Scanner } from './scanners/index.js';
-
-export interface ScannerMeta {
-  name: string;
-  finding_count: number;
-}
 
 export interface ScanResult {
   generated_at: string;
   scan_context: ScanContext;
-  recommendations: Recommendation[];
-  scanner_meta: ScannerMeta[];
 }
 
 /**
- * Run a deep scan of Claude Code configuration at the given directory.
- * Reads all config files into a ScanContext, then runs all registered
- * scanners to detect quality issues. Returns merged recommendations.
+ * Build scan context from Claude Code configuration at the given directory.
+ * Returns raw context data for model-driven analysis.
  *
- * Errors in individual scanners are caught and logged, not propagated.
- * An empty recommendations array means no issues detected.
+ * In v3.0, this function ran 7 code-based scanners. In v4.0, analysis
+ * is performed by the model via /evolve:scan guidance docs.
  */
-export async function runDeepScan(
+export async function buildScanResult(
   cwd: string,
   home?: string,
 ): Promise<ScanResult> {
   const scanContext = await buildScanContext(cwd, home);
-  const recommendations: Recommendation[] = [];
-  const scannerMeta: ScannerMeta[] = [];
-
-  for (let i = 0; i < scanners.length; i++) {
-    const scanner = scanners[i];
-    const name = scannerNames[i] ?? `scanner-${i}`;
-    try {
-      const result = await scanner(scanContext);
-      recommendations.push(...result);
-      scannerMeta.push({ name, finding_count: result.length });
-    } catch (err) {
-      // Log but don't propagate -- scan is advisory, not critical
-      console.error(
-        `Scanner error (${name}): ${err instanceof Error ? err.message : String(err)}`,
-      );
-      scannerMeta.push({ name, finding_count: 0 });
-    }
-  }
-
   return {
     generated_at: new Date().toISOString(),
     scan_context: scanContext,
-    recommendations,
-    scanner_meta: scannerMeta,
   };
 }
 
-// Re-export key types for consumers
+// Re-export for consumers
 export type { ScanContext } from './schemas.js';
-export type { Scanner } from './scanners/index.js';
