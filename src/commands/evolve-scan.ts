@@ -89,7 +89,7 @@ Present the results using the exact Output Format specified below.
 
 ## Output Format
 
-**IMPORTANT: Always present scan results in English, regardless of the user's session language or locale. All section headings, labels, and descriptions must be in English.**
+**Language: Default to English for scan results. If the user has explicitly requested a different language for this session, use that language instead.**
 
 Start with a scanner coverage summary line:
 

@@ -79,7 +79,7 @@ describe('generateScanCommand', () => {
   });
 
   it('contains English-language instruction in Output Format', () => {
-    expect(output).toContain('Always present scan results in English');
+    expect(output).toContain('Default to English for scan results');
   });
 
   it('contains scanner_summary reference for coverage line', () => {
