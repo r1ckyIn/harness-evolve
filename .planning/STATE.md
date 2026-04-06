@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Reliability & Config Audit
 status: executing
-stopped_at: Completed 19.1-02-PLAN.md
-last_updated: "2026-04-06T06:12:31.200Z"
+stopped_at: Completed 20-01-PLAN.md
+last_updated: "2026-04-06T07:39:27.693Z"
 last_activity: 2026-04-06
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 11
+  completed_plans: 10
   percent: 33
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 19.1 — developer-full-integration-testing
+**Current focus:** Phase 20 — scanner-ux-coverage-polish
 
 ## Current Position
 
-Phase: 19.1
-Plan: Not started
+Phase: 20 (scanner-ux-coverage-polish) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
 Last activity: 2026-04-06
 
@@ -61,6 +61,7 @@ Progress: [==........] 33% (v3.0 scope)
 | Phase 19-workflow-documentation P02 | 4min | 2 tasks | 4 files |
 | Phase 19.1 P01 | 3min | 1 tasks | 11 files |
 | Phase 19.1 P02 | 4min | 2 tasks | 2 files |
+| Phase 20-scanner-ux-coverage-polish P01 | 4min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ See `.planning/milestones/v2.0-ROADMAP.md` for v2.0 history.
 - [Phase 19-workflow-documentation]: removeSlashCommandsFromDir extracted as reusable helper for dual global+project path cleanup
 - [Phase 19.1]: severity: 'suggestion' applied to all 20 recommendation push calls across 11 files for Zod type compliance
 - [Phase 19.1]: dismiss command does not validate recommendation existence -- creates state entry directly; tests adjusted to expect exit 0
+- [Phase 20]: Parallel arrays (scanners + scannerNames) over Map/object registry -- minimal change, no refactor
+- [Phase 20]: scanner_summary placed between recommendation_count and problems in CLI output for logical grouping
+- [Phase 20]: Error-throwing scanners get finding_count: 0 in scanner_meta (consistent with existing error swallowing)
 
 ### Roadmap Evolution
 
@@ -105,6 +109,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-06T02:24:28.460Z
-Stopped at: Completed 19.1-02-PLAN.md
+Last session: 2026-04-06T07:39:27.688Z
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None
