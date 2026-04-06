@@ -43,6 +43,7 @@ export function classifyCodeCorrections(
       target: 'RULE',
       confidence: 'LOW',
       pattern_type: 'code_correction',
+      severity: 'suggestion',
       title: `Frequent code modifications with ${entry.tool_name} (${entry.count} uses)`,
       description: `The ${entry.tool_name} tool has been used ${entry.count} times. Review for recurring patterns that could become a coding rule or convention.`,
       evidence: {

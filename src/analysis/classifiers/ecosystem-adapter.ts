@@ -40,6 +40,7 @@ export function classifyEcosystemAdaptations(
       target: 'CLAUDE_MD',
       confidence: 'MEDIUM',
       pattern_type: 'version_update',
+      severity: 'suggestion',
       title: `Claude Code version ${snapshot.claude_code.version} detected (outside tested range)`,
       description: `Your Claude Code version (${snapshot.claude_code.version}) is outside the tested compatible range. New features may be available that change optimal configuration strategies.`,
       evidence: {
@@ -65,6 +66,7 @@ export function classifyEcosystemAdaptations(
         target: 'SKILL',
         confidence: 'LOW',
         pattern_type: 'ecosystem_gsd',
+        severity: 'suggestion',
         title: 'GSD workflow detected -- consider /gsd slash commands',
         description: 'GSD is installed in this project. Repeated multi-step prompts may be better served by GSD planning phases or slash commands rather than standalone skills.',
         evidence: {
@@ -85,6 +87,7 @@ export function classifyEcosystemAdaptations(
       target: 'MEMORY',
       confidence: 'LOW',
       pattern_type: 'ecosystem_cog',
+      severity: 'suggestion',
       title: 'Cog memory system detected -- route memory to Cog tiers',
       description: "Cog is installed. Personal information and contextual preferences should be routed to Cog's tiered memory system rather than raw CLAUDE.md entries.",
       evidence: {

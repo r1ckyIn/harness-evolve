@@ -51,6 +51,7 @@ export function classifyRepeatedPrompts(
       target: 'HOOK',
       confidence,
       pattern_type: 'repeated_prompt',
+      severity: 'suggestion',
       title: `Repeated prompt: "${truncatedPrompt}"`,
       description: `This prompt has been used ${entry.count} times across ${entry.sessions} sessions. Consider creating a hook or alias to automate this.`,
       evidence: {

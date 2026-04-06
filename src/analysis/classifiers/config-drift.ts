@@ -41,6 +41,7 @@ export function classifyConfigDrift(
       target: 'RULE',
       confidence: 'LOW',
       pattern_type: 'config_drift',
+      severity: 'suggestion',
       title: `Hook-rule overlap detected: "${overlap}"`,
       description: `Both a hook (event: "${overlap}") and a rule (name: "${overlap}") exist. This may indicate duplicated behavior that should be consolidated into one mechanism.`,
       evidence: {
@@ -61,6 +62,7 @@ export function classifyConfigDrift(
       target: 'CLAUDE_MD',
       confidence: 'LOW',
       pattern_type: 'config_drift',
+      severity: 'suggestion',
       title: `Multiple CLAUDE.md files detected (${existingClaudeMd.length})`,
       description: `Found ${existingClaudeMd.length} existing CLAUDE.md files. Multiple CLAUDE.md files may contain contradictory instructions. Review for consistency.`,
       evidence: {
@@ -80,6 +82,7 @@ export function classifyConfigDrift(
       target: 'HOOK',
       confidence: 'LOW',
       pattern_type: 'config_drift',
+      severity: 'suggestion',
       title: `Excessive hook count (${snapshot.installed_tools.hooks.length} hooks)`,
       description: `Found ${snapshot.installed_tools.hooks.length} hooks across all scopes. This many hooks may indicate redundancy or performance concerns. Review for consolidation.`,
       evidence: {

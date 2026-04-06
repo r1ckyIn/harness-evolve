@@ -37,6 +37,7 @@ export function classifyOnboarding(
         target: 'HOOK',
         confidence: 'MEDIUM',
         pattern_type: 'onboarding_start_hooks',
+        severity: 'suggestion',
         title: 'Start automating: create your first hook',
         description:
           'Hooks run automatically on Claude Code lifecycle events (pre-commit, tool use, session start). ' +
@@ -58,6 +59,7 @@ export function classifyOnboarding(
         target: 'RULE',
         confidence: 'MEDIUM',
         pattern_type: 'onboarding_start_rules',
+        severity: 'suggestion',
         title: 'Define coding preferences: add your first rule',
         description:
           'Rules (.claude/rules/) codify conventions that Claude follows automatically. ' +
@@ -79,6 +81,7 @@ export function classifyOnboarding(
         target: 'CLAUDE_MD',
         confidence: 'MEDIUM',
         pattern_type: 'onboarding_start_claudemd',
+        severity: 'suggestion',
         title: 'Set project context: create CLAUDE.md',
         description:
           'CLAUDE.md gives Claude project-specific context — tech stack, conventions, and constraints. ' +
@@ -97,6 +100,7 @@ export function classifyOnboarding(
       target: 'SETTINGS',
       confidence: 'LOW',
       pattern_type: 'onboarding_optimize',
+      severity: 'suggestion',
       title: 'Consider mechanizing recurring patterns',
       description:
         'Your extensive configuration suggests active automation investment. ' +

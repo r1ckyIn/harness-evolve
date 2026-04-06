@@ -69,6 +69,7 @@ export function scanMechanization(context: ScanContext): Recommendation[] {
         target: 'HOOK',
         confidence: 'MEDIUM',
         pattern_type: 'scan_missing_mechanization',
+        severity: 'suggestion',
         title: `Mechanizable rule: "${match[0].substring(0, 60)}"`,
         description:
           `Found a rule in ${source.source} that describes an operation ` +

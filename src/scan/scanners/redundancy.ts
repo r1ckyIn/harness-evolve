@@ -36,6 +36,7 @@ export function scanRedundancy(context: ScanContext): Recommendation[] {
         target: 'RULE',
         confidence: 'MEDIUM',
         pattern_type: 'scan_redundancy',
+        severity: 'suggestion',
         title: `Redundant section: "${cmdH.heading}"`,
         description:
           `The heading "${cmdH.heading}" appears in both ` +
@@ -72,6 +73,7 @@ export function scanRedundancy(context: ScanContext): Recommendation[] {
       target: 'RULE',
       confidence: 'MEDIUM',
       pattern_type: 'scan_redundancy',
+      severity: 'suggestion',
       title: `Duplicate rule files detected (${paths.length} files with same headings)`,
       description:
         `${paths.length} rule files share the same heading structure: ` +

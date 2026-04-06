@@ -37,6 +37,7 @@ export function classifyLongPrompts(
       target: 'SKILL',
       confidence,
       pattern_type: 'long_prompt',
+      severity: 'suggestion',
       title: `Long repeated prompt (${entry.length} words, ${entry.count}x)`,
       description: `A ${entry.length}-word prompt has been used ${entry.count} times. Consider converting it to a reusable skill.`,
       evidence: {

@@ -37,6 +37,7 @@ export function classifyPermissionPatterns(
       target: 'SETTINGS',
       confidence,
       pattern_type: 'permission-always-approved',
+      severity: 'suggestion',
       title: `Frequently approved tool: ${entry.tool_name}`,
       description: `You have approved "${entry.tool_name}" ${entry.count} times across ${entry.sessions} sessions. Consider adding it to allowedTools in settings.json.`,
       evidence: {

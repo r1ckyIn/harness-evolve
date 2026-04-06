@@ -76,6 +76,7 @@ export async function scanStaleness(context: ScanContext): Promise<Recommendatio
         target: 'CLAUDE_MD',
         confidence: 'HIGH',
         pattern_type: 'scan_stale_reference',
+        severity: 'suggestion',
         title: `Stale reference: @${ref}`,
         description: `${claudeMd.path} references @${ref}, but this file does not exist.`,
         evidence: {
@@ -104,6 +105,7 @@ export async function scanStaleness(context: ScanContext): Promise<Recommendatio
       target: 'SETTINGS',
       confidence: 'HIGH',
       pattern_type: 'scan_stale_reference',
+      severity: 'suggestion',
       title: `Stale hook script: ${scriptPath}`,
       description:
         `Hook (${hook.event}, ${hook.scope}) references script "${scriptPath}", ` +

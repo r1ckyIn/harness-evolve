@@ -53,6 +53,7 @@ export function classifyPersonalInfo(
         target: 'MEMORY',
         confidence: 'LOW',
         pattern_type: 'personal_info',
+        severity: 'suggestion',
         title: `Personal preference detected: "${keyword}..."`,
         description: `A prompt mentioning personal information ("${keyword}") has appeared ${entry.count} times. Consider storing this in memory for automatic context.`,
         evidence: {
