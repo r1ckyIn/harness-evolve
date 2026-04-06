@@ -1,7 +1,7 @@
 // Slash command template generator for /evolve:apply
 
 // Template version -- bump when content changes materially
-const APPLY_TEMPLATE_VERSION = '2';
+const APPLY_TEMPLATE_VERSION = '3';
 
 /**
  * Return the current apply template version for version-aware updates.
@@ -90,21 +90,32 @@ For each pending recommendation, present using the card format from the Output F
 
 ### Step 4: Ask User to Choose
 
-For each recommendation, ask the user to choose one of three actions:
+For each recommendation, present numbered options:
 
-1. **Apply** -- Execute the recommendation:
-   \`\`\`bash
-   npx harness-evolve apply-one <id>
-   \`\`\`
-   Report the result (success or failure) and show what changed.
+**Choose an action:**
+1. **Apply** -- Execute this recommendation now
+2. **Skip** -- Leave it pending for later
+3. **Dismiss** -- Permanently remove this recommendation
+4. **Let Claude decide** -- Apply if HIGH confidence, skip if MEDIUM/LOW
 
-2. **Skip** -- Leave it pending for future review. No CLI command needed.
+Wait for the user to respond with a number (1-4). If the user responds with text instead of a number, map it to the closest option.
 
-3. **Dismiss** -- Permanently remove this recommendation:
-   \`\`\`bash
-   npx harness-evolve dismiss <id>
-   \`\`\`
-   Confirm the recommendation has been dismissed.
+When the user chooses:
+- **1 (Apply):**
+  \`\`\`bash
+  npx harness-evolve apply-one <id>
+  \`\`\`
+  Report the result (success or failure) and show what changed.
+
+- **2 (Skip):** Leave it pending for future review. No CLI command needed.
+
+- **3 (Dismiss):**
+  \`\`\`bash
+  npx harness-evolve dismiss <id>
+  \`\`\`
+  Confirm the recommendation has been dismissed.
+
+- **4 (Let Claude decide):** If the recommendation has HIGH confidence, apply it (same as option 1). If MEDIUM or LOW, skip it (same as option 2).
 
 ### Step 5: Process Next Recommendation
 
@@ -126,7 +137,8 @@ Description text explaining the issue or opportunity.
 - **Evidence:** What triggered this recommendation
 - **Suggested:** Action to take
 
-Choose: [Apply] [Skip] [Dismiss]
+**Choose an action (1-4):**
+1. Apply  2. Skip  3. Dismiss  4. Let Claude decide
 \`\`\`
 
 Where:

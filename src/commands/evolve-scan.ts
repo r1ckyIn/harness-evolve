@@ -1,7 +1,7 @@
 // Slash command template generator for /evolve:scan
 
 // Template version -- bump when content changes materially
-const SCAN_TEMPLATE_VERSION = '2';
+const SCAN_TEMPLATE_VERSION = '3';
 
 /**
  * Return the current scan template version for version-aware updates.
@@ -89,7 +89,15 @@ Present the results using the exact Output Format specified below.
 
 ## Output Format
 
-Start with a summary line:
+**IMPORTANT: Always present scan results in English, regardless of the user's session language or locale. All section headings, labels, and descriptions must be in English.**
+
+Start with a scanner coverage summary line:
+
+> **X** scanners checked, **Y** issue(s) in **Z** area(s).
+
+Where X = scanner_summary.total_scanners, Y = recommendation_count, Z = scanner_summary.scanners_with_findings.
+
+Then show:
 
 > Found **X** problem(s) and **Y** suggestion(s).
 
