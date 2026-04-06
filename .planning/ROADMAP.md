@@ -61,7 +61,7 @@
 
 - [ ] **Phase 21: Foundation & Context Infrastructure** - Fix hooks parsing bug, add scan-context/store-findings CLI commands, and streamline init experience
 - [ ] **Phase 22: Ecosystem Learning & Scanner Guidance** - Research GSD/open-source patterns and rewrite /evolve:scan template with model-driven guidance docs
-- [ ] **Phase 23: Model-Driven Validation & Legacy Cleanup** - Validate model capabilities against real configs and remove old TypeScript scanners
+- [x] **Phase 23: Model-Driven Validation & Legacy Cleanup** - Validate model capabilities against real configs and remove old TypeScript scanners (completed 2026-04-06)
 
 ## Phase Details
 
@@ -172,12 +172,12 @@ Plans:
   3. Model identifies a hookable operation described in natural language (e.g., "always run tests before committing") without relying on fixed keyword lists
   4. A user adds a new analysis area by creating/editing a guidance .md section, and the next `/evolve:scan` invocation includes that new area without any code changes or rebuilds
   5. All 7 legacy scanner TypeScript functions (redundancy, mechanization, staleness, conflict, structure, hooks-redundancy, commands) are removed, and the test suite passes with model-driven replacements
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 23-01-PLAN.md -- Replacement integration tests (scan pipeline v4.0) + model validation test config fixtures
 - [x] 23-02-PLAN.md -- Legacy scanner removal (8 source + 7 test + 1 E2E files) + scan orchestrator + CLI updates
-- [ ] 23-03-PLAN.md -- Human verification checkpoint for MODEL-01 through MODEL-04
+- [x] 23-03-PLAN.md -- Human verification checkpoint for MODEL-01 through MODEL-04
 
 ## Progress
 
@@ -209,4 +209,4 @@ Phases execute in numeric order: 21 -> 22 -> 23
 | 20. Scanner UX & Coverage Polish | v3.0 | 2/2 | Complete | 2026-04-06 |
 | 21. Foundation & Context Infrastructure | v4.0 | 0/0 | Not started | - |
 | 22. Ecosystem Learning & Scanner Guidance | v4.0 | 0/0 | Not started | - |
-| 23. Model-Driven Validation & Legacy Cleanup | v4.0 | 2/3 | In Progress|  |
+| 23. Model-Driven Validation & Legacy Cleanup | v4.0 | 3/3 | Complete   | 2026-04-06 |
