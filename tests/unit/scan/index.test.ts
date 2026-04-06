@@ -13,11 +13,12 @@ vi.mock('../../../src/scan/context-builder.js', () => ({
 // Mock the scanners module
 vi.mock('../../../src/scan/scanners/index.js', () => ({
   scanners: [] as Array<(ctx: unknown) => unknown>,
+  scannerNames: [] as string[],
 }));
 
 import { runDeepScan, type ScanResult } from '../../../src/scan/index.js';
 import { buildScanContext } from '../../../src/scan/context-builder.js';
-import { scanners } from '../../../src/scan/scanners/index.js';
+import { scanners, scannerNames } from '../../../src/scan/scanners/index.js';
 import type { ScanContext } from '../../../src/scan/schemas.js';
 import type { Recommendation } from '../../../src/schemas/recommendation.js';
 
@@ -52,8 +53,9 @@ let capturedErrors: string[];
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // Reset scanners array for each test
+  // Reset scanners and scannerNames arrays for each test
   scanners.length = 0;
+  (scannerNames as string[]).length = 0;
   // Mock buildScanContext to return our fixture
   vi.mocked(buildScanContext).mockResolvedValue(fakeScanContext);
   // Capture console.error
@@ -158,5 +160,44 @@ describe('runDeepScan', () => {
       '/my/project',
       '/custom/home',
     );
+  });
+
+  it('returns scanner_meta with name and finding_count for each scanner', async () => {
+    const rec1 = makeRec({ id: 'rec-1' });
+    const rec2 = makeRec({ id: 'rec-2' });
+
+    scanners.push(() => [rec1]);
+    scanners.push(() => [rec2]);
+    (scannerNames as string[]).push('redundancy', 'mechanization');
+
+    const result = await runDeepScan('/fake/project');
+
+    expect(result.scanner_meta).toHaveLength(2);
+    expect(result.scanner_meta[0]).toEqual({ name: 'redundancy', finding_count: 1 });
+    expect(result.scanner_meta[1]).toEqual({ name: 'mechanization', finding_count: 1 });
+  });
+
+  it('scanner_meta records finding_count: 0 for scanners that throw', async () => {
+    scanners.push(() => { throw new Error('broken'); });
+    (scannerNames as string[]).push('broken-scanner');
+
+    const result = await runDeepScan('/fake/project');
+
+    expect(result.scanner_meta).toHaveLength(1);
+    expect(result.scanner_meta[0]).toEqual({ name: 'broken-scanner', finding_count: 0 });
+  });
+
+  it('scanner_meta length matches scanners array length', async () => {
+    scanners.push(() => []);
+    scanners.push(() => [makeRec({ id: 'a' })]);
+    scanners.push(() => [makeRec({ id: 'b' }), makeRec({ id: 'c' })]);
+    (scannerNames as string[]).push('s1', 's2', 's3');
+
+    const result = await runDeepScan('/fake/project');
+
+    expect(result.scanner_meta).toHaveLength(3);
+    expect(result.scanner_meta[0].finding_count).toBe(0);
+    expect(result.scanner_meta[1].finding_count).toBe(1);
+    expect(result.scanner_meta[2].finding_count).toBe(2);
   });
 });

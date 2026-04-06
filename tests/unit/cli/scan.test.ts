@@ -46,6 +46,10 @@ describe('CLI scan command', () => {
           suggested_action: 'Do something',
         },
       ],
+      scanner_meta: [
+        { name: 'redundancy', finding_count: 0 },
+        { name: 'mechanization', finding_count: 1 },
+      ],
     });
 
     const { registerScanCommand } = await import('../../../src/cli/scan.js');
@@ -101,6 +105,11 @@ describe('CLI scan command', () => {
           suggested_action: 'Do medium',
         },
       ],
+      scanner_meta: [
+        { name: 'redundancy', finding_count: 1 },
+        { name: 'mechanization', finding_count: 1 },
+        { name: 'staleness', finding_count: 1 },
+      ],
     });
 
     const { registerScanCommand } = await import('../../../src/cli/scan.js');
@@ -113,6 +122,48 @@ describe('CLI scan command', () => {
     const output = JSON.parse(logs.join(''));
     expect(output.recommendations.map((r: any) => r.confidence)).toEqual(['HIGH', 'MEDIUM', 'LOW']);
     expect(output.recommendations.map((r: any) => r.id)).toEqual(['high-1', 'med-1', 'low-1']);
+  });
+
+  it('scan output includes scanner_summary with correct counts', async () => {
+    const { runDeepScan } = await import('../../../src/scan/index.js');
+    const mockedScan = vi.mocked(runDeepScan);
+    mockedScan.mockResolvedValueOnce({
+      generated_at: '2026-04-04T00:00:00.000Z',
+      scan_context: {} as any,
+      recommendations: [
+        {
+          id: 'rec-1',
+          target: 'HOOK',
+          confidence: 'HIGH',
+          pattern_type: 'scan_missing_mechanization',
+          title: 'Issue',
+          description: 'An issue',
+          evidence: { count: 1, examples: ['e'] },
+          suggested_action: 'Fix it',
+        },
+      ],
+      scanner_meta: [
+        { name: 'redundancy', finding_count: 0 },
+        { name: 'mechanization', finding_count: 1 },
+        { name: 'staleness', finding_count: 0 },
+      ],
+    });
+
+    const { registerScanCommand } = await import('../../../src/cli/scan.js');
+    const program = new Command();
+    program.exitOverride();
+    registerScanCommand(program);
+
+    await program.parseAsync(['scan'], { from: 'user' });
+
+    const output = JSON.parse(logs.join(''));
+    expect(output.scanner_summary).toBeDefined();
+    expect(output.scanner_summary.total_scanners).toBe(3);
+    expect(output.scanner_summary.scanners_with_findings).toBe(1);
+    expect(Array.isArray(output.scanner_summary.areas_scanned)).toBe(true);
+    expect(output.scanner_summary.areas_scanned).toEqual(['redundancy', 'mechanization', 'staleness']);
+    expect(Array.isArray(output.scanner_summary.areas_with_findings)).toBe(true);
+    expect(output.scanner_summary.areas_with_findings).toEqual(['mechanization']);
   });
 
   it('scan command handles errors gracefully', async () => {
