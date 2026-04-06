@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Intelligent Scanner & Ecosystem Learning
 status: executing
-stopped_at: Completed 23-01-PLAN.md
-last_updated: "2026-04-06T13:52:23.732Z"
+stopped_at: Completed 23-02-PLAN.md
+last_updated: "2026-04-06T14:02:10.218Z"
 last_activity: 2026-04-06
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 ## Current Position
 
 Phase: 23 (model-driven-validation-legacy-cleanup) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-04-06
 
@@ -52,6 +52,7 @@ Progress: [..........] 0%
 | 20-scanner-ux-coverage-polish | 01 | 4min | 2 | 8 |
 | 20-scanner-ux-coverage-polish | 02 | 3min | 1 | 1 |
 | Phase 23 P01 | 30min | 2 tasks | 11 files |
+| Phase 23 P02 | 7min | 2 tasks | 24 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ All prior decisions archived in PROJECT.md Key Decisions table.
 - v4.0 roadmap: Phase 21 depends on nothing; Phase 22 depends on 21 (scan-context CLI); Phase 23 depends on 22 (guidance docs must exist before validation)
 - [Phase 23]: Force-added test fixture CLAUDE.md files past .gitignore (test fixtures, not project config)
 - [Phase 23]: Nested hooks test validates current behavior since INFRA-01 fix is in Phase 21
+- [Phase 23]: buildScanResult is thin wrapper (timestamp + context) -- model produces findings via guidance docs
+- [Phase 23]: CLI scan deprecation notice goes to stderr to preserve JSON piping
 
 ### Roadmap Evolution
 
@@ -81,6 +84,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-06T13:52:23.727Z
-Stopped at: Completed 23-01-PLAN.md
+Last session: 2026-04-06T14:02:10.213Z
+Stopped at: Completed 23-02-PLAN.md
 Resume file: None

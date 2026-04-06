@@ -19,7 +19,7 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 - [ ] **SCAN-01**: `/evolve:scan` 模板包含完整的分析指导文档，指导用户当前模型执行配置审查（而非展示 CLI 预计算结果）
 - [ ] **SCAN-02**: 指导文档定义 7 个分析领域的检查清单、严重性分类规则、输出格式规范和边界条件
-- [ ] **SCAN-03**: 模型驱动方案验证通过后，移除 7 个旧 TypeScript scanner 函数及相关代码
+- [x] **SCAN-03**: 模型驱动方案验证通过后，移除 7 个旧 TypeScript scanner 函数及相关代码
 
 ### 模型驱动能力 (MODEL)
 
@@ -94,7 +94,7 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 | INFRA-04 | Phase 21 | Pending |
 | SCAN-01 | Phase 22 | Pending |
 | SCAN-02 | Phase 22 | Pending |
-| SCAN-03 | Phase 23 | Pending |
+| SCAN-03 | Phase 23 | Complete |
 | MODEL-01 | Phase 23 | Complete |
 | MODEL-02 | Phase 23 | Complete |
 | MODEL-03 | Phase 23 | Complete |
