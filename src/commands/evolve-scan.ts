@@ -129,7 +129,7 @@ If suggestions exist alongside zero problems, show them as optional improvements
 
 **End with:**
 
-> Run \`/evolve:apply\` to review and apply recommendations interactively.
+> Run \`/evolve:apply\` to apply fixes.
 
 ## Error Handling
 
