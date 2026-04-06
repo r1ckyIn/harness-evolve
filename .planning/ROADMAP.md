@@ -97,7 +97,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 17 -> 18 -> 19 -> 19.1
+Phases execute in numeric order: 17 -> 18 -> 19 -> 19.1 -> 20
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -138,3 +138,18 @@ Plans:
 - [x] 19.1-01-PLAN.md -- Fix DTS build error and pre-Phase-18 scanner severity gaps
 - [x] 19.1-02-PLAN.md -- Create and execute automated CLI verification script (init through uninstall)
 - [x] 19.1-03-PLAN.md -- Hook simulation + manual Claude Code runtime verification (checkpoint)
+
+### Phase 20: Scanner UX & Coverage Polish
+
+**Goal:** Fix 4 UX issues discovered during Phase 19.1 dogfooding — scan defaults to English output, apply uses interactive option selection, scan shows areas-scanned summary, and E2E dirty-config test validates all 7 scanners
+**Depends on:** Phase 19.1
+**Requirements**: UX-01, UX-02, UX-03, UX-04
+**Success Criteria** (what must be TRUE):
+  1. Running `harness-evolve scan` outputs findings in English regardless of the Claude Code session language
+  2. `/evolve:apply` presents numbered options (apply/skip/dismiss/let Claude decide) that user selects interactively, not free-form text
+  3. Scan output includes a summary line showing how many areas were scanned and how many had findings (e.g., "7 scanners checked, 3 issues in 2 areas")
+  4. An E2E integration test creates an intentionally broken Claude Code config and verifies `scan` detects issues from multiple scanner types (not just hooks)
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 20 to break down)

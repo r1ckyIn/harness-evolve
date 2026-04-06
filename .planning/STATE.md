@@ -93,6 +93,7 @@ See `.planning/milestones/v2.0-ROADMAP.md` for v2.0 history.
 ### Roadmap Evolution
 
 - Phase 19.1 inserted after Phase 19: Developer Full Integration Testing (URGENT)
+- Phase 20 added: Scanner UX & Coverage Polish (4 issues from 19.1 dogfooding)
 
 ### Pending Todos
 
