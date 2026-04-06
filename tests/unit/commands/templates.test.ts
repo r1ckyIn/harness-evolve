@@ -77,6 +77,18 @@ describe('generateScanCommand', () => {
   it('contains template version comment', () => {
     expect(output).toMatch(/<!-- template-version: \d+ -->/);
   });
+
+  it('contains English-language instruction in Output Format', () => {
+    expect(output).toContain('Always present scan results in English');
+  });
+
+  it('contains scanner_summary reference for coverage line', () => {
+    expect(output).toContain('scanner_summary');
+  });
+
+  it('has template version 3', () => {
+    expect(output).toContain('<!-- template-version: 3 -->');
+  });
 });
 
 describe('generateApplyCommand', () => {
@@ -118,11 +130,11 @@ describe('generateApplyCommand', () => {
     expect(output).toContain('npx harness-evolve dismiss');
   });
 
-  it('contains all three action choices (apply, skip, ignore)', () => {
+  it('contains all three action choices (apply, skip, dismiss)', () => {
     const lower = output.toLowerCase();
     expect(lower).toContain('apply');
     expect(lower).toContain('skip');
-    expect(lower).toContain('ignore');
+    expect(lower).toContain('dismiss');
   });
 
   it('contains $ARGUMENTS handling for filter', () => {
@@ -169,5 +181,24 @@ describe('generateApplyCommand', () => {
 
   it('contains template version comment', () => {
     expect(output).toMatch(/<!-- template-version: \d+ -->/);
+  });
+
+  it('contains numbered options (1-4) in Step 4', () => {
+    expect(output).toContain('1.');
+    expect(output).toContain('2.');
+    expect(output).toContain('3.');
+    expect(output).toContain('4.');
+  });
+
+  it('contains Let Claude decide option', () => {
+    expect(output).toContain('Let Claude decide');
+  });
+
+  it('does not contain old free-form Choose format', () => {
+    expect(output).not.toMatch(/Choose: \[Apply\] \[Skip\] \[Dismiss\]/);
+  });
+
+  it('has template version 3', () => {
+    expect(output).toContain('<!-- template-version: 3 -->');
   });
 });
