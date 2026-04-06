@@ -29,10 +29,19 @@ export function registerScanCommand(program: Command): void {
         const problems = sorted.filter(r => (r as Record<string, unknown>).severity === 'problem');
         const suggestions = sorted.filter(r => (r as Record<string, unknown>).severity !== 'problem');
 
+        // Build scanner coverage summary from scanner_meta
+        const scannersWithFindings = result.scanner_meta.filter(s => s.finding_count > 0);
+
         // Output minimal JSON (no scan_context to keep output clean for slash command)
         const output = {
           generated_at: result.generated_at,
           recommendation_count: sorted.length,
+          scanner_summary: {
+            total_scanners: result.scanner_meta.length,
+            scanners_with_findings: scannersWithFindings.length,
+            areas_scanned: result.scanner_meta.map(s => s.name),
+            areas_with_findings: scannersWithFindings.map(s => s.name),
+          },
           problems,
           suggestions,
           recommendations: sorted,  // Keep full list for backward compatibility

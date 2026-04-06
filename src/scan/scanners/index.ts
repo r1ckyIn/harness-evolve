@@ -24,3 +24,14 @@ export const scanners: Scanner[] = [
   scanHooksRedundancy,
   scanCommands,
 ];
+
+// Scanner names -- parallel to scanners array, keep in sync
+export const scannerNames: string[] = [
+  'redundancy',
+  'mechanization',
+  'staleness',
+  'conflicts',
+  'structure',
+  'hooks',
+  'commands',
+];
