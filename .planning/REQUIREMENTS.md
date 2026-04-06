@@ -23,10 +23,10 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 ### 模型驱动能力 (MODEL)
 
-- [ ] **MODEL-01**: 模型能检测语义级配置冲突（如"use ESM" vs "use CommonJS"），不依赖正则模式匹配
-- [ ] **MODEL-02**: 模型能评估 CLAUDE.md + rules + settings + commands 的跨文件一致性，发现矛盾或冗余
-- [ ] **MODEL-03**: 模型能用任意自然语言措辞识别可 hook 化的操作，不限于固定关键词
-- [ ] **MODEL-04**: 用户通过编辑指导文档 .md 即可添加新的扫描领域，无需修改 TypeScript 代码
+- [x] **MODEL-01**: 模型能检测语义级配置冲突（如"use ESM" vs "use CommonJS"），不依赖正则模式匹配
+- [x] **MODEL-02**: 模型能评估 CLAUDE.md + rules + settings + commands 的跨文件一致性，发现矛盾或冗余
+- [x] **MODEL-03**: 模型能用任意自然语言措辞识别可 hook 化的操作，不限于固定关键词
+- [x] **MODEL-04**: 用户通过编辑指导文档 .md 即可添加新的扫描领域，无需修改 TypeScript 代码
 
 ### 生态学习 (ECO)
 
@@ -95,10 +95,10 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 | SCAN-01 | Phase 22 | Pending |
 | SCAN-02 | Phase 22 | Pending |
 | SCAN-03 | Phase 23 | Pending |
-| MODEL-01 | Phase 23 | Pending |
-| MODEL-02 | Phase 23 | Pending |
-| MODEL-03 | Phase 23 | Pending |
-| MODEL-04 | Phase 23 | Pending |
+| MODEL-01 | Phase 23 | Complete |
+| MODEL-02 | Phase 23 | Complete |
+| MODEL-03 | Phase 23 | Complete |
+| MODEL-04 | Phase 23 | Complete |
 | ECO-01 | Phase 22 | Pending |
 | ECO-02 | Phase 22 | Pending |
 
