@@ -1,568 +1,652 @@
-# Architecture Patterns — v1.1 Stabilization & Production
+# Architecture Patterns -- v4.0 Model-Driven Scanner
 
 **Domain:** Self-improving Claude Code harness system (harness-evolve)
-**Researched:** 2026-04-02
-**Focus:** CLI integration, npm bin entries, CI/CD pipeline, auto-apply scope expansion
-**Confidence:** HIGH (based on codebase analysis + official docs + verified patterns)
+**Researched:** 2026-04-06
+**Focus:** Restructuring scanner from code-based regex analysis to model-driven analysis
+**Confidence:** HIGH (based on codebase analysis + GSD workflow pattern study + official Claude Code docs)
 
-## Existing Architecture Summary
+## Executive Summary
 
-The v1.0 codebase has a clean, layered architecture:
+The current scanner architecture uses 7 TypeScript functions that perform regex/string matching against a `ScanContext` object to detect config quality issues. This approach is fundamentally brittle: BUG-01 proves that hardcoded parsing logic breaks against real-world format variations, and regex-based conflict detection cannot understand semantic contradictions (e.g., "use ESM" vs "use CommonJS").
+
+The redesign moves **analysis and judgment** to the model while keeping **file reading, context assembly, and output parsing** as code. The model receives raw config file contents plus structured guidance documents (checklists, severity definitions, output format specs) and produces structured findings. Code validates and routes the model's output through the existing Recommendation pipeline.
+
+This mirrors the GSD pattern: GSD workflows use `.md` documents to structure model behavior with precise output format specs, severity rules, and edge case handling -- achieving consistent, repeatable results from probabilistic model outputs.
+
+## Current Architecture (What Exists)
 
 ```
-src/
-├── hooks/           5 lifecycle handlers + shared utils (stdin, summarize)
-├── analysis/        pre-processor, trigger, analyzer, environment-scanner
-│   └── classifiers/ 8 classifiers (repeated-prompts, long-prompts, etc.)
-├── delivery/        renderer, state, rotator, notification, auto-apply, run-evolve
-├── storage/         config, counter, dirs, logger
-├── schemas/         Zod v4 schemas (config, hook-input, log-entry, recommendation, delivery, onboarding, counter)
-└── scrubber/        secret patterns + scrub functions
+/evolve:scan slash command
+    |
+    v
+CLI: `npx harness-evolve scan`
+    |
+    v
+runDeepScan(cwd, home)
+    |
+    +--> buildScanContext(cwd, home)
+    |        |
+    |        +--> readClaudeMdFiles()     -- reads CLAUDE.md from 3 scopes
+    |        +--> readRuleFiles()         -- recursively reads .claude/rules/
+    |        +--> readAllSettings()       -- reads settings.json from 3 scopes
+    |        +--> readCommandFiles()      -- reads .claude/commands/
+    |        +--> extractHooksFromAllSettings()  -- BUG-01: breaks on nested format
+    |        |
+    |        v
+    |    ScanContext (validated by Zod)
+    |
+    +--> scanners[0..6](context) --> Recommendation[]
+    |        |
+    |        +--> scanRedundancy()       -- heading comparison across files
+    |        +--> scanMechanization()    -- regex for "always run", "before committing"
+    |        +--> scanStaleness()        -- checks @references exist on disk
+    |        +--> scanConflicts()        -- opposition pairs: always/never, enable/disable
+    |        +--> scanStructure()        -- empty/oversized/headingless rules
+    |        +--> scanHooksRedundancy()  -- duplicate hook registrations
+    |        +--> scanCommands()         -- frontmatter/convention checks
+    |
+    v
+ScanResult { scan_context, recommendations[], scanner_meta[] }
+    |
+    v
+CLI outputs JSON to stdout
+    |
+    v
+/evolve:scan template tells model how to present results
 ```
 
-**Build output (tsup):** 8 entry points producing flat JS files:
-- `dist/index.js` — Library exports
-- `dist/hooks/{user-prompt-submit,pre-tool-use,post-tool-use,post-tool-use-failure,permission-request,stop}.js` — Hook entry points (standalone executables)
-- `dist/delivery/run-evolve.js` — /evolve skill entry point
+### What Each Scanner Actually Does (Analysis of Code)
 
-**Key design invariant:** Hook entry points are self-contained executables with `main()` functions that read stdin and call handler functions. They must be runnable standalone via `node dist/hooks/stop.js`.
+| Scanner | Detection Method | Limitation |
+|---------|-----------------|------------|
+| **redundancy** | Compares normalized heading strings across files | Cannot detect semantic overlap (same concept, different headings) |
+| **mechanization** | 6 regex patterns (always run, before committing, etc.) | Misses natural language variations; can't reason about intent |
+| **staleness** | Checks @references against filesystem | Works well; filesystem checks are deterministic |
+| **conflict** | 3 opposition pairs (always/never, enable/disable, require/forbid) | Cannot detect semantic conflicts; only catches keyword opposites |
+| **structure** | Line counts, heading counts, subdirectory checks | Works well; structural metrics are deterministic |
+| **hooks-redundancy** | Compares event+scope+command strings | BUG-01: cannot parse nested `{matcher, hooks: [...]}` format |
+| **commands** | Frontmatter parsing, content length checks | Works well; format checks are deterministic |
 
-## Integration Point 1: CLI Commands + tsup Build
+### Key Observation: Two Categories of Scanners
 
-### Problem
+**Deterministic scanners** (staleness, structure, commands, hooks-redundancy): Check factual properties -- file exists, line count > 200, frontmatter present. These work reliably and benefit from code execution. The only code bug is BUG-01 in hooks parsing.
 
-The project needs a `harness-evolve` CLI command (at minimum `harness-evolve init`) for hook registration setup. This must integrate with the existing tsup multi-entry build without disrupting the 8 existing entry points.
+**Judgment scanners** (redundancy, mechanization, conflict): Attempt semantic analysis via regex/string matching. These are inherently limited because regex cannot understand meaning. A model would excel here.
 
-### Recommended Approach: New `src/cli.ts` Entry Point
+## Target Architecture (What To Build)
 
-Add a single new tsup entry for the CLI:
+```
+/evolve:scan slash command (REWRITTEN -- embeds guidance docs)
+    |
+    v
+Model reads guidance, runs CLI for context, performs analysis, outputs structured findings
+    |
+    +--> Step 1: `npx harness-evolve scan-context`  (NEW CLI command)
+    |        |
+    |        +--> buildScanContext(cwd, home)  (MODIFIED -- fix BUG-01)
+    |        |
+    |        v
+    |    JSON context output to stdout (raw file contents + metadata)
+    |
+    +--> Step 2: Model analyzes context using embedded guidance docs
+    |        |
+    |        +--> Redundancy analysis      (model judgment)
+    |        +--> Mechanization analysis    (model judgment)
+    |        +--> Conflict detection        (model judgment)
+    |        +--> Structure audit           (model judgment, replaces deterministic checks)
+    |        +--> Hooks analysis            (model judgment, BUG-01 irrelevant)
+    |        +--> Commands audit            (model judgment)
+    |        +--> Cross-file coherence      (NEW -- impossible with regex)
+    |
+    +--> Step 3: Model outputs structured JSON findings
+    |
+    v
+/evolve:scan template validates output format, presents to user
+    |
+    v
+Optional: `npx harness-evolve store-findings '...'` (NEW -- persists for /evolve:apply)
+```
 
+### Why This Works
+
+1. **Context building stays as code** because file I/O is deterministic and fast (<100ms). The model should not waste tokens on `readFile` calls.
+
+2. **Analysis moves to the model** because judgment about config quality requires understanding natural language semantics, not pattern matching.
+
+3. **Output formatting stays in the template** because the slash command document controls how the model presents results (GSD-proven pattern).
+
+4. **Persistence stays as code** because writing JSON to disk is a side-effect that should be deterministic.
+
+## Component-by-Component Change Plan
+
+### 1. `context-builder.ts` -- MODIFY (fix BUG-01 + simplify output)
+
+**What changes:**
+- Fix `extractHooksFromAllSettings()` to handle the nested `{matcher, hooks: [{type, command}]}` format that Claude Code actually uses (BUG-01)
+- Simplify the ScanContext output: include raw file contents rather than extracted headings/references, because the model can extract these itself
+- Keep the file-reading logic -- this is the code's core value
+
+**BUG-01 Fix (nested hooks parsing):**
+
+Current broken code in `extractHooksFromAllSettings` at line 280:
 ```typescript
-// tsup.config.ts — add one entry
-entry: {
-  // ... existing 8 entries unchanged ...
-  'cli': 'src/cli.ts',   // NEW: CLI entry point
+// CURRENT (broken): assumes flat {type, command} array elements
+for (const def of defs) {
+  const hookDef = def as Record<string, unknown>;
+  const type = String(hookDef.type ?? 'command');
+  const command = typeof hookDef.command === 'string' ? hookDef.command : undefined;
+  hooks.push({ event, scope, type, command });
 }
 ```
 
-The `src/cli.ts` file starts with a shebang:
-```typescript
-#!/usr/bin/env node
-// CLI entry point for harness-evolve
-import { program } from 'commander';
-// ... subcommand definitions
-```
-
-**tsup shebang handling (HIGH confidence):** When a source file contains `#!/usr/bin/env node`, tsup automatically preserves the shebang in the output and marks the file as executable (`chmod +x`). No manual `chmod` or post-build scripts needed.
-
-This produces `dist/cli.js` which is directly executable.
-
-### package.json bin Field
-
+Real Claude Code hooks format:
 ```json
 {
-  "bin": {
-    "harness-evolve": "./dist/cli.js"
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "script.sh" }
+        ]
+      }
+    ]
   }
 }
 ```
 
-When installed globally (`npm install -g harness-evolve`) or via npx (`npx harness-evolve init`), npm symlinks `dist/cli.js` to the user's PATH as `harness-evolve`.
+**Fix approach:** Check if each array element has a `hooks` sub-array (nested format) or is a direct hook def (legacy flat format). Support both:
 
-### package.json exports Field
+```typescript
+for (const def of defs) {
+  if (!def || typeof def !== 'object') continue;
+  const entry = def as Record<string, unknown>;
 
-The existing `"main": "dist/index.js"` and `"types": "dist/index.d.ts"` serve library consumers. For v1.1, add an `exports` map for explicit subpath exports:
-
-```json
-{
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+  if (Array.isArray(entry.hooks)) {
+    // Nested format: { matcher?: string, hooks: [{type, command}] }
+    const matcher = typeof entry.matcher === 'string' ? entry.matcher : '*';
+    for (const innerHook of entry.hooks as Array<Record<string, unknown>>) {
+      if (!innerHook || typeof innerHook !== 'object') continue;
+      hooks.push({
+        event,
+        scope,
+        type: String(innerHook.type ?? 'command'),
+        command: typeof innerHook.command === 'string' ? innerHook.command : undefined,
+        matcher,
+      });
     }
+  } else {
+    // Flat format (legacy): { type, command }
+    hooks.push({
+      event,
+      scope,
+      type: String(entry.type ?? 'command'),
+      command: typeof entry.command === 'string' ? entry.command : undefined,
+      matcher: '*',
+    });
   }
 }
 ```
 
-**Why ESM-only (no CJS dual format):** The project already uses `"type": "module"` and targets Node 22+. All hook entry points are ESM. Adding CJS support would double the build output for zero benefit — Claude Code runs Node 22+ and all consumers are ESM. This aligns with the 2025+ trend of ESM-only packages for Node 22+ targets.
+**Why fix in code instead of letting model handle:** The context-builder must still produce valid `hooks_registered` data for the CLI `status` command and for `apply-one` to know what hooks exist. This is not just a scanner concern -- it is infrastructure.
 
-### CLI Structure (Commander.js)
+### 2. Scanner Functions (`src/scan/scanners/*`) -- REMOVE (7 files)
 
-```
-src/
-├── cli.ts                 # Entry point with shebang, top-level program
-└── cli/
-    ├── init.ts            # `harness-evolve init` — register hooks in settings.json
-    ├── status.ts          # `harness-evolve status` — show current state
-    └── config.ts          # `harness-evolve config` — view/edit config
-```
+**All 7 scanner files become unnecessary.** The model performs the analysis that these functions attempted with regex. The scanner registry (`scanners/index.ts`) and all individual scanner files are deleted.
 
-**Subcommand pattern:** Each subcommand exports a function that receives the Commander `program` and registers itself. `cli.ts` imports and composes them:
+**Files to remove:**
+- `src/scan/scanners/redundancy.ts`
+- `src/scan/scanners/mechanization.ts`
+- `src/scan/scanners/staleness.ts`
+- `src/scan/scanners/conflict.ts`
+- `src/scan/scanners/structure.ts`
+- `src/scan/scanners/hooks-redundancy.ts`
+- `src/scan/scanners/commands.ts`
+- `src/scan/scanners/index.ts`
+
+**Their test files also go.** But we add new integration tests that validate the model-driven output format.
+
+### 3. Scan Orchestrator (`src/scan/index.ts`) -- SIMPLIFY
+
+**Before:** Orchestrates 7 scanners sequentially, merges results.
+**After:** Exports only `buildScanContext` for the CLI and removes scanner orchestration.
+
+The new `runDeepScan()` is replaced by a simpler `getScanContext()` that just calls `buildScanContext` and returns JSON. The model does the analysis step that code previously did.
+
+Alternatively, `runDeepScan()` could remain but delegate to the model -- however, this would require an API call from within the CLI, which contradicts the design principle of hooks/CLI being fast, offline code. The model invocation happens in the slash command context, not in the CLI process.
+
+### 4. New CLI Command: `scan-context` -- NEW
+
+**Purpose:** Output the raw ScanContext as JSON to stdout, without running any analysis. The model calls this to get the data it will analyze.
 
 ```typescript
-#!/usr/bin/env node
-import { program } from 'commander';
-import { registerInit } from './cli/init.js';
-import { registerStatus } from './cli/status.js';
-
-program.name('harness-evolve').version('1.1.0');
-registerInit(program);
-registerStatus(program);
-program.parse();
+// src/cli/scan-context.ts
+export function registerScanContext(program: Command): void {
+  program
+    .command('scan-context')
+    .description('Output raw config context for model-driven analysis')
+    .action(async () => {
+      const context = await buildScanContext(process.cwd());
+      console.log(JSON.stringify(context, null, 2));
+    });
+}
 ```
 
-This pattern keeps the main entry minimal and allows adding subcommands without touching cli.ts.
+The existing `scan` CLI command is preserved but deprecated -- it runs the old code-based scanners. Users who call `scan` directly get a deprecation notice pointing to `/evolve:scan`.
 
-### What `init` Does
+### 5. New CLI Command: `store-findings` -- NEW
 
-The `init` command automates hook registration in `~/.claude/settings.json`:
+**Purpose:** Accept structured findings JSON from the model and persist them as Recommendation[] for `/evolve:apply`.
 
-1. Read existing settings.json (or create default)
-2. For each hook event (UserPromptSubmit, PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest, Stop):
-   - Check if harness-evolve handler already registered
-   - If not, append `{ "type": "command", "command": "node /path/to/dist/hooks/<event>.js" }`
-3. Write settings.json atomically (using write-file-atomic, already a dependency)
-4. Report what was added/skipped
+```typescript
+// src/cli/store-findings.ts
+export function registerStoreFindings(program: Command): void {
+  program
+    .command('store-findings')
+    .description('Store model-generated scan findings for /evolve:apply')
+    .argument('<json>', 'JSON string of findings array')
+    .action(async (jsonStr: string) => {
+      const findings = JSON.parse(jsonStr);
+      // Validate against Recommendation schema
+      // Write to recommendations state
+      // Output confirmation
+    });
+}
+```
 
-**Path resolution:** The hook command paths must be absolute because Claude Code resolves them from its own process cwd, not the user's cwd. `init` resolves `__dirname` to find the installed dist/ location.
+### 6. `/evolve:scan` Template (`src/commands/evolve-scan.ts`) -- REWRITE
 
-### Impact on Existing Architecture
+This is the most significant change. The template transforms from a thin "run CLI, present results" wrapper into a comprehensive model guidance document. The template becomes the scanner itself.
 
-| Component | Change | Risk |
-|-----------|--------|------|
-| tsup.config.ts | Add 1 entry (`cli`) | NONE — additive, existing entries unchanged |
-| package.json | Add `bin`, `exports`, add `commander` dep | LOW — no existing fields modified |
-| src/ | Add `cli.ts` + `cli/` directory | NONE — new files, no modifications |
-| dist/ | Adds `dist/cli.js` | NONE — existing outputs unchanged |
+**Current template flow:**
+1. Run `npx harness-evolve scan`
+2. Parse JSON output
+3. Present results in formatted sections
 
-**Dependency addition:** `commander` (^14.0.3) and `@commander-js/extra-typings` (^14.x) are new runtime and dev dependencies respectively. This is the only new dependency for CLI support.
+**New template flow:**
+1. Run `npx harness-evolve scan-context` to get raw config data
+2. Analyze config using embedded guidance checklist (model does the analysis)
+3. Output findings in specified structured format
+4. Run `npx harness-evolve store-findings '...'` to persist findings
 
-## Integration Point 2: npm Publishing Setup
+### 7. Scanner Guidance Docs -- NEW (embedded in template)
 
-### package.json Metadata
+These are the structured guidance documents that replace the 7 scanner functions. They define:
+- **What to check** (checklist per analysis area)
+- **Severity classification** (problem vs suggestion, with rules)
+- **Confidence assignment** (HIGH/MEDIUM/LOW, with criteria)
+- **Output format** (exact JSON structure per finding)
+- **Edge cases** (what NOT to flag)
 
-Required fields for npm publish that are currently missing:
+See "Guidance Document Architecture" section below.
 
-```json
+### 8. `/evolve:apply` Template -- MINOR MODIFY
+
+The apply template works with Recommendation objects. Since the model-driven scanner outputs the same Recommendation schema (via `store-findings`), the apply template needs no structural changes. Only the `allowed-tools` frontmatter may need updating to include the new CLI commands.
+
+## Guidance Document Architecture
+
+### How GSD Structures Model Behavior (Research Findings)
+
+After analyzing GSD workflows, the following patterns emerge for getting consistent model outputs:
+
+**Pattern 1: Role + Context + Process separation**
+GSD uses `<purpose>`, `<available_agent_types>`, and `<process>` blocks. The model knows WHY it exists, WHAT tools it has, and HOW to use them. Apply this to scanner guidance.
+
+**Pattern 2: Step-by-step with named steps**
+GSD uses `<step name="..." priority="...">`. Each step has clear inputs, expected actions, and outputs. The model follows a sequential process. Apply this to scan analysis areas.
+
+**Pattern 3: Exact output format specifications**
+GSD workflows (especially `verify-work.md`) specify exact output formats with templates and field-by-field descriptions. The model produces parseable, consistent output. Critical for scan results.
+
+**Pattern 4: Edge case enumeration**
+GSD templates include explicit "Edge Cases" sections that tell the model what situations to handle specially. Prevents false positives. Apply to scanner edge cases.
+
+**Pattern 5: Error handling with fallback**
+GSD specifies what to do when things go wrong (CLI fails, output unparseable, etc.). Apply to scan failure modes.
+
+### Guidance Document Structure
+
+The scanner guidance is embedded directly in the `/evolve:scan` template (not as a separate file). This follows the GSD pattern where the slash command `.md` IS the complete behavioral spec.
+
+```markdown
+## Analysis Areas
+
+### Area 1: Redundancy Detection
+**What to check:**
+- Same instruction appearing in CLAUDE.md AND a rule file
+- Multiple rule files covering the same topic (even with different headings)
+- Settings that duplicate what rules already enforce
+
+**How to detect:**
+- Read each CLAUDE.md section and each rule file
+- Look for semantic overlap, not just heading matches
+- Two files about "git branching" are redundant even if headings differ
+
+**Severity rules:**
+- PROBLEM if exact text is duplicated (copy-paste redundancy)
+- SUGGESTION if topics overlap but content differs
+
+**Confidence rules:**
+- HIGH if clear verbatim duplication
+- MEDIUM if topical overlap with different wording
+- LOW if ambiguous (could be intentional complementary content)
+
+**Edge cases -- do NOT flag:**
+- A CLAUDE.md that references a rule (e.g., "> See rules/git.md") is not redundancy
+- A rule that explicitly extends CLAUDE.md content is not redundancy
+- Index/summary files that list rules by name are not redundant with the rules
+
+### Area 2: Mechanization Opportunities
+**What to check:**
+- Rules or CLAUDE.md instructions that describe operations requiring 100% reliability
+- Patterns like "always run X before Y", "never allow Z", "must check W"
+- Formatting/linting enforcement described in text
+
+**How to detect:**
+- Read the intent behind each instruction
+- If an instruction would be better served by a hook (deterministic, automatic), flag it
+- Consider whether the operation can be expressed as a shell command
+
+**Severity rules:**
+- SUGGESTION always (these are optimization opportunities, not problems)
+
+**Edge cases -- do NOT flag:**
+- Instructions about coding style or architecture (model judgment, not hookable)
+- Instructions that reference context-dependent decisions
+- Meta-instructions about how Claude should communicate
+
+### Area 3: Conflict Detection
+[... semantic conflict rules ...]
+
+### Area 4: Staleness Detection
+[... broken reference rules ...]
+
+### Area 5: Structure Quality
+[... file structure rules ...]
+
+### Area 6: Hooks Configuration
+[... hooks analysis rules ...]
+
+### Area 7: Commands Convention
+[... commands quality rules ...]
+
+### Area 8: Cross-File Coherence (NEW)
+**What to check:**
+- Do CLAUDE.md, rules, settings, and hooks tell a coherent story?
+- Are there instructions that assume capabilities not configured?
+- Are there hooks that enforce things not documented in rules?
+
+**This area is impossible with regex scanners.** It requires reading all config as a whole
+and reasoning about whether the parts form a coherent system.
+```
+
+### Output Format Specification (Embedded in Template)
+
+```markdown
+## Output Format
+
+For each finding, produce a JSON object with these exact fields:
+
 {
-  "description": "Self-improving engine for Claude Code harnesses — detects patterns, routes optimizations",
-  "keywords": ["claude-code", "hooks", "self-improving", "automation", "harness"],
-  "author": "r1ckyIn <rickyqin919@gmail.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/r1ckyIn/harness-evolve.git"
+  "id": "scan-{area}-{index}",          // e.g., "scan-redundancy-0"
+  "target": "RULE|HOOK|SETTINGS|CLAUDE_MD",  // which config to fix
+  "confidence": "HIGH|MEDIUM|LOW",
+  "pattern_type": "scan_{area_name}",   // e.g., "scan_redundancy"
+  "severity": "problem|suggestion",
+  "title": "Short title (under 80 chars)",
+  "description": "Full description of the issue.",
+  "evidence": {
+    "count": 1,
+    "examples": ["file path or text excerpt (max 3)"]
   },
-  "homepage": "https://github.com/r1ckyIn/harness-evolve#readme",
-  "bugs": {
-    "url": "https://github.com/r1ckyIn/harness-evolve/issues"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ]
+  "suggested_action": "Concrete action to fix. Include expected effect."
 }
+
+Collect all findings into a JSON array. If zero issues found, output an empty array [].
 ```
 
-**The `files` field is critical:** Without it, npm publishes everything not in `.gitignore`. The `files` whitelist ensures only `dist/`, `README.md`, and `LICENSE` are included. This excludes `src/`, `tests/`, `.planning/`, `CLAUDE.md`, and other development artifacts.
+## Data Flow: Before vs After
 
-### npx Support
-
-npx support comes automatically from the `bin` field. When a user runs `npx harness-evolve init`, npm:
-1. Downloads the package to a temp cache
-2. Resolves the `bin.harness-evolve` entry
-3. Executes `dist/cli.js`
-
-No additional configuration needed.
-
-### prepublishOnly Script
-
-```json
-{
-  "scripts": {
-    "prepublishOnly": "npm run build && npm run test && npm run typecheck"
-  }
-}
-```
-
-This prevents accidental publishing of broken code.
-
-## Integration Point 3: CI/CD Pipeline (GitHub Actions)
-
-### Recommended Workflow Structure
-
-Two separate workflows:
-
-**1. `ci.yml` — Runs on every push/PR**
-
-```yaml
-name: CI
-on:
-  push:
-    branches: [main, 'feature/**']
-  pull_request:
-    branches: [main]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run typecheck
-      - run: npm test
-```
-
-**2. `publish.yml` — Runs on version tag push**
-
-```yaml
-name: Publish
-on:
-  push:
-    tags: ['v*']
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write    # Required for npm OIDC trusted publishing
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm publish --provenance --access public
-```
-
-### npm Trusted Publishing (OIDC)
-
-**Recommended over NPM_TOKEN (HIGH confidence).** Since July 2025, npm supports OIDC-based trusted publishing from GitHub Actions. This eliminates the need for long-lived NPM tokens stored as repository secrets.
-
-Setup:
-1. On npmjs.com, link the GitHub repository to the package
-2. Configure trusted publisher: org/user = `r1ckyIn`, repository = `harness-evolve`, workflow = `publish.yml`
-3. The `id-token: write` permission in the workflow allows GitHub to generate OIDC tokens
-4. `npm publish --provenance` automatically uses OIDC authentication
-5. Provenance attestations are generated automatically
-
-**No NPM_TOKEN secret needed** when using OIDC. The `npm publish` command automatically detects the OIDC environment.
-
-### Why Two Separate Workflows
-
-| Aspect | ci.yml | publish.yml |
-|--------|--------|-------------|
-| Trigger | Push + PR | Tag push only |
-| Permissions | Default (read) | id-token: write |
-| Purpose | Gate PRs | Publish to npm |
-| Failure impact | Blocks merge | Blocks release |
-
-Separating them follows the principle of least privilege — only the publish workflow has token-minting permission.
-
-### Test Coverage in CI
-
-The existing test suite (336 tests, 37 files) runs via `npm test` (Vitest). No special CI configuration needed — Vitest detects CI mode automatically and disables watch mode.
-
-**One concern:** The flaky concurrent-counter test. If this test fails intermittently in CI, it will block PRs. The v1.1 tech debt fix for this test should happen before CI setup to avoid CI noise.
-
-## Integration Point 4: Expanding Auto-Apply Scope
-
-### Current State
-
-`auto-apply.ts` currently handles only one pattern:
+### Before (Code-Driven)
 
 ```
-if (rec.pattern_type !== 'permission-always-approved') {
-  return { success: false, details: 'Skipped: pattern_type not supported...' };
-}
+User: /evolve:scan
+  -> Model runs `npx harness-evolve scan`
+  -> CLI calls buildScanContext()       [code reads files]
+  -> CLI runs 7 scanner functions       [code does regex analysis]
+  -> CLI outputs ScanResult JSON        [structured output]
+  -> Model formats JSON for display     [presentation only]
 ```
 
-It modifies `~/.claude/settings.json` by adding tools to `allowedTools`. All other recommendation types (HOOK, SKILL, RULE, CLAUDE_MD, MEMORY) are skipped.
+**Model role:** Passive presenter. Formats code output.
 
-### Expansion Strategy: Strategy Pattern for Target-Specific Appliers
-
-The current monolithic `applySingleRecommendation` function checks pattern_type with an if-statement. As more targets are supported, this should use a strategy pattern:
+### After (Model-Driven)
 
 ```
-src/delivery/
-├── auto-apply.ts            # Orchestrator (exists, refactored)
-└── appliers/
-    ├── index.ts             # Applier registry
-    ├── settings-applier.ts  # settings.json modifications (extracted from current auto-apply)
-    ├── rule-applier.ts      # NEW: create .claude/rules/*.md files
-    └── hook-applier.ts      # NEW: register hooks in settings.json
+User: /evolve:scan
+  -> Model runs `npx harness-evolve scan-context`
+  -> CLI calls buildScanContext()       [code reads files, same as before]
+  -> CLI outputs ScanContext JSON       [raw data only, no analysis]
+  -> Model reads embedded guidance docs [behavioral spec]
+  -> Model analyzes context per guidance [model does semantic analysis]
+  -> Model outputs structured findings  [model produces Recommendation JSON]
+  -> Model runs `npx harness-evolve store-findings '...'`  [code persists]
+  -> Model presents findings to user    [presentation]
 ```
 
-### Applier Interface
+**Model role:** Active analyst. Reads config, applies judgment, produces findings.
+
+## Schema Changes
+
+### ScanContext Schema -- MODIFY
+
+Add `matcher` field to hooks_registered:
 
 ```typescript
-interface Applier {
-  /** Which recommendation targets this applier handles */
-  targets: RoutingTarget[];
-  /** Which pattern_types within those targets are supported */
-  supportedPatterns: string[];
-  /** Apply a single recommendation. Returns success/failure with details. */
-  apply(rec: Recommendation, options?: ApplyOptions): Promise<AutoApplyResult>;
-  /** Create a backup before modification */
-  backup(rec: Recommendation): Promise<string>;
-}
+hooks_registered: z.array(
+  z.object({
+    event: z.string(),
+    scope: z.enum(['user', 'project', 'local']),
+    type: z.string(),
+    command: z.string().optional(),
+    matcher: z.string().optional(),    // NEW: from nested format
+  }),
+),
 ```
 
-### Safe Expansion Order (by blast radius)
-
-| Priority | Target | What It Modifies | Blast Radius | Rationale |
-|----------|--------|-----------------|--------------|-----------|
-| 1 (done) | SETTINGS (allowedTools) | `~/.claude/settings.json` | LOW | Only adds items to an array. Easily reversible. |
-| 2 | RULE | `.claude/rules/*.md` | LOW | Creates new files only. Never modifies existing rules. Easily deletable. |
-| 3 | HOOK | `~/.claude/settings.json` hooks array | MEDIUM | Adds hook registrations. Could conflict with existing hooks. Needs duplicate detection. |
-| 4 | MEMORY | `~/.claude/projects/*/memory/*.md` | MEDIUM | Creates memory entries. Could duplicate. Needs dedup logic. |
-| 5 | CLAUDE_MD | Project CLAUDE.md | HIGH | Appends to existing file. Hard to isolate changes. Defer. |
-| 6 | SKILL | `.claude/skills/*.md` | HIGH | Creates executable skill files. Needs careful validation. Defer. |
-
-### Architectural Constraints for Safe Auto-Apply
-
-1. **Create-only, never modify** — New appliers should only create new files or append to arrays. Never modify existing file content (except JSON arrays where items are additive).
-
-2. **Backup before every write** — The existing pattern of `copyFile(settingsFilePath, backup)` before modification must be preserved for all new appliers.
-
-3. **Idempotency** — Running auto-apply twice with the same recommendation must produce the same result. Check if the target already exists before creating.
-
-4. **Audit trail** — Every auto-apply attempt (success or failure) must be logged to `auto-apply-log.jsonl`. This is already implemented in the orchestrator and applies to all appliers.
-
-5. **Config-gated** — `config.delivery.fullAuto` must still be the master switch. Consider adding per-target gates: `config.delivery.autoApplyTargets: ['SETTINGS', 'RULE']`.
-
-### Impact on Existing Delivery Architecture
-
-| Component | Change | Risk |
-|-----------|--------|------|
-| `auto-apply.ts` | Refactor to use applier registry instead of inline logic | MEDIUM — must preserve existing behavior exactly |
-| `delivery/index.ts` | No change — `autoApplyRecommendations` export stays the same | NONE |
-| `schemas/config.ts` | Add `autoApplyTargets` array field with default `['SETTINGS']` | LOW — Zod default ensures backward compatibility |
-| `schemas/delivery.ts` | No change — `AutoApplyLogEntry` already has generic `target` field | NONE |
-| `run-evolve.ts` | No change — calls `autoApplyRecommendations()` which handles all targets | NONE |
-
-### Data Flow After Expansion
-
-```
-analyze() → recommendations[]
-    │
-    ▼
-autoApplyRecommendations(recommendations)
-    │
-    ├── Filter: HIGH confidence + target in autoApplyTargets + pending status
-    │
-    ├── For each candidate:
-    │   ├── Look up applier from registry by rec.target
-    │   ├── Check if rec.pattern_type is in applier.supportedPatterns
-    │   ├── applier.backup(rec) → backup path
-    │   ├── applier.apply(rec) → AutoApplyResult
-    │   ├── Log to auto-apply-log.jsonl
-    │   └── Update recommendation state (applied/failed)
-    │
-    └── Return AutoApplyResult[]
-```
-
-## Integration Point 5: The inferPatternType String Mismatch Fix
-
-### Problem
-
-`inferPatternType` in the outcome tracker uses pattern_type strings to map recommendations back to classifiers for confidence adjustment. 7 of 8 classifiers use `pattern_type` values that don't match what `inferPatternType` expects, breaking the feedback loop.
-
-### Fix Architecture
-
-Introduce a shared `PatternType` enum (or Zod enum) that both classifiers and `inferPatternType` reference:
+Consider adding raw settings content for model inspection:
 
 ```typescript
-// src/schemas/pattern-types.ts (NEW)
-import { z } from 'zod/v4';
-
-export const patternTypeSchema = z.enum([
-  'repeated-command',
-  'repeated-prompt',
-  'long-prompt',
-  'permission-always-approved',
-  'code-correction',
-  'personal-info',
-  'config_drift',
-  'ecosystem-adaptation',
-  'onboarding',
-]);
-export type PatternType = z.infer<typeof patternTypeSchema>;
+settings_raw: z.object({
+  user: z.string().nullable(),     // raw JSON string, not parsed
+  project: z.string().nullable(),
+  local: z.string().nullable(),
+}),
 ```
 
-All classifiers and `inferPatternType` import from this single source. This directly addresses the v1.0 retrospective lesson: "String constants across module boundaries need a shared enum."
+This lets the model see the exact settings structure (including nested hooks) without relying on the code's parsing.
 
-### Impact
+### PatternType Enum -- EXTEND
 
-| Component | Change |
-|-----------|--------|
-| `schemas/pattern-types.ts` | NEW — shared enum |
-| `schemas/recommendation.ts` | Change `pattern_type: z.string()` to `pattern_type: patternTypeSchema` |
-| All 8 classifiers | Use enum values instead of string literals |
-| `analysis/outcome-tracker.ts` | `inferPatternType` uses enum values |
-| Tests | Update pattern_type assertions to use enum values |
+Add new pattern types for model-driven scan areas:
 
-## Component Architecture: New vs Modified
+```typescript
+// Add to existing enum:
+'scan_cross_file_coherence',   // NEW area only model can do
+```
+
+### Recommendation Schema -- NO CHANGE
+
+The existing Recommendation schema is the output contract. The model produces data matching this schema. No changes needed -- this is a key architectural win.
+
+## New vs Modified vs Removed Components
 
 ### New Components
 
-| Component | Path | Purpose | Dependencies |
-|-----------|------|---------|--------------|
-| CLI entry | `src/cli.ts` | Shebang entry point, Commander setup | commander, cli/* |
-| CLI init | `src/cli/init.ts` | Register hooks in settings.json | storage/dirs, storage/config, write-file-atomic |
-| CLI status | `src/cli/status.ts` | Show counter, last analysis, pending recs | storage/counter, delivery/state |
-| CLI config | `src/cli/config.ts` | View/edit harness-evolve config | storage/config |
-| Pattern types enum | `src/schemas/pattern-types.ts` | Shared pattern_type values | zod |
-| Applier registry | `src/delivery/appliers/index.ts` | Map targets to applier implementations | applier implementations |
-| Settings applier | `src/delivery/appliers/settings-applier.ts` | Extract from auto-apply.ts | write-file-atomic, storage/dirs |
-| Rule applier | `src/delivery/appliers/rule-applier.ts` | Create .claude/rules/*.md files | node:fs/promises |
-| CI workflow | `.github/workflows/ci.yml` | Build + test + typecheck on push/PR | N/A |
-| Publish workflow | `.github/workflows/publish.yml` | npm publish on tag | N/A |
+| Component | Path | Purpose |
+|-----------|------|---------|
+| scan-context CLI | `src/cli/scan-context.ts` | Output raw ScanContext as JSON |
+| store-findings CLI | `src/cli/store-findings.ts` | Persist model findings as Recommendation[] |
 
 ### Modified Components
 
-| Component | Change Description | Risk |
-|-----------|-------------------|------|
-| `tsup.config.ts` | Add `cli` entry | NONE |
-| `package.json` | Add bin, exports, metadata, commander dep, scripts | LOW |
-| `src/delivery/auto-apply.ts` | Refactor to use applier registry | MEDIUM |
-| `src/schemas/recommendation.ts` | pattern_type: z.string() -> patternTypeSchema | MEDIUM (breaks tests) |
-| `src/analysis/outcome-tracker.ts` | Use shared pattern types enum | LOW |
-| All 8 classifiers | Use enum pattern_type values | LOW (find-and-replace) |
-| `src/schemas/config.ts` | Add autoApplyTargets field | LOW (Zod default) |
-| `src/index.ts` | Export new symbols (PatternType, CLI utilities if needed) | NONE |
+| Component | Change | Risk |
+|-----------|--------|------|
+| `src/scan/context-builder.ts` | Fix BUG-01 nested hooks parsing; add `matcher` field; optionally add `settings_raw` | LOW -- additive change + bug fix |
+| `src/scan/schemas.ts` | Add `matcher` to hooks_registered; optionally add `settings_raw` | LOW -- backward compatible |
+| `src/scan/index.ts` | Simplify to only export context building; remove scanner orchestration | MEDIUM -- breaking change for `runDeepScan()` callers |
+| `src/commands/evolve-scan.ts` | Complete rewrite with embedded guidance docs | HIGH -- most impactful change |
+| `src/cli.ts` | Register new `scan-context` and `store-findings` commands | LOW -- additive |
+| `src/schemas/recommendation.ts` | Add `scan_cross_file_coherence` to PatternType enum | LOW -- additive |
+| Existing `scan` CLI command | Add deprecation notice, keep functional | LOW |
 
-### Unchanged Components (Verify No Regression)
+### Removed Components
+
+| Component | Why Remove |
+|-----------|------------|
+| `src/scan/scanners/redundancy.ts` | Replaced by model analysis |
+| `src/scan/scanners/mechanization.ts` | Replaced by model analysis |
+| `src/scan/scanners/staleness.ts` | Replaced by model analysis |
+| `src/scan/scanners/conflict.ts` | Replaced by model analysis |
+| `src/scan/scanners/structure.ts` | Replaced by model analysis |
+| `src/scan/scanners/hooks-redundancy.ts` | Replaced by model analysis |
+| `src/scan/scanners/commands.ts` | Replaced by model analysis |
+| `src/scan/scanners/index.ts` | Registry no longer needed |
+| All scanner test files | Replaced by integration tests against model output format |
+
+### Unchanged Components
 
 | Component | Why Unchanged |
 |-----------|---------------|
-| `src/hooks/*.ts` | Hook handlers are self-contained; CLI and auto-apply changes don't touch them |
-| `src/storage/logger.ts` | Log format unchanged |
-| `src/storage/counter.ts` | Counter logic unchanged |
-| `src/storage/dirs.ts` | Directory structure unchanged |
-| `src/scrubber/*` | Secret scrubbing unchanged |
-| `src/analysis/pre-processor.ts` | Pre-processing unchanged |
-| `src/analysis/environment-scanner.ts` | Environment scanning unchanged |
-| `src/analysis/analyzer.ts` | Analyzer orchestration unchanged |
-| `src/analysis/trigger.ts` | Trigger logic unchanged |
-| `src/delivery/renderer.ts` | Rendering unchanged |
-| `src/delivery/state.ts` | State tracking unchanged |
-| `src/delivery/notification.ts` | Notification unchanged |
-| `src/delivery/rotator.ts` | Rotation unchanged |
-| `src/delivery/run-evolve.ts` | /evolve entry unchanged |
+| `src/commands/evolve-apply.ts` | Consumes Recommendation[] -- same schema |
+| `src/delivery/*` | Applier pipeline unchanged -- receives same Recommendation type |
+| `src/hooks/*` | Hook handlers unrelated to scan |
+| `src/analysis/*` | Background analysis pipeline separate from deep scan |
+| `src/storage/*` | Storage layer unchanged |
+| `src/cli/init.ts` | Hook registration unchanged (but benefits from BUG-01 fix via shared context-builder) |
+
+## Integration Points
+
+### Integration Point 1: scan-context CLI <-> /evolve:scan template
+
+The template calls `npx harness-evolve scan-context` and receives JSON. The JSON must contain enough raw data for the model to perform analysis. Key requirement: include raw file contents, not just extracted metadata.
+
+### Integration Point 2: Model findings <-> store-findings CLI
+
+The model produces a JSON array of findings. `store-findings` validates each finding against the Recommendation schema (Zod) and persists valid findings. Invalid findings are reported as warnings.
+
+### Integration Point 3: store-findings <-> /evolve:apply
+
+`store-findings` writes to the same recommendation state file that `pending` reads. The apply pipeline treats model-generated findings identically to code-generated findings.
+
+### Integration Point 4: Existing `scan` CLI <-> backward compatibility
+
+The existing `npx harness-evolve scan` command must continue working during transition. It can run the old code-based scanners (with BUG-01 fixed) and produce ScanResult. The deprecation notice guides users to `/evolve:scan`.
 
 ## Suggested Build Order
 
-Based on dependency analysis, the v1.1 features should be built in this order:
-
 ```
-Phase 1: Tech Debt (no dependencies, unblocks CI)
-├── Fix inferPatternType string mismatch (shared pattern-types enum)
-├── Fix flaky concurrent-counter test
-└── Rationale: These must land before CI to prevent CI noise
+Phase A: BUG-01 Fix + Context Enhancement (foundation, no breaking changes)
+  1. Fix extractHooksFromAllSettings() for nested format
+  2. Add matcher field to hooks_registered schema
+  3. Add settings_raw to ScanContext (optional, for model inspection)
+  4. Add scan-context CLI command
+  5. Update existing tests for new hooks format
+  Rationale: Everything else depends on correct context data
 
-Phase 2: CI/CD (depends on Phase 1: clean test suite)
-├── .github/workflows/ci.yml
-├── .github/workflows/publish.yml
-├── npm metadata in package.json (files, exports, description, etc.)
-├── prepublishOnly script
-└── Rationale: CI validates all subsequent changes automatically
+Phase B: Scanner Guidance Docs + Template Rewrite (the core change)
+  1. Design and write the complete scanner guidance document
+  2. Rewrite /evolve:scan template with embedded guidance
+  3. Add store-findings CLI command
+  4. Add scan_cross_file_coherence to PatternType enum
+  5. Test with real user configs
+  Rationale: This is the architectural pivot -- must be right
 
-Phase 3: CLI + npm bin (depends on Phase 2: CI gates quality)
-├── src/cli.ts (Commander.js setup with shebang)
-├── src/cli/init.ts (hook registration)
-├── src/cli/status.ts (optional, nice-to-have)
-├── tsup.config.ts entry addition
-├── package.json bin field
-└── Rationale: CLI is the user-facing install experience
+Phase C: Cleanup + Removal (safe only after Phase B proven)
+  1. Remove 7 scanner function files
+  2. Remove scanner registry
+  3. Simplify scan/index.ts
+  4. Remove scanner unit tests
+  5. Add integration tests for model output format
+  6. Add deprecation notice to `scan` CLI
+  Rationale: Only remove old code after new approach is validated
 
-Phase 4: Auto-apply expansion (depends on Phase 1: shared enums)
-├── src/delivery/appliers/ strategy pattern
-├── Extract settings-applier from auto-apply.ts
-├── Implement rule-applier
-├── Config gate: autoApplyTargets
-└── Rationale: Separate from CLI; independent concern
+Phase D: Polish + Ecosystem Learning (optional, depends on research)
+  1. Study similar open-source projects for patterns to adopt
+  2. Add cross-file coherence analysis guidance
+  3. Tune severity/confidence rules based on real-world testing
+  4. Document the guidance doc authoring pattern for extensibility
 ```
 
 **Phase ordering rationale:**
-- Phase 1 before Phase 2: CI must not be blocked by flaky tests or known bugs
-- Phase 2 before Phase 3: CI validates CLI implementation as it's built
-- Phase 1 before Phase 4: The shared pattern-types enum from the inferPatternType fix is used by the new applier registry for pattern matching
-- Phase 3 and Phase 4 are independent and could theoretically run in parallel on separate branches, but sequential is safer given that Phase 4 refactors the delivery module
+- A before B: Template needs working `scan-context` CLI to call
+- B before C: Never remove old scanners until new approach is proven
+- C depends on B validation: If model-driven analysis has gaps, old scanners remain as fallback
+- D is independent research that improves Phase B guidance quality
 
-## Performance Budget
+## Performance Considerations
 
-| New Component | Target Latency | Strategy |
-|---------------|---------------|----------|
-| `harness-evolve init` (CLI) | <2s | One-time operation. Read + validate + write settings.json. |
-| `harness-evolve status` (CLI) | <500ms | Read counter.json + recommendation-state.json. Pure reads. |
-| CI build + test | <3min | npm ci with cache. Vitest is fast (336 tests in <10s locally). |
-| Rule auto-apply | <100ms per rule | `writeFile` to create a small .md file. |
+| Aspect | Code Scanners (current) | Model-Driven (target) |
+|--------|------------------------|----------------------|
+| Latency | <500ms | 5-30s (model inference) |
+| Token cost | Zero | ~2K-5K tokens per scan |
+| Accuracy (semantic) | LOW (regex) | HIGH (model judgment) |
+| Accuracy (structural) | HIGH (deterministic) | HIGH (model can count lines too) |
+| Offline capability | YES | NO (requires model context) |
+| False positives | HIGH (21 from BUG-01 alone) | LOW (model understands format) |
+
+**Trade-off:** Scan becomes slower but dramatically more accurate. This is acceptable because scan is an infrequent, user-initiated operation (not a hot-path hook).
+
+**Offline fallback:** The old `scan` CLI command (with BUG-01 fixed) remains available for offline/CI use. The model-driven `/evolve:scan` is the primary path.
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: CLI Logic in Hook Entry Points
+### Anti-Pattern 1: Model Calling readFile Directly
 
-**What:** Putting CLI subcommand logic in the same files as hook handlers.
+**What:** Having the model use Bash/Read tools to read each config file individually.
+**Why bad:** Wastes model tokens on I/O. Slow. The model doesn't know where all config files are.
+**Instead:** Code reads all files into a single JSON context. Model receives one structured input.
 
-**Why bad:** Hook entry points must be minimal (read stdin, call handler, exit). Mixing CLI concerns adds import weight and startup time to every hook invocation. Hooks fire on every Claude Code interaction.
+### Anti-Pattern 2: Unstructured Model Output
 
-**Instead:** CLI lives in `src/cli/` and `src/cli.ts`. Hooks live in `src/hooks/`. They share library code via `src/storage/`, `src/schemas/`, etc. but never import from each other.
+**What:** Letting the model output findings in free-form text and parsing with regex.
+**Why bad:** Defeats the purpose. We're replacing regex parsing, not creating more of it.
+**Instead:** Specify exact JSON output format in the guidance doc. Model outputs parseable JSON.
 
-### Anti-Pattern 2: Single tsup Config for Different Build Targets
+### Anti-Pattern 3: Trying to Keep Scanner Functions as Validation
 
-**What:** Trying to use `banner` or `define` options globally to add shebangs to all entry points.
+**What:** Running code scanners first, then having the model validate/supplement.
+**Why bad:** Two analysis passes are redundant. The code scanners' findings would need to be reconciled with model findings.
+**Instead:** One analysis pass by the model. Code handles only I/O and persistence.
 
-**Why bad:** Only the CLI entry needs a shebang. Adding it to hook entry points is harmless but confusing. tsup handles shebangs automatically when the source file has one.
+### Anti-Pattern 4: Splitting Guidance Across Multiple Files
 
-**Instead:** Put `#!/usr/bin/env node` in `src/cli.ts` only. tsup handles the rest.
+**What:** Putting scanner guidance in separate .md files that the template references.
+**Why bad:** Slash commands are self-contained -- the .md body IS the injected context. External file references add fragility and require the model to read additional files.
+**Instead:** Embed all guidance directly in the /evolve:scan template. One file, complete spec.
 
-### Anti-Pattern 3: Auto-Apply Modifying Existing File Content
+### Anti-Pattern 5: Model-Driven Analysis Without Format Validation
 
-**What:** Having the rule-applier or hook-applier modify the content of existing configuration files (e.g., editing an existing rule to add content).
-
-**Why bad:** Merge conflicts, data loss, hard to audit. The v1.0 retrospective explicitly states: "Restrict auto-apply scope aggressively."
-
-**Instead:** Create-only operations. New rule = new file. New hook = new entry in the hooks array. Never edit existing entries.
-
-### Anti-Pattern 4: npm Publish Without Provenance
-
-**What:** Publishing with `NPM_TOKEN` secret instead of OIDC trusted publishing.
-
-**Why bad:** Long-lived tokens are a security risk. OIDC tokens are short-lived, scoped, and provide automatic provenance attestation.
-
-**Instead:** Use OIDC trusted publishing with `id-token: write` permission. No secrets needed.
+**What:** Trusting model output without schema validation.
+**Why bad:** Models occasionally produce malformed JSON or missing fields.
+**Instead:** `store-findings` validates each finding against the Recommendation Zod schema. Invalid findings are warned, not silently accepted.
 
 ## Sources
 
-### HIGH Confidence (Official Documentation)
-- [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) — OIDC setup for npm publishing
-- [npm Provenance Statements](https://docs.npmjs.com/generating-provenance-statements/) — Provenance with OIDC
-- [tsup Documentation](https://tsup.egoist.dev/) — Shebang handling, entry points, banner options
-- [Commander.js](https://github.com/tj/commander.js) — CLI framework, subcommands
-- [GitHub Actions setup-node](https://github.com/actions/setup-node) — Node.js CI setup
+### HIGH Confidence (Official Documentation + Codebase Analysis)
+- [Claude Code Hooks Reference](https://code.claude.com/docs/en/hooks) -- Nested `{matcher, hooks: [...]}` format confirmed as the standard structure
+- Codebase analysis of all 7 scanner files (src/scan/scanners/*.ts) -- detailed regex patterns and limitations documented above
+- Codebase analysis of context-builder.ts -- BUG-01 root cause identified at line 280
+- Codebase analysis of cli/utils.ts mergeHooks() -- confirms harness-evolve already writes nested format correctly (line 183-185)
 
-### MEDIUM Confidence (Verified Community Patterns)
-- [npm OIDC GA Announcement](https://github.blog/changelog/2025-07-31-npm-trusted-publishing-with-oidc-is-generally-available/) — July 2025 announcement
-- [Building TypeScript CLI with Commander](https://blog.logrocket.com/building-typescript-cli-node-js-commander/) — CLI patterns
-- [Publishing ESM-based npm packages with TypeScript](https://2ality.com/2025/02/typescript-esm-packages.html) — ESM-only publishing patterns
-- [Things you need to do for npm trusted publishing](https://philna.sh/blog/2026/01/28/trusted-publishing-npm/) — Practical OIDC setup guide
-- [Building npm packages with tsup + multiple entry points](https://dev.to/tigawanna/building-and-publishing-npm-packages-with-typescript-multiple-entry-points-tailwind-tsup-and-npm-9e7) — Multi-entry tsup patterns
+### HIGH Confidence (GSD Workflow Pattern Analysis)
+- GSD execute-phase.md -- `<step name="..." priority="...">` pattern for structured process
+- GSD new-project.md -- `<available_agent_types>` pattern for declaring capabilities
+- GSD verify-work.md -- Exact output format specifications for consistent model output
+- GSD quick.md -- Composable flags pattern for configuration
+- GSD executor agent (gsd-executor.md) -- `<role>`, `<execution_flow>`, `<project_context>` separation pattern
 
-### LOW Confidence (Single Source / Inference)
-- Auto-apply expansion beyond SETTINGS is based on codebase analysis of classifier output patterns and existing auto-apply architecture. No external source validates the specific applier strategy pattern for this domain. However, the strategy pattern itself is a well-known OOP pattern with proven applicability.
+### MEDIUM Confidence (Architecture Inference)
+- The "code for I/O, model for judgment" split is an emerging pattern in AI-augmented tools. No single authoritative source, but consistent with how GSD, Cog, and similar tools structure their model interactions.
+- Performance estimates (5-30s latency) are based on typical Claude model response times for structured analysis tasks of this size (~2K-5K input tokens).

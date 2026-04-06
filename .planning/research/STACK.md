@@ -1,301 +1,400 @@
-# Technology Stack — v1.1 Additions
+# Technology Stack — v4.0 Model-Driven Scanner Architecture
 
 **Project:** harness-evolve
-**Researched:** 2026-04-02
-**Scope:** Stack additions for npm publish, CI/CD pipeline, and CLI entry point. Existing stack (TypeScript 6.0, Node.js 22, Zod v4, tsup 8.x, Vitest 4, proper-lockfile, write-file-atomic) is validated and NOT re-researched.
+**Researched:** 2026-04-06
+**Scope:** Stack additions/changes for model-driven scanning, GSD-style behavior documents, and open-source ecosystem comparison. Existing validated stack (Node.js 22, TypeScript 6, tsup 8.x, Zod 4, Commander.js 14, Vitest 4, write-file-atomic, proper-lockfile) is NOT re-researched.
+**Overall confidence:** HIGH
 
 ---
 
-## New Stack Requirements
+## Executive Summary
 
-v1.1 adds three capabilities that need stack decisions:
+The v4.0 architectural shift is fundamentally different from previous milestones: it removes code, not adds it. The current 7 hardcoded TypeScript scanners will be replaced by model-driven analysis where the user's Claude Code model performs the analysis, guided by embedded documentation in the `/evolve:scan` slash command template. This means the primary "stack addition" is **structured markdown documentation** -- not new npm packages.
 
-1. **npm publish setup** — package.json metadata, `exports` field, `files` whitelist, `bin` entry
-2. **CI/CD pipeline** — GitHub Actions workflows for build/test/typecheck + future publish
-3. **CLI entry point** — `harness-evolve init` command for hook registration
+**Key insight from research:** The GSD framework, Everything Claude Code, Singularity-Claude, and Cog all converge on the same pattern -- **markdown documents as behavior specifications**. GSD calls them "workflow documents," ECC calls them "skills," Singularity calls them "SKILL.md files." The mechanism is identical: structured natural language embedded in `.claude/commands/*.md` files that Claude Code loads as context when the slash command is invoked. harness-evolve already uses this pattern (the v3.0 `/evolve:scan` and `/evolve:apply` templates are 143/163 lines of behavior specification). v4.0 deepens this pattern by moving scanner logic from TypeScript into the template.
+
+**The result: zero new production dependencies.** One dev dependency addition for YAML frontmatter parsing in tests. Everything else is restructuring existing code and expanding markdown templates.
 
 ---
 
-## 1. npm Publish Configuration
+## Architecture Change: Why No New Dependencies
 
-### package.json Changes (No New Dependencies)
+### Current State (v3.0)
 
-The current package.json needs structural changes, not new libraries.
-
-| Field | Current | Needed | Why |
-|-------|---------|--------|-----|
-| `exports` | (missing) | Conditional exports map | Modern Node.js resolution. Replaces `main`/`types` as the authoritative entry point map. All supported Node.js versions (22+) use `exports` over `main`. |
-| `files` | (missing) | `["dist", "bin"]` | Whitelist for npm publish. Prevents accidental inclusion of `src/`, `tests/`, `.planning/`, `CLAUDE.md`. Security and package size optimization. |
-| `bin` | (missing) | `{"harness-evolve": "./dist/cli.js"}` | Enables `npx harness-evolve init` and global install `harness-evolve init`. Points to compiled ESM output. |
-| `keywords` | (missing) | Array of discovery terms | npm search discoverability. |
-| `description` | (missing) | One-line description | npm registry listing. |
-| `repository` | (missing) | GitHub URL object | Links npm page to GitHub. Required for npm provenance. |
-| `license` | (missing) | `"MIT"` | npm registry metadata. |
-| `author` | (missing) | Author object | npm registry metadata. |
-
-#### Recommended `exports` Field
-
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./hooks/*": {
-      "types": "./dist/hooks/*.d.ts",
-      "import": "./dist/hooks/*.js"
-    }
-  }
-}
+```
+User invokes /evolve:scan
+  -> Template tells Claude to run `npx harness-evolve scan`
+  -> CLI invokes runDeepScan()
+  -> 7 TypeScript scanner functions execute against ScanContext
+  -> Returns Recommendation[] JSON
+  -> Claude renders results per template format
 ```
 
-**Why ESM-only (no CJS dual-publish):** The project already uses `"type": "module"`. The target audience (Claude Code users) runs Node.js 22+. There is zero reason to support CommonJS. Dual-publish adds complexity, testing burden, and potential type resolution bugs for no benefit. ESM-only is the correct 2026 posture for a Node.js 22+ tool.
+The model is **not involved in analysis**. It only renders results. All intelligence is in TypeScript regex matching and heuristics (e.g., `scanMechanization` matches patterns like `/always\s+run/i`).
 
-**Why `types` must come first:** TypeScript resolves the first matching condition. If `import` comes before `types`, TypeScript won't find declaration files. This is a well-documented gotcha.
+### Target State (v4.0)
 
-#### Recommended `bin` Entry
-
-```json
-{
-  "bin": {
-    "harness-evolve": "./dist/cli.js"
-  }
-}
+```
+User invokes /evolve:scan
+  -> Template contains embedded scanner guidance docs (checklists, severity definitions, examples)
+  -> Template tells Claude to read config files directly (Read tool, not CLI)
+  -> Claude performs analysis using its own reasoning + guidance docs
+  -> Claude outputs structured findings in the specified format
+  -> Optionally: CLI validates/stores findings for /evolve:apply pipeline
 ```
 
-The CLI entry point (`src/cli.ts`) must start with `#!/usr/bin/env node` shebang. tsup preserves shebangs in output and auto-sets the executable bit, so no post-build `chmod` step is needed.
+The model **is the scanner**. The guidance documents replace regex heuristics with natural language analysis criteria that the model evaluates against the user's actual configuration.
 
-### Pre-Publish Validation Tools
+### Why This Works Better
 
-| Tool | Version | Purpose | Integration |
-|------|---------|---------|-------------|
-| publint | ^0.3.x | Validate `exports`, `main`, `types` field correctness before publish | Dev dependency. Run as `npx publint` in CI and before `npm publish`. Catches misconfigured exports that would break consumers. |
-| @arethetypeswrong/cli | ^0.18.x | Validate TypeScript types resolve correctly for all entry points | Dev dependency. Run as `npx attw --pack .` in CI. Catches the "types work locally but break for consumers" class of bugs. |
-
-**Why both:** publint validates package.json structure. attw validates that TypeScript types actually resolve for consumers under different `moduleResolution` settings. They catch different classes of bugs. Both are fast (<2s), zero-config, and widely adopted.
-
-**Why NOT `np` (publish helper):** np is an interactive terminal tool for release management. This project will use GitHub Actions for automated publishing (trusted publishing with OIDC). np's version bumping, git tagging, and GitHub release creation are all handled by the CI workflow. Adding np would create two competing release mechanisms.
-
-**Why NOT `semantic-release` / `release-it`:** Overkill for a v1.x project. These tools shine for projects with frequent releases and complex changelogs. harness-evolve releases will be manual (git tag -> CI publish) for now. Revisit when release cadence warrants automation.
+| Dimension | Hardcoded Scanner | Model-Driven Scanner |
+|-----------|-------------------|----------------------|
+| False positives | HIGH -- regex can't understand context | LOW -- model understands intent |
+| Coverage | LIMITED -- only checks what code is written for | BROAD -- model reasons about any pattern |
+| Maintenance | Every new check = new TypeScript code | Add a line to the checklist |
+| Adaptability | None -- same checks for every user | Adapts to project-specific conventions |
+| Extensibility | Requires code changes + npm publish | Users can extend guidance docs locally |
 
 ---
 
-## 2. CI/CD Pipeline (GitHub Actions)
+## Stack Decisions
 
-### No New npm Dependencies Required
+### 1. No New Production Dependencies
 
-GitHub Actions configuration is YAML-only. No new packages needed.
+The v4.0 model-driven scanner requires **zero new npm packages** because:
 
-### Actions to Use
+1. **Scanner logic moves from TypeScript to markdown** -- no code to execute
+2. **File reading is done by Claude's built-in Read/Grep tools** -- not by CLI
+3. **Context building can be simplified** -- the model reads files directly instead of building a ScanContext JSON blob
+4. **Output format is enforced by template instructions** -- not by Zod schemas in the pipeline
 
-| Action | Version | Purpose | Why This Version |
-|--------|---------|---------|------------------|
-| `actions/checkout` | `v4` | Clone repo | Stable, current major. |
-| `actions/setup-node` | `v4` | Install Node.js 22, configure npm cache | v4 is the widely tested stable version. v5 introduced automatic caching (when `packageManager` field is set in package.json) but this project doesn't use corepack/packageManager field. v6 requires runner v2.327.1+ and upgrades to node24 runtime. Stick with v4 for maximum runner compatibility. |
+The existing stack handles everything:
+- `commander` -- CLI still needed for `init`, `status`, `uninstall`, and a lightweight `scan` command
+- `zod` -- Still validates any structured data that passes through the CLI (stored recommendations)
+- `write-file-atomic` -- Still used for recommendation storage
+- `node:fs/promises` -- Still used by context-builder (simplified version)
 
-**Why `actions/setup-node@v4` over v5/v6:** v5 auto-caches based on `packageManager` field in package.json, which this project doesn't set. v6 requires newer runners and upgrades the action runtime to node24 — unnecessary complexity for a simple CI pipeline. v4 with explicit `cache: 'npm'` is battle-tested and sufficient.
+### 2. Context Builder Simplification (Existing Code Change)
 
-### Recommended Workflow Structure
+**Current:** `context-builder.ts` (334 lines) reads all config files, extracts headings, parses frontmatter, builds a Zod-validated `ScanContext` object with nested arrays.
 
-**File: `.github/workflows/ci.yml`** — Runs on every push and PR.
+**v4.0:** The context builder becomes optional/simplified. Two paths:
 
-Three jobs, each independent (parallel execution):
+| Path | When | What Happens |
+|------|------|--------------|
+| **Model-driven** (primary) | `/evolve:scan` slash command | Template instructs Claude to use Read/Grep tools directly. No context builder needed. |
+| **CLI fallback** | `npx harness-evolve scan` from terminal | Simplified context builder produces a text summary (not JSON), piped to stdout for human reading or model consumption. |
 
-| Job | Steps | Why Separate |
-|-----|-------|--------------|
-| `typecheck` | `npm ci` -> `tsc --noEmit` | Fast feedback on type errors. Fails independently. |
-| `test` | `npm ci` -> `vitest run` | Test suite. Fails independently from typecheck. |
-| `build` | `npm ci` -> `tsup` -> `publint` -> `attw --pack .` | Validates the published artifact is correct. |
+The context builder doesn't need new dependencies -- it's a simplification of existing code.
 
-**Why parallel jobs, not sequential steps:** Each job gets a clean environment (no state leakage) and runs simultaneously. A typecheck failure shouldn't block test results — developers need both signals. Total CI time is max(typecheck, test, build) instead of sum.
+### 3. Scanner Guidance Documents (New Files, No Dependencies)
 
-**Why `npm ci` not `npm install`:** `npm ci` is deterministic (uses lockfile exactly), faster (skips resolution), and fails if lockfile is out of sync. Standard CI practice.
+The core v4.0 deliverable is a set of **scanner guidance documents** embedded in the `/evolve:scan` template. These are structured markdown sections within `src/commands/evolve-scan.ts` that the template generator embeds.
 
-### Future: Publish Workflow
+**Structure borrowed from GSD's pattern:**
 
-**File: `.github/workflows/publish.yml`** — Runs on version tag push (`v*`).
+GSD uses a layered document approach:
+- `PROJECT.md` -- vision, always loaded
+- `CONTEXT.md` -- phase-specific preferences
+- `PLAN.md` -- XML-structured atomic tasks with verification criteria
 
-| Concern | Approach | Why |
-|---------|----------|-----|
-| Authentication | npm Trusted Publishing (OIDC) | No long-lived npm tokens. GitHub Actions generates short-lived, cryptographically-signed tokens via OIDC. Generally available since July 2025. More secure than `NPM_TOKEN` secret. |
-| Provenance | Automatic with Trusted Publishing | When publishing via OIDC, `npm publish` automatically generates SLSA provenance attestations. No `--provenance` flag needed. |
-| Trigger | `on: push: tags: ['v*']` | Manual version control. Developer bumps version, creates tag, pushes. CI handles the rest. |
-| Permissions | `id-token: write`, `contents: read` | OIDC token generation requires explicit `id-token: write` permission. |
+harness-evolve v4.0 adapts this as:
+- **Scanner overview** -- what to check, severity scale (already exists in v3.0 template)
+- **Per-scanner guidance** -- detailed checklist, examples of findings, edge cases to avoid
+- **Output format contract** -- exact structure the model must produce (already exists)
+- **Calibration examples** -- "this IS a finding" vs "this is NOT a finding" pairs
 
-**Why Trusted Publishing over npm tokens:** npm deprecated classic tokens. Granular tokens work but require manual rotation. OIDC tokens are short-lived, workflow-scoped, and cannot be exfiltrated. This is the npm-recommended approach for 2026.
+No libraries needed -- this is pure markdown engineering within existing TypeScript template generators.
 
-**Why NOT automated version bumping (semantic-release):** Premature for v1.x. The release cadence doesn't justify the setup complexity. Manual `npm version [patch|minor|major]` + `git tag` + `git push --tags` is transparent and simple.
+### 4. YAML Frontmatter Parsing for Tests (Dev Dependency)
 
-**Important configuration note:** The `repository.url` in package.json MUST match the GitHub repository URL exactly for Trusted Publishing to work. Also, do NOT set `NODE_AUTH_TOKEN` to empty string — it prevents OIDC from working because npm attempts to use the empty token instead of OIDC.
+**Decision: Use `yaml` package for test validation only.**
 
----
+The `/evolve:scan` and `/evolve:apply` templates include YAML frontmatter (`---` delimited). Currently, the existing `parseFrontmatter()` in `context-builder.ts` does minimal regex-based extraction. For v4.0 testing of the expanded templates, proper YAML parsing ensures frontmatter correctness.
 
-## 3. CLI Entry Point
+| Package | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| yaml | ^2.7.x | Parse YAML frontmatter in template tests | The `yaml` package is the standard YAML parser for Node.js (23M+ weekly downloads). Used only in tests to validate that generated templates have correct frontmatter. NOT a production dependency -- templates are consumed as raw text by Claude Code. |
 
-### Commander.js (Already in Stack)
+**Alternative considered: `gray-matter`** -- Popular frontmatter parser (8M weekly downloads), but it bundles `js-yaml` internally and adds string-manipulation helpers we don't need. The `yaml` package is lower-level, lighter, and more appropriate for test-only validation.
 
-Commander.js v14 is already in the validated stack. No version change needed. However, it is currently listed as a dependency but NOT actually installed or used in the codebase.
+**Alternative considered: Keep using regex** -- Adequate for current 3-field frontmatter, but v4.0 templates may add fields like `allowed-tools`, `model`, `timeout`. Regex parsing becomes fragile at 5+ fields. The `yaml` package is the principled choice.
 
-| Package | Status | Action |
-|---------|--------|--------|
-| `commander` | In CLAUDE.md stack, NOT in package.json | Add to `dependencies` |
-| `@commander-js/extra-typings` | In CLAUDE.md stack, NOT in package.json | Add to `devDependencies` |
+### 5. No NLP/AI Libraries
 
-**Why `commander` in `dependencies` (not devDependencies):** The CLI binary ships in the published package. Commander is a runtime dependency for the `harness-evolve init` command.
+**Decision: Do NOT add winkNLP, natural, or any NLP library.**
 
-**Why `@commander-js/extra-typings` in `devDependencies`:** Provides generic type inference during development only. Zero runtime cost — it's purely TypeScript-level.
+The v1.0 STACK.md listed winkNLP as a "deferred decision" for semantic similarity. v4.0 eliminates the need entirely because:
 
-### CLI Architecture
+1. The model IS the NLP engine -- it understands semantic similarity natively
+2. Prompt deduplication (the original use case) can be done by the model directly
+3. Adding a local NLP library would be architecturally backwards -- we're moving FROM code-based analysis TO model-based analysis
 
-The CLI entry point (`src/cli.ts`) will be a new tsup entry point:
+### 6. No Markdown/AST Parsing Libraries
+
+**Decision: Do NOT add remark, unified, markdown-it, or similar.**
+
+The scanner guidance documents are **consumed by Claude Code as raw text**, not parsed programmatically. Claude Code's markdown rendering handles the presentation. We don't need to parse or transform markdown at the application level.
+
+**Exception:** If a future phase needs to programmatically generate markdown from structured data (e.g., combining user-provided checklist items with defaults), we'd consider `mdast-util-to-markdown` from the unified ecosystem. But v4.0 doesn't need this -- templates are static TypeScript string literals.
+
+### 7. Template Versioning (Existing Pattern, No New Dependencies)
+
+The v3.0 template system already has version-aware updates:
 
 ```typescript
-// src/cli.ts
-#!/usr/bin/env node
-import { program } from 'commander';
-// ...subcommands
+const SCAN_TEMPLATE_VERSION = '3';
 ```
 
-**tsup.config.ts addition:**
-
-```typescript
-entry: {
-  // ...existing entries
-  'cli': 'src/cli.ts',
-}
-```
-
-### `harness-evolve init` Command Design
-
-The `init` command needs to:
-1. Read `~/.claude/settings.json` (or project-level `.claude/settings.json`)
-2. Inject hook registrations into the `hooks` object
-3. Write back atomically (using existing `write-file-atomic`)
-
-**No new dependencies needed.** The command uses:
-- `commander` for argument parsing (adding to deps)
-- `node:fs/promises` for reading settings.json
-- `write-file-atomic` (already a dependency) for safe writes
-- `zod` (already a dependency) for settings.json validation
+v4.0 increments this to trigger re-installation of updated templates for existing users. The `extractInstalledVersion()` + version comparison logic in the init command handles this automatically. No new code patterns or dependencies needed.
 
 ---
 
-## Complete New Dependencies Summary
+## Existing Stack: What Changes
 
-### Production Dependencies to ADD
+### Files That Change (Not Stack, But Architecture)
 
-| Package | Version | Why |
-|---------|---------|-----|
-| `commander` | `^14.0.3` | CLI argument parsing for `harness-evolve init`. Already in validated stack, just not installed. |
+| File | Current | v4.0 | Impact |
+|------|---------|------|--------|
+| `src/commands/evolve-scan.ts` | 171 lines, brief scanner descriptions | 400-600 lines, full guidance docs | Major expansion of template content |
+| `src/scan/scanners/*.ts` | 7 scanner functions, ~600 total LOC | Deprecated or simplified to validation-only | Code removal |
+| `src/scan/index.ts` | Orchestrates all 7 scanners | Simplified or becomes optional CLI-only path | Simplification |
+| `src/scan/context-builder.ts` | Full ScanContext builder | Simplified text summary generator | Simplification |
+| `src/scan/schemas.ts` | ScanContext Zod schema | Simplified or retained for CLI path | Minimal change |
 
-### Dev Dependencies to ADD
+### Files That Don't Change
 
-| Package | Version | Why |
-|---------|---------|-----|
-| `@commander-js/extra-typings` | `^14.0.0` | TypeScript type inference for Commander options/actions. Dev-only, zero runtime cost. |
-| `publint` | `^0.3.18` | Pre-publish validation of package.json exports/types fields. Run in CI. |
-| `@arethetypeswrong/cli` | `^0.18.2` | Validate TypeScript types resolve correctly for consumers. Run in CI. |
+| File | Why |
+|------|-----|
+| `src/schemas/recommendation.ts` | Recommendation schema stays -- /evolve:apply still uses structured recommendations |
+| `src/cli.ts` | CLI commands stay -- init/status/uninstall/scan all still needed |
+| `src/commands/evolve-apply.ts` | Apply template stays -- interactive apply workflow unchanged |
+| `src/hooks/*.ts` | All hook handlers stay -- interaction capture pipeline is independent |
+| `src/analysis/**` | Classifier pipeline stays -- background analysis is separate from deep scan |
+| `src/generators/**` | Generator functions stay -- skill/hook/patch generation is separate |
+| `src/delivery/**` | Delivery pipeline stays -- notification and recommendation output unchanged |
+
+---
+
+## Recommended Stack (Complete v4.0 View)
+
+### Unchanged Core (DO NOT MODIFY)
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Node.js | >=22.14.0 | Runtime |
+| TypeScript | ~6.0 | Type safety |
+| tsup | ^8.5.1 | Bundler |
+| Zod | ^4.3.6 | Schema validation |
+| Commander.js | ^14.0.3 | CLI framework |
+| @commander-js/extra-typings | ^14.x | CLI type inference |
+| write-file-atomic | ^7.0.0 | Atomic file writes |
+| proper-lockfile | ^4.1.2 | Cross-process locking |
+| Vitest | ^4.1.2 | Testing |
+| tsx | ^4.x | Dev-time TS execution |
+
+### New Dev Dependencies
+
+| Package | Version | Purpose | When to Install |
+|---------|---------|---------|-----------------|
+| yaml | ^2.7.0 | YAML frontmatter parsing in template tests | Phase where template expansion happens |
 
 ### Dependencies NOT to Add
 
 | Package | Why Not |
 |---------|---------|
-| `np` | CI handles publishing. Interactive tool conflicts with automated workflow. |
-| `semantic-release` | Overkill for v1.x. Manual versioning is transparent and sufficient. |
-| `release-it` | Same as semantic-release. Revisit at v2.0+ if release cadence increases. |
-| `changesets` | Designed for monorepos with multiple packages. Single package, not needed. |
-| `husky` / `lint-staged` | Claude Code hooks already handle pre-commit verification. Adding git hooks tooling creates duplication. |
-| Any GitHub Actions npm package | Workflows are YAML config, not code dependencies. |
+| winkNLP | Model IS the NLP engine now. Local NLP is architecturally backwards. |
+| remark / unified / markdown-it | Templates consumed as raw text by Claude Code. No programmatic markdown parsing needed. |
+| gray-matter | Overkill for test-only frontmatter validation. `yaml` is lighter. |
+| @anthropic-ai/sdk | harness-evolve does NOT call the Anthropic API. The user's Claude Code session provides the model. Adding an SDK would introduce API key management, billing complexity, and vendor lock-in for zero benefit. |
+| langchain / llamaindex | Same reason as above. Model-driven means the model that's already running does the work, not a separate API call. |
+| openai / any LLM SDK | harness-evolve is Claude Code-specific and model-agnostic within that context. |
+| handlebars / ejs / mustache | Template strings in TypeScript are sufficient. Adding a templating engine for markdown generation is over-engineering. |
+| js-yaml | Predecessor to `yaml` package. The `yaml` package (v2.x) is the maintained successor with better TypeScript support. |
+| @constellos/claude-code-kit | Third-party Claude Code type definitions. Risk of drift. Own Zod schemas are safer. |
 
-### Installation Commands
+---
+
+## Slash Command Template Architecture (The Real "Stack")
+
+Since the primary deliverable is expanded markdown templates, here's the architectural pattern for the guidance documents:
+
+### Template Structure (GSD-Inspired)
+
+```
+/evolve:scan template structure:
+---
+name: scan
+description: ...
+allowed-tools: Read(*), Grep(*), Glob(*), Bash(npx harness-evolve *)
+---
+
+# Evolve Scan (v4)
+
+## Your Role
+[One paragraph: you are a config auditor. Analyze, don't just pattern-match.]
+
+## What to Scan
+[Ordered list of file locations to check]
+
+## Scanner Guidance
+
+### 1. Redundancy Analysis
+**What to look for:** [checklist]
+**Severity:** [when PROBLEM vs SUGGESTION]
+**Examples:**
+  - IS a finding: [concrete example]
+  - NOT a finding: [concrete non-example]
+
+### 2. Mechanization Opportunities
+[same structure]
+
+### 3. Staleness Detection
+[same structure]
+
+... (7 scanner sections)
+
+## Output Format
+[Exact format specification -- carried forward from v3.0]
+
+## Calibration
+[Global examples of correct vs incorrect findings]
+[False positive patterns to avoid]
+
+## Edge Cases
+[Carried forward from v3.0 + new model-specific cases]
+```
+
+### Key Design Decisions for Templates
+
+| Decision | Rationale |
+|----------|-----------|
+| `allowed-tools` includes Read/Grep/Glob | Model needs filesystem access to analyze config files. v3.0 only allowed Bash for CLI calls. |
+| `disable-model-invocation: false` (or removed) | v3.0 set `disable-model-invocation: true` because the CLI did all work. v4.0 needs model reasoning. |
+| Calibration examples use IS/NOT pairs | Research from Anthropic's prompt engineering best practices: providing both positive and negative examples dramatically improves classification accuracy. |
+| Per-scanner severity definitions | Prevents the model from over-flagging. "This is a SUGGESTION, not a PROBLEM" boundaries. |
+| Scanner sections are ordered by impact | Highest-impact scanners first ensures they get most attention if context is limited. |
+
+### Template Size Budget
+
+| Component | Estimated Lines | Notes |
+|-----------|----------------|-------|
+| Frontmatter + overview | 30 | Carried from v3.0 |
+| Per-scanner guidance (7 scanners) | 280 (40 per scanner) | New content |
+| Output format | 50 | Carried from v3.0 |
+| Calibration examples | 40 | New content |
+| Error handling + edge cases | 30 | Carried from v3.0 |
+| **Total** | **~430 lines** | Within Claude Code's effective context budget |
+
+**Risk: Template too large?** Research indicates Claude Code loads `.claude/commands/*.md` fully into context. GSD's workflow documents are 200-400 lines each without issues. ECC has skills exceeding 500 lines. 430 lines is well within safe territory. However, monitor for quality degradation and split into sub-templates if needed.
+
+---
+
+## Open-Source Ecosystem Comparison (Research for v4.0 Feature)
+
+This section informs the "ecosystem comparison" feature requirement -- not a stack decision, but context the roadmap needs.
+
+### Competitive Landscape (April 2026)
+
+| Tool | GitHub Stars | Approach | Scanner/Audit | Self-Improving |
+|------|-------------|----------|---------------|----------------|
+| **Everything Claude Code** | ~82K+ | Agent harness optimization system | `/harness-audit` (deterministic scoring), `/security-scan` (102 rules) | No -- static rule sets |
+| **GSD** | 5K+ (est.) | Spec-driven development workflow | No scanner -- different problem domain | No -- workflow orchestration |
+| **Cog** | 1K+ (est.) | Cognitive architecture, tiered memory | `/evolve` (audit architecture + rule effectiveness) | Yes -- `/reflect` mines patterns |
+| **Singularity-Claude** | 500+ (est.) | Self-evolving skill engine | Gap detection for skills | Yes -- score/repair/crystallize loop |
+| **Claude-Mem** | 1K+ (est.) | Session capture + AI compression | No scanner | No -- memory only |
+| **Total Recall** | 500+ (est.) | Tiered memory with write gates | No scanner | No -- memory only |
+| **harness-evolve** | <100 | Self-iteration engine, pattern detection | 7 scanners (moving to model-driven) | Yes -- captures patterns, routes optimizations |
+
+### What to Borrow
+
+| From | Pattern | How to Apply |
+|------|---------|-------------|
+| GSD | Layered document architecture (PROJECT > CONTEXT > PLAN) | Scanner guidance docs follow this layering: overview > per-scanner > calibration |
+| GSD | Fresh subagent contexts to avoid context rot | Already used via slash commands (each invocation is a fresh context) |
+| ECC | Deterministic scoring for audits | Keep a deterministic scoring summary alongside model-driven findings |
+| ECC | Manifest-driven installation | Already have init system; can add manifest for scanner guidance doc versions |
+| Singularity | IS/NOT calibration pattern | Adopt for scanner guidance: "IS a finding" vs "NOT a finding" examples |
+| Singularity | Maturity stages for skills | Could apply to scanner guidance docs: draft > tested > hardened |
+| Cog | `/reflect` pattern mining | harness-evolve's background analysis pipeline already does this |
+
+### What NOT to Borrow
+
+| Pattern | Why Not |
+|---------|---------|
+| ECC's 119 skills + 60 commands | Bloat. harness-evolve is focused on one thing (config optimization), not a Swiss army knife. |
+| Singularity's shell-only approach | harness-evolve already has TypeScript infrastructure. Going shell-only would be a regression. |
+| Cog's multi-tier memory | Out of scope. harness-evolve routes TO memory systems, doesn't build one. |
+| ECC's red-team/blue-team/auditor pipeline | Overkill for config audit. Three model invocations per scan is expensive and slow. |
+
+---
+
+## Installation (v4.0 Changes)
+
+### New Dev Dependency
 
 ```bash
-# Production dependency
-npm install commander@^14.0.3
+npm install -D yaml@^2.7.0
+```
 
-# Dev dependencies
-npm install -D @commander-js/extra-typings@^14.0.0 publint @arethetypeswrong/cli
+### Production Dependencies: No Changes
+
+```bash
+# Nothing to install. v4.0 is a refactoring + documentation milestone.
 ```
 
 ---
 
-## tsup.config.ts Changes
+## Performance Budget (v4.0 Update)
 
-Current config produces 8 entry points. Add one:
+| Operation | v3.0 Target | v4.0 Target | Notes |
+|-----------|-------------|-------------|-------|
+| `/evolve:scan` via slash command | <5s (CLI + 7 scanners) | 15-45s (model analysis) | Model reads files + reasons. Slower but dramatically more accurate. Acceptable for on-demand scan. |
+| `npx harness-evolve scan` CLI | <5s | <5s (simplified) | CLI path stays fast -- reduced scanner set or text summary only. |
+| `/evolve:apply` | Unchanged | Unchanged | Apply pipeline doesn't change. |
+| Hook latency | Unchanged | Unchanged | Hook capture pipeline doesn't change. |
 
-| Entry | Source | Purpose |
-|-------|--------|---------|
-| `cli` | `src/cli.ts` | CLI binary entry point for `harness-evolve init` |
-
-The shebang (`#!/usr/bin/env node`) in `src/cli.ts` will be preserved by tsup in the output. tsup also auto-sets the executable bit on files with shebangs.
-
----
-
-## package.json Target State
-
-Key structural changes (not a complete file, showing additions/changes only):
-
-```json
-{
-  "name": "harness-evolve",
-  "version": "1.1.0",
-  "description": "Self-iteration engine for Claude Code — observes patterns, recommends optimizations",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "bin": {
-    "harness-evolve": "./dist/cli.js"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "claude-code", "hooks", "self-improving", "harness",
-    "optimization", "pattern-detection", "cli"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/r1ckyIn/harness-evolve.git"
-  },
-  "license": "MIT",
-  "author": {
-    "name": "Ricky",
-    "email": "rickyqin919@gmail.com",
-    "url": "https://github.com/r1ckyIn"
-  }
-}
-```
+**Key tradeoff:** Model-driven scanning is 3-10x slower than hardcoded scanners, but eliminates false positives and catches issues that regex never could. This is the right tradeoff for an on-demand analysis tool (not a real-time hook).
 
 ---
 
 ## Integration Points
 
-### How New Stack Connects to Existing
+### How v4.0 Changes Connect to Existing Stack
 
-| New Component | Integrates With | How |
-|---------------|-----------------|-----|
-| `commander` CLI | `storage/config.ts` | `init` command reads/writes settings.json via existing config patterns |
-| `commander` CLI | `storage/dirs.ts` | Uses `paths` and `ensureInit()` for directory setup |
-| `commander` CLI | `write-file-atomic` | Atomic writes to settings.json during `init` |
-| `publint` | `tsup` build output | Validates the `dist/` artifact after build |
-| `attw` | `tsup` build output + `package.json` | Validates types resolve for consumers |
-| GitHub Actions | `package.json` scripts | Runs existing `build`, `test`, `typecheck` scripts |
-| npm Trusted Publishing | `package.json` `repository` field | URL must match GitHub repo for OIDC validation |
+| Change | Integrates With | How |
+|--------|-----------------|-----|
+| Expanded scan template | `src/commands/evolve-scan.ts` | Template generator function grows from 171 to ~430 lines |
+| Simplified context builder | `src/scan/context-builder.ts` | Produces text summary instead of (or alongside) JSON ScanContext |
+| Scanner deprecation | `src/scan/scanners/*.ts` | 7 scanner files deprecated or removed |
+| `allowed-tools` expansion | Slash command frontmatter | Add Read, Grep, Glob to allowed tools list |
+| `disable-model-invocation` removal | Slash command frontmatter | Remove or set to false -- model must reason |
+| Recommendation storage | `src/delivery/recommendation-store.ts` | Model outputs recommendations in same schema -- apply pipeline unchanged |
 
-### What Does NOT Change
+### What the Model Outputs
 
-| Component | Reason |
-|-----------|--------|
-| Zod schemas | No new schemas needed for CLI. Settings.json validation uses existing Zod patterns. |
-| Vitest config | No changes. Existing test infrastructure handles CLI tests. |
-| tsconfig.json | No changes. CLI code follows same TS config. |
-| Storage layer | No changes. CLI reuses existing `storage/` module. |
-| Hook handlers | No changes. Already compiled and working. |
+The model-driven scan must produce output that the existing `/evolve:apply` pipeline can consume. Two options:
+
+| Option | How | Tradeoff |
+|--------|-----|----------|
+| **A: Model outputs structured JSON** | Template instructs model to output `Recommendation[]`-compatible JSON after analysis | Tight coupling to schema, but seamless apply pipeline integration |
+| **B: Model outputs human-readable text** | Template specifies a markdown output format; CLI doesn't store results | Simpler, but breaks `/evolve:apply` pipeline |
+
+**Recommendation: Option A.** The `/evolve:apply` pipeline is valuable and should not be broken. The scan template will instruct the model to output findings in a JSON format that matches the existing `Recommendation` schema, then the template instructs the model to call `npx harness-evolve store-scan <json>` (new CLI subcommand) to persist results for the apply pipeline.
+
+This requires one new CLI subcommand:
+
+```typescript
+// In src/cli.ts -- new subcommand
+program
+  .command('store-scan')
+  .description('Store scan results from model-driven analysis')
+  .action(async () => {
+    // Read JSON from stdin, validate with Zod, write to recommendations file
+  });
+```
+
+No new dependencies -- uses existing Zod validation and write-file-atomic.
 
 ---
 
@@ -303,27 +402,27 @@ Key structural changes (not a complete file, showing additions/changes only):
 
 | Decision | Confidence | Basis |
 |----------|------------|-------|
-| ESM-only publish (no CJS) | HIGH | Project is `"type": "module"`, targets Node 22+, no CJS consumers exist |
-| `exports` field structure | HIGH | Official Node.js docs, npm docs, multiple 2026 guides agree |
-| `actions/setup-node@v4` | HIGH | Widely tested, v4 README still current, explicit cache config |
-| npm Trusted Publishing (OIDC) | HIGH | npm official docs, GA since July 2025, multiple implementation guides |
-| Commander.js v14 | HIGH | Already validated in v1.0 stack research, just needs installation |
-| publint + attw as CI validators | MEDIUM | Widely recommended in 2026 guides, but both pre-1.0 (publint 0.3.x, attw 0.18.x). Low risk since they're dev-only validation tools. |
-| No semantic-release | HIGH | Project complexity doesn't warrant it. Manual tagging is transparent. |
+| Zero new production dependencies | HIGH | Architectural analysis of current codebase. Model-driven scanning delegates analysis to the Claude Code model, not to application code. |
+| `yaml` as dev dependency | HIGH | 23M weekly downloads, standard YAML parser, test-only usage. Low risk. |
+| Template size (~430 lines) viable | MEDIUM | GSD and ECC demonstrate templates of similar size work well. No direct measurement with harness-evolve-specific content yet. |
+| Model-driven scanning is more accurate | MEDIUM | Logical inference from LLM capabilities vs regex matching. Not yet empirically validated with harness-evolve's specific scanners. Phase-specific research recommended. |
+| `store-scan` CLI subcommand approach | MEDIUM | Cleanest integration with existing apply pipeline. Alternative: model writes directly to recommendation file (less structured). |
+| No NLP libraries needed | HIGH | Model IS the NLP engine. Adding local NLP contradicts the architectural direction. |
+| Ecosystem comparison data accuracy | LOW | GitHub star counts from web search, may be stale. Feature descriptions from README/docs, may not reflect current state. |
 
 ---
 
 ## Sources
 
-- [publint Documentation](https://publint.dev/docs/) -- Package.json validation tool (HIGH confidence)
-- [Are The Types Wrong](https://arethetypeswrong.github.io/) -- TypeScript type resolution validator (HIGH confidence)
-- [npm Trusted Publishing Docs](https://docs.npmjs.com/trusted-publishers/) -- Official OIDC publishing guide (HIGH confidence)
-- [npm Trusted Publishing GA Announcement](https://github.blog/changelog/2025-07-31-npm-trusted-publishing-with-oidc-is-generally-available/) -- OIDC GA (HIGH confidence)
-- [Things you need to do for npm trusted publishing to work](https://philna.sh/blog/2026/01/28/trusted-publishing-npm/) -- Practical setup guide (MEDIUM confidence)
-- [Tutorial: publishing ESM-based npm packages with TypeScript](https://2ality.com/2025/02/typescript-esm-packages.html) -- Dr. Axel Rauschmayer's guide (HIGH confidence)
-- [Guide to package.json exports field](https://hirok.io/posts/package-json-exports) -- Comprehensive exports guide (MEDIUM confidence)
-- [actions/setup-node GitHub](https://github.com/actions/setup-node) -- Official action docs (HIGH confidence)
-- [Commander.js](https://github.com/tj/commander.js) -- CLI framework (HIGH confidence)
-- [Building CLI apps with TypeScript in 2026](https://hackers.pub/@hongminhee/2026/typescript-cli-2026) -- Ecosystem overview (MEDIUM confidence)
-- [np - A better npm publish](https://github.com/sindresorhus/np) -- Considered, not adopted (MEDIUM confidence)
-- [Create a Modern npm Package in 2026](https://jsmanifest.com/create-modern-npm-package-2026/) -- Package structure guide (MEDIUM confidence)
+- [Claude Code Hooks Reference](https://code.claude.com/docs/en/hooks) -- Official hook docs, agent/prompt hook types (HIGH confidence)
+- [Claude Code Common Workflows](https://code.claude.com/docs/en/common-workflows) -- Slash command patterns, allowed-tools (HIGH confidence)
+- [GSD (Get Shit Done)](https://github.com/gsd-build/get-shit-done) -- Workflow document architecture, layered context pattern (HIGH confidence)
+- [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) -- Harness audit, deterministic scoring, manifest-driven install (MEDIUM confidence)
+- [Singularity-Claude](https://github.com/Shmayro/singularity-claude) -- Self-evolving skills, score/repair loop, zero-dependency pattern (MEDIUM confidence)
+- [Cog](https://github.com/marciopuga/cog) -- Cognitive architecture, /reflect pattern mining (MEDIUM confidence)
+- [Claude-Mem](https://github.com/thedotmack/claude-mem) -- Session capture + compression (MEDIUM confidence)
+- [Anthropic Prompt Engineering Best Practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) -- Calibration example patterns (HIGH confidence)
+- [Beating Context Rot with GSD (The New Stack)](https://thenewstack.io/beating-the-rot-and-getting-stuff-done/) -- GSD architecture deep dive (MEDIUM confidence)
+- [GSD Framework Deep Dive (codecentric)](https://www.codecentric.de/en/knowledge-hub/blog/the-anatomy-of-claude-code-workflows-turning-slash-commands-into-an-ai-development-system) -- GSD workflow document patterns (MEDIUM confidence)
+- [How Claude Code Builds a System Prompt](https://www.dbreunig.com/2026/04/04/how-claude-code-builds-a-system-prompt.html) -- Context engineering internals (MEDIUM confidence)
+- [yaml npm package](https://www.npmjs.com/package/yaml) -- YAML parser for Node.js (HIGH confidence)
