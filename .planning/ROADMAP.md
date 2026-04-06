@@ -149,8 +149,8 @@ Plans:
   2. `/evolve:apply` presents numbered options (apply/skip/dismiss/let Claude decide) that user selects interactively, not free-form text
   3. Scan output includes a summary line showing how many areas were scanned and how many had findings (e.g., "7 scanners checked, 3 issues in 2 areas")
   4. An E2E integration test creates an intentionally broken Claude Code config and verifies `scan` detects issues from multiple scanner types (not just hooks)
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 20-01-PLAN.md -- Template UX (English scan output, numbered apply options) + scanner summary metadata
-- [ ] 20-02-PLAN.md -- E2E dirty-config integration test validating all 7 scanners
+- [x] 20-02-PLAN.md -- E2E dirty-config integration test validating all 7 scanners
