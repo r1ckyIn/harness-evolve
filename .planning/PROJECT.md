@@ -97,6 +97,10 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [ ] Model identifies cross-file inconsistencies — Phase 23 (MODEL-02, awaiting human verification)
 - [ ] Model identifies hookable operations from natural language — Phase 23 (MODEL-03, awaiting human verification)
 - [ ] User extends scan by editing guidance .md without code changes — Phase 23 (MODEL-04, awaiting human verification)
+- [x] context-builder correctly parses nested hooks format `{matcher, hooks: [{type, command}]}`, zero false positives on real configs — Validated in Phase 21: foundation-context-infrastructure (INFRA-01)
+- [x] `harness-evolve scan-context` CLI outputs complete ScanContext JSON for model consumption — Validated in Phase 21: foundation-context-infrastructure (INFRA-02)
+- [x] `harness-evolve store-findings` validates and persists model-generated findings to apply pipeline — Validated in Phase 21: foundation-context-infrastructure (INFRA-03)
+- [x] First-time user onboarding: scan-context works without init, store-findings auto-creates directories — Validated in Phase 21: foundation-context-infrastructure (INFRA-04)
 
 ## Current Milestone: v4.0 Intelligent Scanner & Ecosystem Learning
 
