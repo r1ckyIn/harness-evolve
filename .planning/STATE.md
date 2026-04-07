@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Deep Scan & Auto-Generation
+milestone: v1.0
+milestone_name: milestone
 status: verifying
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-04-04T11:59:26.114Z"
+stopped_at: Completed 21-02-PLAN.md
+last_updated: "2026-04-07T03:05:53.247Z"
 last_activity: 2026-04-04
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 9
+  completed_phases: 8
+  total_plans: 21
+  completed_plans: 22
   percent: 88
 ---
 
@@ -55,6 +55,7 @@ Progress: [========░░] 88% (v2.0 scope)
 | 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 | Phase 16 P02 | 3min | 1 tasks | 4 files |
 | Phase 16-ux-polish P01 | 4min | 2 tasks | 6 files |
+| Phase 21 P02 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 16-ux-polish]: Notification text uses 'suggestion' instead of 'recommendation' for conciseness
 - [Phase 16-ux-polish]: buildNotification reduced to single parameter -- /evolve:apply is the only action path
 - [Phase 16-ux-polish]: Hook descriptions embedded in HOOK_REGISTRATIONS array, not a separate data structure
+- [Phase 21]: scan-context outputs raw ScanContext JSON directly (no wrapper, no deprecation)
+- [Phase 21]: Errors go to stderr with exitCode=1 for clean JSON piping
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:48:28.635Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-04-07T03:05:53.243Z
+Stopped at: Completed 21-02-PLAN.md
 Resume file: None
