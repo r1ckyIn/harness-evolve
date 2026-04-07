@@ -8,6 +8,7 @@ import { registerInitCommand } from './cli/init.js';
 import { registerStatusCommand } from './cli/status.js';
 import { registerUninstallCommand } from './cli/uninstall.js';
 import { registerScanCommand } from './cli/scan.js';
+import { registerScanContextCommand } from './cli/scan-context.js';
 import { registerPendingCommand, registerApplyOneCommand, registerDismissCommand } from './cli/apply.js';
 
 // Read version from package.json at runtime
@@ -26,6 +27,7 @@ registerInitCommand(program);
 registerStatusCommand(program);
 registerUninstallCommand(program);
 registerScanCommand(program);
+registerScanContextCommand(program);
 registerPendingCommand(program);
 registerApplyOneCommand(program);
 registerDismissCommand(program);
