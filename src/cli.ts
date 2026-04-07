@@ -9,6 +9,7 @@ import { registerStatusCommand } from './cli/status.js';
 import { registerUninstallCommand } from './cli/uninstall.js';
 import { registerScanCommand } from './cli/scan.js';
 import { registerScanContextCommand } from './cli/scan-context.js';
+import { registerStoreFindingsCommand } from './cli/store-findings.js';
 import { registerPendingCommand, registerApplyOneCommand, registerDismissCommand } from './cli/apply.js';
 
 // Read version from package.json at runtime
@@ -31,5 +32,6 @@ registerScanContextCommand(program);
 registerPendingCommand(program);
 registerApplyOneCommand(program);
 registerDismissCommand(program);
+registerStoreFindingsCommand(program);
 
 program.parse();

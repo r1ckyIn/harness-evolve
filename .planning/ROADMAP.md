@@ -153,7 +153,7 @@ Plans:
 Plans:
 - [x] 21-01-PLAN.md -- Fix nested hooks parsing bug + add matcher field to schema (INFRA-01)
 - [ ] 21-02-PLAN.md -- Add scan-context CLI subcommand (INFRA-02, INFRA-04)
-- [ ] 21-03-PLAN.md -- Add store-findings CLI subcommand (INFRA-03, INFRA-04)
+- [x] 21-03-PLAN.md -- Add store-findings CLI subcommand (INFRA-03, INFRA-04)
 
 ### Phase 22: Ecosystem Learning & Scanner Guidance
 **Goal**: The `/evolve:scan` slash command template contains a comprehensive, model-executable guidance document informed by GSD workflow patterns and open-source best practices -- making the model itself the scanner
