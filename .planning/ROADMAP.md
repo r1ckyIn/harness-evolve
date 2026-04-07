@@ -149,7 +149,11 @@ Plans:
   2. `harness-evolve scan-context` outputs a complete JSON object containing CLAUDE.md content, rules, settings, hooks, and commands -- ready for model consumption without additional processing
   3. `harness-evolve store-findings` accepts a JSON array of findings from stdin, validates each against the Recommendation schema, and persists valid findings to the apply pipeline (available via `pending`)
   4. A user who installs harness-evolve for the first time can invoke `/evolve:scan` within their first Claude Code session without a separate manual `harness-evolve init` step, or is guided to run init automatically
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 21-01-PLAN.md -- Fix nested hooks parsing bug + add matcher field to schema (INFRA-01)
+- [ ] 21-02-PLAN.md -- Add scan-context CLI subcommand (INFRA-02, INFRA-04)
+- [ ] 21-03-PLAN.md -- Add store-findings CLI subcommand (INFRA-03, INFRA-04)
 
 ### Phase 22: Ecosystem Learning & Scanner Guidance
 **Goal**: The `/evolve:scan` slash command template contains a comprehensive, model-executable guidance document informed by GSD workflow patterns and open-source best practices -- making the model itself the scanner
@@ -207,6 +211,6 @@ Phases execute in numeric order: 21 -> 22 -> 23
 | 19. Workflow Documentation | v3.0 | 2/2 | Complete | 2026-04-05 |
 | 19.1. Developer Full Integration Testing | v3.0 | 3/3 | Complete | 2026-04-05 |
 | 20. Scanner UX & Coverage Polish | v3.0 | 2/2 | Complete | 2026-04-06 |
-| 21. Foundation & Context Infrastructure | v4.0 | 0/0 | Not started | - |
+| 21. Foundation & Context Infrastructure | v4.0 | 0/3 | In progress | - |
 | 22. Ecosystem Learning & Scanner Guidance | v4.0 | 0/0 | Not started | - |
 | 23. Model-Driven Validation & Legacy Cleanup | v4.0 | 3/3 | Complete    | 2026-04-06 |
