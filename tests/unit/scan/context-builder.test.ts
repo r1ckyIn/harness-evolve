@@ -140,6 +140,151 @@ describe('buildScanContext', () => {
     expect(projectHook).toBeDefined();
   });
 
+  describe('nested hooks parsing (INFRA-01)', () => {
+    it('parses nested hooks format with matcher into individual hook entries', async () => {
+      await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+      await writeFile(
+        join(fakeCwd, '.claude', 'settings.json'),
+        JSON.stringify({
+          hooks: {
+            PreToolUse: [
+              {
+                matcher: 'Bash',
+                hooks: [{ type: 'command', command: 'echo test' }],
+              },
+            ],
+          },
+        }),
+      );
+
+      const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+      const hook = ctx.hooks_registered.find(
+        (h) => h.scope === 'project' && h.event === 'PreToolUse',
+      );
+      expect(hook).toBeDefined();
+      expect(hook!.type).toBe('command');
+      expect(hook!.command).toBe('echo test');
+      expect(hook!.matcher).toBe('Bash');
+    });
+
+    it('parses flat hooks format without matcher (backward compatibility)', async () => {
+      await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+      await writeFile(
+        join(fakeCwd, '.claude', 'settings.json'),
+        JSON.stringify({
+          hooks: {
+            UserPromptSubmit: [
+              { type: 'command', command: 'node capture.js' },
+            ],
+          },
+        }),
+      );
+
+      const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+      const hook = ctx.hooks_registered.find(
+        (h) => h.scope === 'project' && h.event === 'UserPromptSubmit',
+      );
+      expect(hook).toBeDefined();
+      expect(hook!.type).toBe('command');
+      expect(hook!.command).toBe('node capture.js');
+      expect(hook!.matcher).toBeUndefined();
+    });
+
+    it('parses mixed format (nested + flat in different events)', async () => {
+      await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+      await writeFile(
+        join(fakeCwd, '.claude', 'settings.json'),
+        JSON.stringify({
+          hooks: {
+            PreToolUse: [
+              {
+                matcher: 'Bash',
+                hooks: [{ type: 'command', command: 'echo nested' }],
+              },
+            ],
+            Stop: [
+              { type: 'command', command: 'echo flat-stop' },
+            ],
+          },
+        }),
+      );
+
+      const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+      const nestedHook = ctx.hooks_registered.find(
+        (h) => h.event === 'PreToolUse' && h.scope === 'project',
+      );
+      expect(nestedHook).toBeDefined();
+      expect(nestedHook!.command).toBe('echo nested');
+      expect(nestedHook!.matcher).toBe('Bash');
+
+      const flatHook = ctx.hooks_registered.find(
+        (h) => h.event === 'Stop' && h.scope === 'project',
+      );
+      expect(flatHook).toBeDefined();
+      expect(flatHook!.command).toBe('echo flat-stop');
+      expect(flatHook!.matcher).toBeUndefined();
+    });
+
+    it('parses nested format without matcher field (matcher=undefined)', async () => {
+      await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+      await writeFile(
+        join(fakeCwd, '.claude', 'settings.json'),
+        JSON.stringify({
+          hooks: {
+            PostToolUse: [
+              {
+                hooks: [{ type: 'command', command: 'echo no-matcher' }],
+              },
+            ],
+          },
+        }),
+      );
+
+      const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+      const hook = ctx.hooks_registered.find(
+        (h) => h.event === 'PostToolUse' && h.scope === 'project',
+      );
+      expect(hook).toBeDefined();
+      expect(hook!.command).toBe('echo no-matcher');
+      expect(hook!.matcher).toBeUndefined();
+    });
+
+    it('parses nested format with multiple inner hooks producing multiple entries', async () => {
+      await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+      await writeFile(
+        join(fakeCwd, '.claude', 'settings.json'),
+        JSON.stringify({
+          hooks: {
+            PreToolUse: [
+              {
+                matcher: '*',
+                hooks: [
+                  { type: 'command', command: 'echo first' },
+                  { type: 'command', command: 'echo second' },
+                ],
+              },
+            ],
+          },
+        }),
+      );
+
+      const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+      const hooks = ctx.hooks_registered.filter(
+        (h) => h.event === 'PreToolUse' && h.scope === 'project',
+      );
+      expect(hooks).toHaveLength(2);
+      expect(hooks[0].command).toBe('echo first');
+      expect(hooks[0].matcher).toBe('*');
+      expect(hooks[1].command).toBe('echo second');
+      expect(hooks[1].matcher).toBe('*');
+    });
+  });
+
   it('returns empty arrays when directories/files do not exist', async () => {
     const emptyHome = join(fakeHome, 'empty');
     const emptyCwd = join(fakeCwd, 'empty');
