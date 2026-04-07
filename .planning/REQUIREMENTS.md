@@ -10,7 +10,7 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 ### Bug 修复与基础设施 (INFRA)
 
-- [ ] **INFRA-01**: context-builder 正确解析 Claude Code 嵌套 hooks 格式 `{matcher, hooks: [{type, command}]}`，扫描真实用户配置零误报
+- [x] **INFRA-01**: context-builder 正确解析 Claude Code 嵌套 hooks 格式 `{matcher, hooks: [{type, command}]}`，扫描真实用户配置零误报
 - [ ] **INFRA-02**: `harness-evolve scan-context` CLI 子命令输出结构化 JSON 配置上下文，供用户模型直接消费
 - [ ] **INFRA-03**: `harness-evolve store-findings` CLI 子命令接收模型生成的 findings 并持久化到 apply 管道，通过 Recommendation schema 验证
 - [ ] **INFRA-04**: 用户首次安装后无需手动运行 `harness-evolve init` 即可使用斜杠命令，或 init 流程有明确的自动化引导
@@ -88,7 +88,7 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 | AUD-03 | Phase 18 | Complete |
 | WFL-01 | Phase 19 | Complete |
 | WFL-02 | Phase 19 | Complete |
-| INFRA-01 | Phase 21 | Pending |
+| INFRA-01 | Phase 21 | Complete |
 | INFRA-02 | Phase 21 | Pending |
 | INFRA-03 | Phase 21 | Pending |
 | INFRA-04 | Phase 21 | Pending |

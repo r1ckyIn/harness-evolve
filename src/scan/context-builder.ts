@@ -281,11 +281,38 @@ function extractHooksFromAllSettings(
       if (!Array.isArray(defs)) continue;
       for (const def of defs) {
         if (!def || typeof def !== 'object') continue;
-        const hookDef = def as Record<string, unknown>;
-        const type = String(hookDef.type ?? 'command');
-        const command =
-          typeof hookDef.command === 'string' ? hookDef.command : undefined;
-        hooks.push({ event, scope, type, command });
+        const matcherGroup = def as Record<string, unknown>;
+
+        // Nested format: { matcher?, hooks: [{ type, command, ... }] }
+        if (Array.isArray(matcherGroup.hooks)) {
+          const matcher =
+            typeof matcherGroup.matcher === 'string'
+              ? matcherGroup.matcher
+              : undefined;
+          for (const innerHook of matcherGroup.hooks) {
+            if (!innerHook || typeof innerHook !== 'object') continue;
+            const h = innerHook as Record<string, unknown>;
+            hooks.push({
+              event,
+              scope,
+              type: String(h.type ?? 'command'),
+              command:
+                typeof h.command === 'string' ? h.command : undefined,
+              matcher,
+            });
+          }
+        } else {
+          // Flat format fallback: { type, command, ... }
+          hooks.push({
+            event,
+            scope,
+            type: String(matcherGroup.type ?? 'command'),
+            command:
+              typeof matcherGroup.command === 'string'
+                ? matcherGroup.command
+                : undefined,
+          });
+        }
       }
     }
   };

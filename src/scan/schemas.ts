@@ -48,6 +48,7 @@ export const scanContextSchema = z.object({
       scope: z.enum(['user', 'project', 'local']),
       type: z.string(),
       command: z.string().optional(),
+      matcher: z.string().optional(),
     }),
   ),
 });

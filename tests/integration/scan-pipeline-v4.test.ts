@@ -134,12 +134,12 @@ describe('v4.0 scan pipeline validation', () => {
       const parsed = scanContextSchema.parse(ctx);
       expect(parsed).toBeDefined();
 
-      // hooks_registered should have at least one entry from the nested format.
-      // Current behavior: the outer object {matcher, hooks} is treated as a
-      // hook entry (with type defaulting to 'command'). The INFRA-01 fix in
-      // Phase 21 will properly extract inner hooks. Either way, entries exist.
+      // INFRA-01: nested hooks must be properly extracted with concrete values
       expect(parsed.hooks_registered.length).toBeGreaterThanOrEqual(1);
       expect(parsed.hooks_registered[0].event).toBe('PreToolUse');
+      expect(parsed.hooks_registered[0].command).toBe('echo nested-hook');
+      expect(parsed.hooks_registered[0].matcher).toBe('Bash');
+      expect(parsed.hooks_registered[0].type).toBe('command');
     });
   });
 
