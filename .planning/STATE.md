@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Deep Scan & Auto-Generation
-status: verifying
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-04-04T11:59:26.114Z"
-last_activity: 2026-04-04
+milestone: v4.0
+milestone_name: Intelligent Scanner & Ecosystem Learning
+status: executing
+stopped_at: Completed 21-01-PLAN.md
+last_updated: "2026-04-07T02:59:00Z"
+last_activity: 2026-04-07 -- Phase 21 plan 01 complete
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 8
+  completed_phases: 6
+  total_plans: 17
+  completed_plans: 15
   percent: 88
 ---
 
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-04)
+See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 16 — ux-polish
+**Current focus:** Phase 21 — foundation-context-infrastructure
 
 ## Current Position
 
-Phase: 16
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-04
+Phase: 21 (foundation-context-infrastructure) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 21 (Plan 01 complete)
+Last activity: 2026-04-07 -- Plan 21-01 complete (nested hooks parsing fix)
 
-Progress: [========░░] 88% (v2.0 scope)
+Progress: [████████░░] 88%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [========░░] 88% (v2.0 scope)
 | 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 | Phase 16 P02 | 3min | 1 tasks | 4 files |
 | Phase 16-ux-polish P01 | 4min | 2 tasks | 6 files |
+| 21-foundation | 01 | 3min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 16-ux-polish]: Notification text uses 'suggestion' instead of 'recommendation' for conciseness
 - [Phase 16-ux-polish]: buildNotification reduced to single parameter -- /evolve:apply is the only action path
 - [Phase 16-ux-polish]: Hook descriptions embedded in HOOK_REGISTRATIONS array, not a separate data structure
+- [Phase 21-01]: Array.isArray(matcherGroup.hooks) as branching condition for nested vs flat format detection
+- [Phase 21-01]: matcher field is optional in schema -- backward compatible with all existing data
 
 ### Pending Todos
 
@@ -94,10 +97,10 @@ None.
 
 ### Blockers/Concerns
 
-- First npm publish must be manual before OIDC trusted publishing works
+None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:48:28.635Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-04-07T02:59:00Z
+Stopped at: Completed 21-01-PLAN.md
 Resume file: None
