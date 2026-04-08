@@ -164,10 +164,10 @@ Plans:
   2. The guidance document defines 7 analysis areas with per-area checklists, severity classification rules (problem vs suggestion), output format specs, and explicit boundary conditions (what NOT to flag)
   3. At least 3 design patterns or structural techniques borrowed from GSD workflow .md files or other open-source projects are identifiable in the scan/apply templates (e.g., structured output contracts, severity tiers, edge case handling sections)
   4. The scan template can be extended with new analysis areas by editing the guidance .md content alone, without modifying any TypeScript source code
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 22-01-PLAN.md -- Rewrite scan template with model-driven guidance document (ECO-01, ECO-02, SCAN-01, SCAN-02)
+- [x] 22-01-PLAN.md -- Rewrite scan template with model-driven guidance document (ECO-01, ECO-02, SCAN-01, SCAN-02)
 - [ ] 22-02-PLAN.md -- Update apply template + live verification checkpoint (SCAN-01, SCAN-02)
 
 ### Phase 23: Model-Driven Validation & Legacy Cleanup
@@ -216,5 +216,5 @@ Phases execute in numeric order: 21 -> 22 -> 23
 | 19.1. Developer Full Integration Testing | v3.0 | 3/3 | Complete | 2026-04-05 |
 | 20. Scanner UX & Coverage Polish | v3.0 | 2/2 | Complete | 2026-04-06 |
 | 21. Foundation & Context Infrastructure | v4.0 | 1/1 | Complete    | 2026-04-07 |
-| 22. Ecosystem Learning & Scanner Guidance | v4.0 | 0/2 | Planning complete | - |
+| 22. Ecosystem Learning & Scanner Guidance | v4.0 | 1/2 | In Progress|  |
 | 23. Model-Driven Validation & Legacy Cleanup | v4.0 | 3/3 | Complete    | 2026-04-06 |

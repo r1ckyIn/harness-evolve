@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Intelligent Scanner & Ecosystem Learning
 status: executing
-stopped_at: Completed 21-03-PLAN.md
-last_updated: "2026-04-07T03:14:27.312Z"
-last_activity: 2026-04-07
+stopped_at: Completed 22-01-PLAN.md
+last_updated: "2026-04-08T03:35:31.036Z"
+last_activity: 2026-04-08
 progress:
   total_phases: 8
   completed_phases: 7
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 19
+  completed_plans: 18
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 21 — foundation-context-infrastructure
+**Current focus:** Phase 22 — ecosystem-learning-scanner-guidance
 
 ## Current Position
 
-Phase: 22
-Plan: Not started
-Status: Executing Phase 21
-Last activity: 2026-04-07
+Phase: 22 (ecosystem-learning-scanner-guidance) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-08
 
 Progress: [..........] 0%
 
@@ -55,6 +55,7 @@ Progress: [..........] 0%
 | Phase 23 P02 | 7min | 2 tasks | 24 files |
 | Phase 23 P03 | 1min | 1 tasks | 0 files |
 | 21-foundation-context-infrastructure | 03 | 3min | 2 | 3 |
+| Phase 22 P01 | 5min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ All prior decisions archived in PROJECT.md Key Decisions table.
 - [Phase 23]: CLI scan deprecation notice goes to stderr to preserve JSON piping
 - [Phase 23]: Auto-approved MODEL-01 through MODEL-04 checkpoint -- live model inference verification deferred to /gsd:verify-work
 - [Phase 21-03]: Added store-findings after dismiss command (Plan 02 runs in parallel wave)
+- [Phase 22]: Template embeds guidance as structured markdown in TypeScript template literal (not external .md file)
+- [Phase 22]: Conservative classification: prefer suggestion over problem, MEDIUM over HIGH to reduce false positives
+- [Phase 22]: Template uses scan-context exclusively (not deprecated scan command) to avoid stderr noise
 
 ### Roadmap Evolution
 
@@ -88,6 +92,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-07T03:06:00.000Z
-Stopped at: Completed 21-03-PLAN.md
+Last session: 2026-04-08T03:35:31.030Z
+Stopped at: Completed 22-01-PLAN.md
 Resume file: None

@@ -17,8 +17,8 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 ### Scanner 架构 (SCAN)
 
-- [ ] **SCAN-01**: `/evolve:scan` 模板包含完整的分析指导文档，指导用户当前模型执行配置审查（而非展示 CLI 预计算结果）
-- [ ] **SCAN-02**: 指导文档定义 7 个分析领域的检查清单、严重性分类规则、输出格式规范和边界条件
+- [x] **SCAN-01**: `/evolve:scan` 模板包含完整的分析指导文档，指导用户当前模型执行配置审查（而非展示 CLI 预计算结果）
+- [x] **SCAN-02**: 指导文档定义 7 个分析领域的检查清单、严重性分类规则、输出格式规范和边界条件
 - [x] **SCAN-03**: 模型驱动方案验证通过后，移除 7 个旧 TypeScript scanner 函数及相关代码
 
 ### 模型驱动能力 (MODEL)
@@ -30,8 +30,8 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 ### 生态学习 (ECO)
 
-- [ ] **ECO-01**: 逆向分析 GSD 的 workflow .md 行为规范模式，将适用的结构化约束模式应用到 scan/apply 模板
-- [ ] **ECO-02**: 研究同类优秀开源项目，提取并采纳至少 3 个适合 harness-evolve 的设计模式或功能
+- [x] **ECO-01**: 逆向分析 GSD 的 workflow .md 行为规范模式，将适用的结构化约束模式应用到 scan/apply 模板
+- [x] **ECO-02**: 研究同类优秀开源项目，提取并采纳至少 3 个适合 harness-evolve 的设计模式或功能
 
 ---
 
@@ -92,15 +92,15 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 | INFRA-02 | Phase 21 | Pending |
 | INFRA-03 | Phase 21 | Complete |
 | INFRA-04 | Phase 21 | Complete |
-| SCAN-01 | Phase 22 | Pending |
-| SCAN-02 | Phase 22 | Pending |
+| SCAN-01 | Phase 22 | Complete |
+| SCAN-02 | Phase 22 | Complete |
 | SCAN-03 | Phase 23 | Complete |
 | MODEL-01 | Phase 23 | Complete |
 | MODEL-02 | Phase 23 | Complete |
 | MODEL-03 | Phase 23 | Complete |
 | MODEL-04 | Phase 23 | Complete |
-| ECO-01 | Phase 22 | Pending |
-| ECO-02 | Phase 22 | Pending |
+| ECO-01 | Phase 22 | Complete |
+| ECO-02 | Phase 22 | Complete |
 
 ---
 *Last updated: 2026-04-06 -- v4.0 roadmap created, all 13 requirements mapped to phases 21-23*
