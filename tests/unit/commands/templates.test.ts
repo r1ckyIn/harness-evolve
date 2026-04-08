@@ -330,7 +330,7 @@ describe('generateApplyCommand', () => {
     expect(output).not.toMatch(/Choose: \[Apply\] \[Skip\] \[Dismiss\]/);
   });
 
-  it('has template version 3', () => {
-    expect(output).toContain('<!-- template-version: 3 -->');
+  it('has template version 4', () => {
+    expect(output).toContain('<!-- template-version: 4 -->');
   });
 });
