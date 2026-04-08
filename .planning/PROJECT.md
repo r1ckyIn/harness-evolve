@@ -101,6 +101,10 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 - [x] `harness-evolve scan-context` CLI outputs complete ScanContext JSON for model consumption — Validated in Phase 21: foundation-context-infrastructure (INFRA-02)
 - [x] `harness-evolve store-findings` validates and persists model-generated findings to apply pipeline — Validated in Phase 21: foundation-context-infrastructure (INFRA-03)
 - [x] First-time user onboarding: scan-context works without init, store-findings auto-creates directories — Validated in Phase 21: foundation-context-infrastructure (INFRA-04)
+- [x] `/evolve:scan` template contains comprehensive model-executable guidance document with 7 analysis areas — Validated in Phase 22: ecosystem-learning-scanner-guidance (SCAN-01)
+- [x] Guidance defines 7 analysis areas with checklists, severity rules, output format specs, and boundary conditions — Validated in Phase 22: ecosystem-learning-scanner-guidance (SCAN-02)
+- [x] GSD workflow patterns (structured output contracts, severity tiers, boundary conditions) applied to scan/apply templates — Validated in Phase 22: ecosystem-learning-scanner-guidance (ECO-01)
+- [x] 3+ open-source patterns (PR-Agent severity classification, ESLint extensibility, Singularity scoring) adopted — Validated in Phase 22: ecosystem-learning-scanner-guidance (ECO-02)
 
 ## Current Milestone: v4.0 Intelligent Scanner & Ecosystem Learning
 
@@ -230,4 +234,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-06 — Phase 19.1 integration testing complete (39/39 tests passed). v3.0 milestone fully verified end-to-end.*
+*Last updated: 2026-04-08 — Phase 22 complete (scan template v4 with model-driven guidance, 7 analysis areas, 684 tests passing). v4.0 milestone: 2/3 phases shipped.*
