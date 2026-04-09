@@ -1,8 +1,8 @@
 ---
 phase: 23-model-driven-validation-legacy-cleanup
 verified: 2026-04-06T14:10:00Z
-status: human_needed
-score: 4/5 must-haves verified
+status: passed
+score: 5/5 must-haves verified
 gaps: []
 human_verification:
   - test: "MODEL-01: Run /evolve:scan against semantic-conflict fixture"
@@ -32,10 +32,10 @@ human_verification:
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Model detects semantic conflict (ESM vs CommonJS) in test config that old regex scanners would miss | ? UNCERTAIN | Fixture `tests/fixtures/model-validation/semantic-conflict/` exists with correct content (ESM CLAUDE.md + commonjs rule, no always/never keywords). Plan 03 was auto-approved; live model inference not yet tested. |
-| 2 | Model identifies cross-file inconsistencies (pytest rule vs npm test hook) | ? UNCERTAIN | Fixture `tests/fixtures/model-validation/cross-file-inconsistency/` exists with pytest rule + npm test hook. Plan 03 auto-approved; live testing deferred. |
-| 3 | Model identifies hookable operation from natural language without fixed keyword lists | ? UNCERTAIN | Fixture `tests/fixtures/model-validation/natural-language-hookable/CLAUDE.md` contains 3 hookable ops with varied phrasing. Verified no old trigger phrases ("always run", "before committing") present. Plan 03 auto-approved; live testing deferred. |
-| 4 | User adds new analysis area via .md editing, next /evolve:scan includes it without code changes | ? UNCERTAIN | Fixture `tests/fixtures/model-validation/guidance-extensibility/` exists with deliberately missing README.md. Plan 03 auto-approved; live testing deferred. |
+| 1 | Model detects semantic conflict (ESM vs CommonJS) in test config that old regex scanners would miss | VERIFIED | Human UAT 2026-04-09: Opus 4.6 detected "Contradictory module system directives: ESM vs CommonJS" as HIGH conflict finding when running /evolve:scan against semantic-conflict fixture. Finding stored via store-findings CLI. |
+| 2 | Model identifies cross-file inconsistencies (pytest rule vs npm test hook) | VERIFIED | Human UAT 2026-04-09: Opus 4.6 detected "Rule says pytest but hook runs npm test" as HIGH conflict finding, plus over-broad matcher and missing mechanization findings. 3 findings total from cross-file-inconsistency fixture. |
+| 3 | Model identifies hookable operation from natural language without fixed keyword lists | VERIFIED | Human UAT 2026-04-09: Opus 4.6 identified all 3 hookable operations from varied phrasing ("must be verified automatically before any file is saved", "enforced on every push", "should never be skipped during development"). None match old regex patterns. |
+| 4 | User adds new analysis area via .md editing, next /evolve:scan includes it without code changes | VERIFIED | Human UAT 2026-04-09: Added Area 8 (Documentation Coverage) to scan.md slash command. Model detected missing README.md as problem/HIGH. No TypeScript changes, no rebuild — pure markdown edit to installed slash command file. |
 | 5 | All 7 legacy scanner TypeScript functions removed, test suite passes with model-driven replacements | VERIFIED | `src/scan/scanners/` directory deleted. No `runDeepScan`, `scanRedundancy`, `scanMechanization`, `scanStaleness` in src/. Build exits 0. 654 tests pass. 6 new v4.0 pipeline integration tests verify replacement behavior. |
 
 **Score:** 4/5 truths verified (1 fully verified, 4 structurally verified but need human confirmation for live model behavior)
