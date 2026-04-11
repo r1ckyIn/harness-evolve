@@ -92,27 +92,18 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 (No active requirements — all v4.0 requirements validated. Next milestone requirements defined via `/gsd:new-milestone`)
 
-## Current Milestone: v5.0 Scan Pipeline Reliability & UX
+## Current State (v5.0 shipped 2026-04-11)
 
-**Goal:** Fix the model-driven scan/apply pipeline so templates are executed as instructions (not treated as documentation), clean up legacy CLI confusion, and add self-healing slash command installation.
+**Architecture:** Model-driven scanner with imperative v5 templates — the Claude Code model is the analyzer, guided by strict step-by-step pipeline instructions (not suggestive documentation). Self-healing SessionStart hook auto-repairs missing slash commands.
 
-**Target features:**
-- Rewrite scan/apply templates so model reliably executes the 3-step pipeline (scan-context → analyze → store-findings) instead of free-styling
-- Separate first-scan (config-only) from subsequent scans (config + historical patterns)
-- Make apply template enforce interactive numbered option flow
-- Auto-detect and reinstall missing slash commands (self-healing)
-- Remove or redirect deprecated `scan` CLI to prevent false-positive confusion
-- Add scan-context scope control (project-level vs user-level config separation)
+**Pipeline:** capture → store → pre-process → classify → route → deliver (v1.0) + scan-context → model analysis → store-findings → apply (v4.0→v5.0 templates)
 
-## Current State (v4.0 shipped 2026-04-11)
-
-**Architecture:** Model-driven scanner — the Claude Code model itself is the analyzer, guided by a 328-line structured guidance document embedded in `/evolve:scan`. Legacy TypeScript scanners removed (~2960 LOC deleted).
-
-**Pipeline:** capture → store → pre-process → classify → route → deliver (v1.0) + scan-context → model analysis → store-findings → apply (v4.0)
-
-**Key stats:** ~20,700 LOC TypeScript, 684 tests, 9 CLI subcommands, 6 hooks, 7 analysis areas, 4 appliers, 3 generators
+**Key stats:** ~21,500 LOC TypeScript, 719 tests (59 test files), 10 CLI subcommands, 7 hooks (including SessionStart), 7 analysis areas, 4 appliers, 3 generators
 
 ## Shipped Milestones
+
+### v5.0 Scan Pipeline Reliability & UX (shipped 2026-04-11)
+Imperative v5 scan/apply templates (model executes pipeline, not free-styles), first-scan/subsequent-scan detection, scan-context scope separation (project/user), deprecated scan CLI hard error, SessionStart self-healing hook for slash command auto-repair. 3 phases (24-26), 6 plans.
 
 ### v4.0 Intelligent Scanner & Ecosystem Learning (shipped 2026-04-11)
 Model-driven scanner architecture: fixed hooks parsing, added scan-context/store-findings CLI bridge, rewrote scan template with 7-area guidance document (GSD + open-source patterns), validated model capabilities via live UAT (4/4 MODEL tests passed), removed 7 legacy TypeScript scanners. 3 phases (21-23), 8 plans.
@@ -197,20 +188,20 @@ Agnostic layer — works with any combination of workflow tools:
 | 3 | Multi-instance counter race condition | File corruption | proper-lockfile with retries. Concurrent test proves 2x100=200 exact. |
 | 4 | Agent context window for large logs | Exceeds context | Shell pre-processing compresses to <50KB summary.json. Resolved. |
 
-## Current State (Phase 19.1 complete — v3.0 integration testing done)
+## Detailed State (v5.0)
 
-- **Codebase:** ~21,000 LOC TypeScript (src + tests)
-- **Tests:** 708 passing across 62 test files
+- **Codebase:** ~21,500 LOC TypeScript (src + tests)
+- **Tests:** 719 passing across 59 test files
 - **npm:** Published as `harness-evolve@1.0.0`
-- **Build:** tsup produces 9 entry points (5 hooks + stop + run-evolve + cli + index)
+- **Build:** tsup produces 10 entry points (6 hooks + stop + run-evolve + cli + index)
+- **Hooks:** 7 (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest, Stop)
 - **Classifiers:** 8 (repeated-prompts, long-prompts, permission-patterns, code-corrections, personal-info, config-drift, ecosystem-adapter, onboarding)
-- **Scanners:** 7 (redundancy, mechanization, staleness, conflict, structure, hooks-redundancy, commands) — comprehensive config audit
 - **Generators:** 3 (skill, hook, claude-md-patch) — pure functions, no filesystem access
 - **Appliers:** 4 (settings, rule, hook, claude-md) — strategy pattern registry, auto-apply pipeline complete
-- **npm:** Publishable with complete metadata, exports map (8 subpaths), bin field, files whitelist
+- **npm:** Publishable with complete metadata, exports map (9 subpaths), bin field, files whitelist
 - **CI/CD:** GitHub Actions CI (build+test+typecheck+publint+attw) + Publish (OIDC v* tag)
-- **CLI:** Commander.js with 3 commands (init, status, uninstall), hook path resolution for all install methods
-- **Slash commands:** /evolve:scan and /evolve:apply with comprehensive GSD-style workflow documents (143/163 lines), version-aware template updates, allowed-tools frontmatter
+- **CLI:** Commander.js with 3 commands (init, status, uninstall), 10 subcommands, hook path resolution for all install methods
+- **Slash commands:** /evolve:scan (v5, 270 lines imperative pipeline) and /evolve:apply (v5, 165 lines one-at-a-time), version-aware template updates, self-healing via SessionStart
 - **UX:** Concise notifications, hook descriptions in init, severity-grouped output, self-contained slash command behavior
 
 ## Evolution
@@ -231,4 +222,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 — v5.0 milestone started (scan pipeline reliability & UX fixes from dogfooding).*
+*Last updated: 2026-04-11 — v5.0 shipped (scan pipeline reliability, imperative templates, self-healing installation).*

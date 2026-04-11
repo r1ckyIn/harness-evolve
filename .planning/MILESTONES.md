@@ -1,5 +1,19 @@
 # Milestones
 
+## v5.0 Scan Pipeline Reliability & UX (Shipped: 2026-04-11)
+
+**Phases completed:** 3 phases, 6 plans, 9 tasks
+
+**Key accomplishments:**
+
+- 1. [Rule 3 - Blocking] Scanner test helpers missing scope_summary
+- Rewrote /evolve:scan template from v4 to v5 with imperative pipeline language, first-scan/subsequent-scan detection, inline error handling, and per-step verification gates
+- Rewrote /evolve:apply template from v4 to v5 with strict one-at-a-time enforcement, MANDATORY markers, per-decision confirmation gates, and inline error handling
+- SessionStart hook with self-healing slash command detection using version-aware repair and conditional additionalContext output
+- SessionStart hook wired into all 5 registration surfaces: HOOK_REGISTRATIONS, tsup, package.json, index.ts, and integration test
+
+---
+
 ## v4.0 Intelligent Scanner & Ecosystem Learning (Shipped: 2026-04-11)
 
 **Phases completed:** 8 phases, 19 plans, 38 tasks
