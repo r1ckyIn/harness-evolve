@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Scan Pipeline Reliability & UX
-status: verifying
-stopped_at: Completed 25-02-PLAN.md
-last_updated: "2026-04-11T12:40:09.374Z"
+status: executing
+stopped_at: Completed 26-01-PLAN.md
+last_updated: "2026-04-11T13:00:37.776Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
   percent: 50
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 25 — template-execution-pipeline
+**Current focus:** Phase 26 — self-healing-installation
 
 ## Current Position
 
-Phase: 26
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 26 (self-healing-installation) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-11
 
 Progress: [=====.....] 50% (v5.0 scope)
@@ -57,6 +57,7 @@ Progress: [=====.....] 50% (v5.0 scope)
 | Phase 16-ux-polish P01 | 4min | 2 tasks | 6 files |
 | Phase 25 P01 | 4min | 2 tasks | 2 files |
 | Phase 25 P02 | 4min | 2 tasks | 2 files |
+| Phase 26 P01 | 3min | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 25]: Template reduced from 351 to 270 lines by tightening prose, not cutting analysis content
 - [Phase 25]: Kept Prerequisites section as minimal heading for backward test compatibility
 - [Phase 25]: 5 MANDATORY markers at critical pipeline gates, 4 DO NOT markers for batching prevention
+- [Phase 26]: homeOverride parameter for checkAndRepairSlashCommands enables real-filesystem testing without mocking
+- [Phase 26]: Zero output for healthy sessions -- no additionalContext emitted unless repair performed
 
 ### Pending Todos
 
@@ -106,6 +109,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-11T12:35:14.707Z
-Stopped at: Completed 25-02-PLAN.md
+Last session: 2026-04-11T13:00:37.771Z
+Stopped at: Completed 26-01-PLAN.md
 Resume file: None

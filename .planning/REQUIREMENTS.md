@@ -21,7 +21,7 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 
 ### Self-Healing (HEAL)
 
-- [ ] **HEAL-01**: SessionStart hook or `/evolve` skill detects whether `~/.claude/commands/evolve/` exists, auto-reinstalling slash commands or prompting user to run init when missing
+- [x] **HEAL-01**: SessionStart hook or `/evolve` skill detects whether `~/.claude/commands/evolve/` exists, auto-reinstalling slash commands or prompting user to run init when missing
 
 ---
 
@@ -52,7 +52,7 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 | TMPL-03 | Phase 25 | Complete |
 | LEGACY-01 | Phase 24 | Pending |
 | LEGACY-02 | Phase 24 | Complete |
-| HEAL-01 | Phase 26 | Pending |
+| HEAL-01 | Phase 26 | Complete |
 
 ---
 *Last updated: 2026-04-11 -- v5.0 roadmap created, 6 requirements mapped to 3 phases*
