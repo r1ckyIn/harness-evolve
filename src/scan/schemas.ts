@@ -21,6 +21,7 @@ export const scanContextSchema = z.object({
     z.object({
       path: z.string(),
       filename: z.string(),
+      scope: z.enum(['user', 'project']).default('project'),
       content: z.string(),
       frontmatter: z
         .object({
@@ -39,6 +40,7 @@ export const scanContextSchema = z.object({
     z.object({
       path: z.string(),
       name: z.string(),
+      scope: z.enum(['user', 'project']),
       content: z.string(),
     }),
   ),
@@ -51,5 +53,11 @@ export const scanContextSchema = z.object({
       matcher: z.string().optional(),
     }),
   ),
+  scope_summary: z.object({
+    project_sources: z.number(),
+    user_sources: z.number(),
+    has_project_config: z.boolean(),
+    has_user_config: z.boolean(),
+  }),
 });
 export type ScanContext = z.infer<typeof scanContextSchema>;

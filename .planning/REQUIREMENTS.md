@@ -17,7 +17,7 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 ### Legacy Cleanup (LEGACY)
 
 - [ ] **LEGACY-01**: Deprecated `harness-evolve scan` CLI subcommand is removed or redirected to `scan-context`, no longer producing false-positive findings
-- [ ] **LEGACY-02**: `harness-evolve scan-context` output distinguishes project-level config from user-global config, labeling each config source (project/user scope)
+- [x] **LEGACY-02**: `harness-evolve scan-context` output distinguishes project-level config from user-global config, labeling each config source (project/user scope)
 
 ### Self-Healing (HEAL)
 
@@ -51,7 +51,7 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 | TMPL-02 | Phase 25 | Pending |
 | TMPL-03 | Phase 25 | Pending |
 | LEGACY-01 | Phase 24 | Pending |
-| LEGACY-02 | Phase 24 | Pending |
+| LEGACY-02 | Phase 24 | Complete |
 | HEAL-01 | Phase 26 | Pending |
 
 ---

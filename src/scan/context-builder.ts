@@ -4,7 +4,7 @@
 // ScanContext object for scanner analysis.
 
 import { readFile, readdir } from 'node:fs/promises';
-import { join, basename } from 'node:path';
+import { join, basename, relative } from 'node:path';
 import { scanContextSchema, type ScanContext } from './schemas.js';
 
 /**
@@ -188,6 +188,7 @@ async function readRuleFiles(cwd: string): Promise<ScanContext['rules']> {
       rules.push({
         path: filePath,
         filename: basename(filePath),
+        scope: 'project' as const,
         content,
         frontmatter: parseFrontmatter(content),
         headings: extractHeadings(content),
@@ -230,31 +231,36 @@ async function readAllSettings(
 }
 
 /**
- * Read command files from .claude/commands/ directory.
+ * Read command files from both project and global .claude/commands/ directories.
+ * Uses collectMdFiles for recursive subdirectory support.
+ * Commands are labeled with scope to distinguish project-level from user-global.
  */
 async function readCommandFiles(
   cwd: string,
+  home: string,
 ): Promise<ScanContext['commands']> {
-  const commandsDir = join(cwd, '.claude', 'commands');
   const commands: ScanContext['commands'] = [];
 
-  try {
-    const entries = await readdir(commandsDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (entry.isFile() && entry.name.endsWith('.md')) {
-        const filePath = join(commandsDir, entry.name);
-        const content = await readFileSafe(filePath);
-        if (content !== null) {
-          commands.push({
-            path: filePath,
-            name: entry.name.replace(/\.md$/, ''),
-            content,
-          });
-        }
+  const locations: Array<{ dir: string; scope: 'user' | 'project' }> = [
+    { dir: join(cwd, '.claude', 'commands'), scope: 'project' },
+    { dir: join(home, '.claude', 'commands'), scope: 'user' },
+  ];
+
+  for (const loc of locations) {
+    const mdFiles = await collectMdFiles(loc.dir);
+    for (const filePath of mdFiles) {
+      const content = await readFileSafe(filePath);
+      if (content !== null) {
+        // Compute relative name from the commands root dir, without .md extension
+        const name = relative(loc.dir, filePath).replace(/\.md$/, '');
+        commands.push({
+          path: filePath,
+          name,
+          scope: loc.scope,
+          content,
+        });
       }
     }
-  } catch {
-    // Directory does not exist
   }
 
   return commands;
@@ -325,6 +331,40 @@ function extractHooksFromAllSettings(
 }
 
 /**
+ * Build scope_summary by counting project vs user sources across all config types.
+ */
+function buildScopeSummary(
+  claudeMdFiles: ScanContext['claude_md_files'],
+  rules: ScanContext['rules'],
+  settings: ScanContext['settings'],
+  commands: ScanContext['commands'],
+  hooksRegistered: ScanContext['hooks_registered'],
+): ScanContext['scope_summary'] {
+  // project_sources: claude_md with scope=project|local + rules + settings.project + settings.local + commands with scope=project + hooks with scope=project|local
+  const projectSources =
+    claudeMdFiles.filter((f) => f.scope === 'project' || f.scope === 'local').length +
+    rules.length +
+    (settings.project !== null ? 1 : 0) +
+    (settings.local !== null ? 1 : 0) +
+    commands.filter((c) => c.scope === 'project').length +
+    hooksRegistered.filter((h) => h.scope === 'project' || h.scope === 'local').length;
+
+  // user_sources: claude_md with scope=user + settings.user + commands with scope=user + hooks with scope=user
+  const userSources =
+    claudeMdFiles.filter((f) => f.scope === 'user').length +
+    (settings.user !== null ? 1 : 0) +
+    commands.filter((c) => c.scope === 'user').length +
+    hooksRegistered.filter((h) => h.scope === 'user').length;
+
+  return {
+    project_sources: projectSources,
+    user_sources: userSources,
+    has_project_config: projectSources > 0,
+    has_user_config: userSources > 0,
+  };
+}
+
+/**
  * Build a complete ScanContext by reading all configuration sources.
  * Returns a validated ScanContext or throws if validation fails.
  *
@@ -341,10 +381,11 @@ export async function buildScanContext(
     readClaudeMdFiles(cwd, homeDir),
     readRuleFiles(cwd),
     readAllSettings(cwd, homeDir),
-    readCommandFiles(cwd),
+    readCommandFiles(cwd, homeDir),
   ]);
 
   const hooksRegistered = extractHooksFromAllSettings(settings);
+  const scopeSummary = buildScopeSummary(claudeMdFiles, rules, settings, commands, hooksRegistered);
 
   const ctx = {
     generated_at: new Date().toISOString(),
@@ -354,6 +395,7 @@ export async function buildScanContext(
     settings,
     commands,
     hooks_registered: hooksRegistered,
+    scope_summary: scopeSummary,
   };
 
   return scanContextSchema.parse(ctx);

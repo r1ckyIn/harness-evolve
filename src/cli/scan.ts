@@ -1,37 +1,22 @@
-// Scan CLI subcommand -- outputs scan context JSON for model-driven analysis.
-// In v4.0, detailed analysis is done by the model via /evolve:scan slash command.
+// Scan CLI subcommand -- removed in v5.0, now a hard error pointing to /evolve:scan.
 
 import type { Command } from '@commander-js/extra-typings';
-import { buildScanContext } from '../scan/context-builder.js';
 
 /**
- * Register the 'scan' subcommand on a Commander.js program.
- *
- * Outputs scan context as structured JSON to stdout. In v4.0, code-based
- * scanners were removed -- analysis is now model-driven via /evolve:scan.
- * A deprecation notice is printed to stderr so JSON piping still works.
+ * Register the 'scan' subcommand as a hard error.
+ * The scan CLI was removed in v5.0. Users should use /evolve:scan in Claude Code
+ * for model-driven analysis, or scan-context for raw JSON.
  */
 export function registerScanCommand(program: Command): void {
   program
     .command('scan')
-    .description('Output scan context JSON for model-driven analysis (use /evolve:scan for full analysis)')
-    .action(async () => {
-      try {
-        console.error(
-          'Note: Code-based scanners were removed in v4.0. ' +
-          'Use /evolve:scan in Claude Code for model-driven analysis.\n' +
-          'Outputting scan context JSON below:\n'
-        );
-        const context = await buildScanContext(process.cwd());
-        console.log(JSON.stringify({
-          generated_at: new Date().toISOString(),
-          scan_context: context,
-        }, null, 2));
-      } catch (err) {
-        console.log(JSON.stringify({
-          error: err instanceof Error ? err.message : String(err),
-        }, null, 2));
-        process.exitCode = 1;
-      }
+    .description('[REMOVED] Use /evolve:scan in Claude Code instead')
+    .action(() => {
+      console.error(
+        'Error: The "scan" subcommand was removed in v5.0.\n\n' +
+        'Use /evolve:scan in Claude Code for model-driven configuration analysis.\n' +
+        'Or use "harness-evolve scan-context" for raw configuration JSON.\n'
+      );
+      process.exitCode = 1;
     });
 }

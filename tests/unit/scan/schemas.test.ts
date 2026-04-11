@@ -27,6 +27,7 @@ describe('scanContextSchema', () => {
   const validCommandEntry = {
     path: '/project/.claude/commands/deploy.md',
     name: 'deploy',
+    scope: 'project' as const,
     content: 'Deploy the project.',
   };
 
@@ -49,6 +50,12 @@ describe('scanContextSchema', () => {
     },
     commands: [validCommandEntry],
     hooks_registered: [validHookEntry],
+    scope_summary: {
+      project_sources: 2,
+      user_sources: 3,
+      has_project_config: true,
+      has_user_config: true,
+    },
   };
 
   it('accepts a valid ScanContext with all fields', () => {

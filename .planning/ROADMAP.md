@@ -85,7 +85,7 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 24-01-PLAN.md -- Add scope labeling to scan-context output (commands scope, rules scope, scope_summary)
+- [x] 24-01-PLAN.md -- Add scope labeling to scan-context output (commands scope, rules scope, scope_summary)
 - [ ] 24-02-PLAN.md -- Remove deprecated scan CLI (hard error with redirect message)
 
 ### Phase 25: Template Execution Pipeline
@@ -117,6 +117,6 @@ Plans:
 | 12-16 | v2.0 | 10/10 | Complete | 2026-04-04 |
 | 17-20 | v3.0 | 11/11 | Complete | 2026-04-06 |
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
-| 24. Context & Legacy | v5.0 | 0/2 | Planning | - |
+| 24. Context & Legacy | v5.0 | 1/2 | Executing | - |
 | 25. Template Pipeline | v5.0 | 0/TBD | Not started | - |
 | 26. Self-Healing | v5.0 | 0/TBD | Not started | - |

@@ -89,7 +89,7 @@ describe('buildScanContext', () => {
     expect(ctx.settings.local).toEqual({ enabledPlugins: ['test'] });
   });
 
-  it('reads .claude/commands/*.md into commands array', async () => {
+  it('reads .claude/commands/*.md into commands array with scope=project', async () => {
     const cmdDir = join(fakeCwd, '.claude', 'commands');
     await mkdir(cmdDir, { recursive: true });
     await writeFile(join(cmdDir, 'deploy.md'), 'Deploy the project to staging.');
@@ -99,6 +99,108 @@ describe('buildScanContext', () => {
     expect(ctx.commands).toHaveLength(1);
     expect(ctx.commands[0].name).toBe('deploy');
     expect(ctx.commands[0].content).toBe('Deploy the project to staging.');
+    expect(ctx.commands[0].scope).toBe('project');
+  });
+
+  it('reads commands from global ~/.claude/commands/ with scope=user', async () => {
+    const globalCmdDir = join(fakeHome, '.claude', 'commands');
+    await mkdir(globalCmdDir, { recursive: true });
+    await writeFile(join(globalCmdDir, 'global-cmd.md'), 'A global command.');
+
+    const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+    const globalCmd = ctx.commands.find((c) => c.name === 'global-cmd');
+    expect(globalCmd).toBeDefined();
+    expect(globalCmd!.scope).toBe('user');
+    expect(globalCmd!.content).toBe('A global command.');
+  });
+
+  it('reads commands from subdirectories with relative name', async () => {
+    const subDir = join(fakeCwd, '.claude', 'commands', 'evolve');
+    await mkdir(subDir, { recursive: true });
+    await writeFile(join(subDir, 'scan.md'), 'Scan config.');
+
+    const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+    const cmd = ctx.commands.find((c) => c.name === 'evolve/scan');
+    expect(cmd).toBeDefined();
+    expect(cmd!.scope).toBe('project');
+    expect(cmd!.content).toBe('Scan config.');
+  });
+
+  it('shows both project and global commands when same name exists', async () => {
+    const projDir = join(fakeCwd, '.claude', 'commands', 'evolve');
+    const globalDir = join(fakeHome, '.claude', 'commands', 'evolve');
+    await mkdir(projDir, { recursive: true });
+    await mkdir(globalDir, { recursive: true });
+    await writeFile(join(projDir, 'scan.md'), 'Project scan.');
+    await writeFile(join(globalDir, 'scan.md'), 'Global scan.');
+
+    const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+    const scanCmds = ctx.commands.filter((c) => c.name === 'evolve/scan');
+    expect(scanCmds).toHaveLength(2);
+    expect(scanCmds.find((c) => c.scope === 'project')).toBeDefined();
+    expect(scanCmds.find((c) => c.scope === 'user')).toBeDefined();
+  });
+
+  it('rules have scope=project', async () => {
+    const rulesDir = join(fakeCwd, '.claude', 'rules');
+    await mkdir(rulesDir, { recursive: true });
+    await writeFile(join(rulesDir, 'test-rule.md'), '# Test Rule\nContent.');
+
+    const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+    expect(ctx.rules.length).toBeGreaterThanOrEqual(1);
+    const rule = ctx.rules.find((r) => r.filename === 'test-rule.md');
+    expect(rule).toBeDefined();
+    expect(rule!.scope).toBe('project');
+  });
+
+  it('scope_summary counts project and user sources correctly', async () => {
+    // Create project CLAUDE.md
+    await writeFile(join(fakeCwd, 'CLAUDE.md'), '# Project');
+    // Create user CLAUDE.md
+    await writeFile(join(fakeHome, '.claude', 'CLAUDE.md'), '# User');
+    // Create project settings
+    await mkdir(join(fakeCwd, '.claude'), { recursive: true });
+    await writeFile(join(fakeCwd, '.claude', 'settings.json'), JSON.stringify({ hooks: { Stop: [{ type: 'command', command: 'echo stop' }] } }));
+    // Create user settings
+    await writeFile(join(fakeHome, '.claude', 'settings.json'), JSON.stringify({ hooks: { UserPromptSubmit: [{ type: 'command', command: 'echo hi' }] } }));
+    // Create project command
+    const projCmdDir = join(fakeCwd, '.claude', 'commands');
+    await mkdir(projCmdDir, { recursive: true });
+    await writeFile(join(projCmdDir, 'deploy.md'), 'Deploy.');
+    // Create user command
+    const userCmdDir = join(fakeHome, '.claude', 'commands');
+    await mkdir(userCmdDir, { recursive: true });
+    await writeFile(join(userCmdDir, 'global.md'), 'Global.');
+
+    const ctx = await buildScanContext(fakeCwd, fakeHome);
+
+    expect(ctx.scope_summary).toBeDefined();
+    // project_sources: 1 claude_md (project) + 1 settings.project + 1 project command + 1 project hook = 4
+    expect(ctx.scope_summary.project_sources).toBe(4);
+    // user_sources: 1 claude_md (user) + 1 settings.user + 1 user command + 1 user hook = 4
+    expect(ctx.scope_summary.user_sources).toBe(4);
+    expect(ctx.scope_summary.has_project_config).toBe(true);
+    expect(ctx.scope_summary.has_user_config).toBe(true);
+  });
+
+  it('scope_summary returns zeros when no config exists', async () => {
+    const emptyHome = join(fakeHome, 'empty');
+    const emptyCwd = join(fakeCwd, 'empty');
+    await mkdir(emptyHome, { recursive: true });
+    await mkdir(emptyCwd, { recursive: true });
+
+    const ctx = await buildScanContext(emptyCwd, emptyHome);
+
+    expect(ctx.scope_summary).toEqual({
+      project_sources: 0,
+      user_sources: 0,
+      has_project_config: false,
+      has_user_config: false,
+    });
   });
 
   it('extracts hooks_registered from all settings scopes', async () => {
