@@ -21,6 +21,7 @@ function makeScanContext(overrides: Partial<ScanContext> = {}): ScanContext {
     settings: { user: null, project: null, local: null },
     commands: [],
     hooks_registered: [],
+    scope_summary: { project_sources: 0, user_sources: 0, has_project_config: false, has_user_config: false },
     ...overrides,
   };
 }
