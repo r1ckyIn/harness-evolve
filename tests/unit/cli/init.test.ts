@@ -27,15 +27,16 @@ vi.mock('node:readline/promises', () => ({
 
 describe('CLI utils', () => {
   describe('HOOK_REGISTRATIONS', () => {
-    it('has exactly 6 entries', async () => {
+    it('has exactly 7 entries', async () => {
       const { HOOK_REGISTRATIONS } = await import('../../../src/cli/utils.js');
-      expect(HOOK_REGISTRATIONS).toHaveLength(6);
+      expect(HOOK_REGISTRATIONS).toHaveLength(7);
     });
 
-    it('contains all 6 hook event names', async () => {
+    it('contains all 7 hook event names', async () => {
       const { HOOK_REGISTRATIONS } = await import('../../../src/cli/utils.js');
       const events = HOOK_REGISTRATIONS.map((r) => r.event);
       expect(events).toEqual([
+        'SessionStart',
         'UserPromptSubmit',
         'PreToolUse',
         'PostToolUse',
@@ -49,6 +50,7 @@ describe('CLI utils', () => {
       const { HOOK_REGISTRATIONS } = await import('../../../src/cli/utils.js');
       const files = HOOK_REGISTRATIONS.map((r) => r.hookFile);
       expect(files).toEqual([
+        'session-start.js',
         'user-prompt-submit.js',
         'pre-tool-use.js',
         'post-tool-use.js',
@@ -334,13 +336,14 @@ describe('CLI init command', () => {
     ) as Record<string, unknown>;
     const hooks = writtenJSON.hooks as Record<string, unknown[]>;
 
-    // Should have all 6 hook events
-    expect(Object.keys(hooks)).toHaveLength(6);
+    // Should have all 7 hook events
+    expect(Object.keys(hooks)).toHaveLength(7);
     expect(Object.keys(hooks).sort()).toEqual([
       'PermissionRequest',
       'PostToolUse',
       'PostToolUseFailure',
       'PreToolUse',
+      'SessionStart',
       'Stop',
       'UserPromptSubmit',
     ]);

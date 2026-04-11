@@ -96,8 +96,8 @@ describe('package.json exports map (NPM-03)', () => {
     expect(pkg.exports[subpath].default).toBe(`./dist/${clean}.js`);
   });
 
-  it('has exactly 8 export entries (root + 7 subpaths)', () => {
-    expect(Object.keys(pkg.exports)).toHaveLength(8);
+  it('has exactly 9 export entries (root + 8 subpaths)', () => {
+    expect(Object.keys(pkg.exports)).toHaveLength(9);
   });
 });
 
