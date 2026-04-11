@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Deep Scan & Auto-Generation
-status: verifying
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-04-04T11:59:26.114Z"
-last_activity: 2026-04-04
+milestone: v5.0
+milestone_name: Scan Pipeline Reliability & UX
+status: executing
+stopped_at: Completed 24-02-PLAN.md
+last_updated: "2026-04-11T11:41:00Z"
+last_activity: 2026-04-11
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
-  percent: 88
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 2
+  completed_plans: 1
+  percent: 50
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-04)
+See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 16 — ux-polish
+**Current focus:** Phase 24 — context-infrastructure-legacy-cleanup
 
 ## Current Position
 
-Phase: 16
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-04
+Phase: 24 (context-infrastructure-legacy-cleanup) — EXECUTING
+Plan: 2 of 2 (complete)
+Status: Executing Phase 24
+Last activity: 2026-04-11
 
-Progress: [========░░] 88% (v2.0 scope)
+Progress: [=====.....] 50% (v5.0 scope)
 
 ## Performance Metrics
 
@@ -87,6 +87,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 16-ux-polish]: Notification text uses 'suggestion' instead of 'recommendation' for conciseness
 - [Phase 16-ux-polish]: buildNotification reduced to single parameter -- /evolve:apply is the only action path
 - [Phase 16-ux-polish]: Hook descriptions embedded in HOOK_REGISTRATIONS array, not a separate data structure
+- [Phase 24-02]: Scan command kept registered (not removed entirely) for CLI discoverability -- users running --help can see it redirects
+- [Phase 24-02]: Synchronous action handler (no async needed since no I/O operations)
 
 ### Pending Todos
 
@@ -94,10 +96,10 @@ None.
 
 ### Blockers/Concerns
 
-- First npm publish must be manual before OIDC trusted publishing works
+None.
 
 ## Session Continuity
 
-Last session: 2026-04-04T10:48:28.635Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-04-11T11:41:00Z
+Stopped at: Completed 24-02-PLAN.md
 Resume file: None
