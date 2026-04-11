@@ -121,10 +121,10 @@ describe('generateScanCommand', () => {
     expect(output.toLowerCase()).toContain('high');
   });
 
-  // --- v4 Analysis Guidance tests ---
+  // --- Analysis area tests ---
 
-  it('contains ## Analysis Guidance section', () => {
-    expect(output).toContain('## Analysis Guidance');
+  it('contains analysis areas within Step 2', () => {
+    expect(output).toContain('Step 2: Analyze Configuration');
   });
 
   it('defines 7 analysis areas', () => {

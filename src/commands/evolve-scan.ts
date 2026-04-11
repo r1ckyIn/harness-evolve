@@ -1,7 +1,7 @@
 // Slash command template generator for /evolve:scan
 
 // Template version -- bump when content changes materially
-const SCAN_TEMPLATE_VERSION = '4';
+const SCAN_TEMPLATE_VERSION = '5';
 
 /**
  * Return the current scan template version for version-aware updates.
@@ -13,11 +13,8 @@ export function getScanTemplateVersion(): string {
 /**
  * Generate the Markdown content for the /evolve:scan slash command.
  *
- * This produces a comprehensive, self-contained model-executable guidance
- * document that instructs the model to read raw configuration data, analyze
- * it following 7 area checklists, classify findings by severity, and pipe
- * structured results to the apply pipeline. The .md body IS the context
- * injected by Claude Code -- no CLAUDE.md preloading needed.
+ * v5: Imperative pipeline language with verification gates, first-scan
+ * detection, inline error handling per step, and explicit command allowlists.
  */
 export function generateScanCommand(): string {
   return `---
@@ -30,229 +27,162 @@ allowed-tools: Bash(npx harness-evolve *)
 
 # Evolve Scan
 
-You are performing a model-driven configuration analysis.
-You will read raw configuration data, analyze it using the guidance below, and store structured findings.
+> You are executing a pipeline. Follow each step exactly.
+> Do not improvise, skip steps, or run commands not listed here.
+> The ONLY commands you may run are: \`npx harness-evolve scan-context\` and \`npx harness-evolve store-findings\`.
 
-## Prerequisites
+## Step 0: Detect Scan Mode
 
-Before running the scan, verify harness-evolve is available:
+MANDATORY: Determine whether this is a first scan or a subsequent scan.
 
 \`\`\`bash
-npx harness-evolve --version
+ls ~/.harness-evolve/analysis/pre-processed/summary.json 2>/dev/null
 \`\`\`
 
-- If the command prints a version number, proceed to Instructions.
-- If the command fails with "not found" or similar error, install first:
-  \`\`\`bash
-  npm install -g harness-evolve
-  \`\`\`
+- If the file DOES NOT exist: This is a **first scan**. Analyze configuration files only.
+- If the file EXISTS: This is a **subsequent scan**. You will also read historical data in Step 2.
 
-## Instructions
+Note the result. You will use it in Step 2.
 
-### Step 1: Gather Context
+## Step 1: Gather Context
 
-Run the scan-context CLI to collect raw configuration data:
+MANDATORY: Run the scan-context CLI to collect raw configuration data.
 
 \`\`\`bash
 npx harness-evolve scan-context
 \`\`\`
 
 Capture the JSON output. It contains: \`claude_md_files\`, \`rules\`, \`settings\`, \`commands\`, \`hooks_registered\`.
-If the command fails, see Error Handling below.
 
-### Step 2: Analyze Configuration
+If this command fails, STOP. Show the error to the user. Suggest \`harness-evolve init\`. DO NOT proceed.
 
-For each of the 7 analysis areas below, examine the relevant ScanContext fields and check each item in the area's checklist.
-Produce findings for any issues detected. Aim for 3-8 total findings. Do not exceed 20.
+If output is valid JSON with \`claude_md_files\`, \`rules\`, \`settings\` fields, proceed to Step 2.
 
-### Step 3: Store Findings
+## Step 2: Analyze Configuration
 
-Format all findings as a JSON array and pipe to store-findings:
+For each of the 7 analysis areas below, examine the relevant ScanContext fields and check each item.
 
+If Step 0 determined this is a **subsequent scan**, ALSO read historical data:
 \`\`\`bash
-echo '<json_array>' | npx harness-evolve store-findings
+cat ~/.harness-evolve/analysis/pre-processed/summary.json
 \`\`\`
+Include historical pattern insights alongside configuration findings.
 
-Check the output for \`stored\` and \`skipped\` counts. If \`skipped > 0\`, review which findings failed validation.
-
-### Step 4: Present Results
-
-Show a human-readable summary. Start with:
-
-> Analyzed **N** areas, found **M** finding(s).
-
-Group by severity (problems first, then suggestions). For each finding show title, description, and suggested action.
-End with:
-
-> Run \`/evolve:apply\` to review and apply fixes.
-
-## Analysis Guidance
+If Step 0 determined this is a **first scan**, analyze configuration files only. DO NOT reference or fabricate historical data.
 
 ### Area 1: Redundancy
 **pattern_type:** \`scan_redundancy\` | **Default target:** \`RULE\`
 
-#### What to Check
+**What to Check**
 - Same constraint in CLAUDE.md AND .claude/rules/ (duplication across files)
 - Same setting in user AND project settings.json (scope duplication)
 - Rule file repeating CLAUDE.md content verbatim
 
-#### Severity Rules
-- **problem** if contradictory duplicates (different values for same setting)
-- **suggestion** if benign duplicates (same intent, different wording)
+**Severity Rules:** problem if contradictory duplicates; suggestion if benign duplicates.
+**Confidence:** HIGH if exact text match; MEDIUM if same intent, different wording; LOW if related but unclear.
 
-#### Confidence
-- **HIGH** if exact text match across files
-- **MEDIUM** if same intent, different wording
-- **LOW** if related but not clearly duplicate
-
-#### Do NOT Flag
+**Do NOT Flag**
 - Intentional overrides (project settings overriding user settings)
 - CLAUDE.md referencing a rule file (cross-referencing, not duplication)
-
----
 
 ### Area 2: Missing Mechanization
 **pattern_type:** \`scan_missing_mechanization\` | **Default target:** \`HOOK\`
 
-#### What to Check
+**What to Check**
 - Natural language instructions in CLAUDE.md or rules describing hookable operations (e.g., "always run tests before commit", "never push to main")
 - Validation steps described as "Claude should check" that could be automated as hooks
 
-#### Severity Rules
-- **problem** if the operation is critical (data loss prevention, security enforcement)
-- **suggestion** if the operation is a workflow optimization
+**Severity Rules:** problem if critical (data loss, security); suggestion if workflow optimization.
+**Confidence:** HIGH if imperative language + hookable event; MEDIUM if strong preference; LOW if guideline.
 
-#### Confidence
-- **HIGH** if instruction uses imperative language ("must", "always", "never") and describes a hookable lifecycle event
-- **MEDIUM** if the instruction is a strong preference
-- **LOW** if it is a guideline or best practice
-
-#### Do NOT Flag
+**Do NOT Flag**
 - Subjective guidance ("prefer X over Y")
-- Patterns already covered by existing hooks (check \`hooks_registered\` in ScanContext)
-- Complex multi-step workflows better suited for skills than hooks
-
----
+- Patterns already covered by existing hooks (check \`hooks_registered\`)
+- Complex multi-step workflows better suited for skills
 
 ### Area 3: Stale References
 **pattern_type:** \`scan_stale_reference\` | **Default target:** \`CLAUDE_MD\`
 
-#### What to Check
+**What to Check**
 - @path references in CLAUDE.md pointing to non-existent files
-- Rule files referencing paths that do not exist in the project
+- Rule files referencing paths that do not exist
 - Mentions of tools or commands that are not installed or recognized
 
-#### Severity Rules
-- **problem** if the reference is in an instruction users actively follow
-- **suggestion** if the reference is in a comment or secondary section
+**Severity Rules:** problem if actively followed instruction; suggestion if secondary reference.
+**Confidence:** HIGH if path clearly non-existent; MEDIUM if path might exist outside scanned scope.
 
-#### Confidence
-- **HIGH** if the referenced path is clearly non-existent in the scan context
-- **MEDIUM** if the path might exist outside the scanned scope
-
-#### Do NOT Flag
-- npm scoped packages (\`@scope/package\`) -- these are package names, not file references
-- URL user paths (\`@user/path\`) -- these are URL patterns, not file references
+**Do NOT Flag**
+- npm scoped packages (\`@scope/package\`) -- package names, not file references
+- URL user paths (\`@user/path\`) -- URL patterns, not file references
 - References to external tools that might be globally installed
-
----
 
 ### Area 4: Conflicts
 **pattern_type:** \`scan_rule_conflict\` | **Default target:** \`RULE\`
 
-#### What to Check
-- Contradictory directives (e.g., "use ESM" in one file and "use CommonJS" in another)
+**What to Check**
+- Contradictory directives (e.g., "use ESM" vs "use CommonJS")
 - Conflicting settings between user and project scope without intentional override
 - Rules that negate each other
 
-#### Severity Rules
-- **problem** if the conflict causes broken behavior (cannot satisfy both directives)
-- **suggestion** if the conflict causes confusion but not breakage
+**Severity Rules:** problem if conflict causes broken behavior; suggestion if confusion only.
+**Confidence:** HIGH if explicit contradiction; MEDIUM if semantic conflict; LOW if potentially intentional.
 
-#### Confidence
-- **HIGH** if the contradiction is explicit (opposing values for same setting)
-- **MEDIUM** if the contradiction is semantic (different wording, conflicting intent)
-- **LOW** if potentially intentional tension between scopes
-
-#### Do NOT Flag
+**Do NOT Flag**
 - Intentional scope overrides (project overrides user is valid)
-- Complementary rules that appear contradictory but cover different scopes
-
----
+- Complementary rules covering different scopes
 
 ### Area 5: Structure Issues
 **pattern_type:** \`scan_structure_issue\` | **Default target:** \`RULE\`
 
-#### What to Check
+**What to Check**
 - Empty rule files (0 bytes or only whitespace)
-- Oversized rule files (>200 lines -- may need splitting)
-- Rule files without headings (poor organization)
+- Oversized rule files (>200 lines)
+- Rule files without headings
 - Rules in subdirectories without path-scoping frontmatter
 - CLAUDE.md exceeding 500 lines
 
-#### Severity Rules
-- **problem** if empty rule file (provides no value, adds noise)
-- **suggestion** for oversized files or poor organization
+**Severity Rules:** problem if empty rule file; suggestion for oversized or poor organization.
+**Confidence:** HIGH if empty; MEDIUM if oversized; LOW if organization could improve.
 
-#### Confidence
-- **HIGH** if file is empty or missing content entirely
-- **MEDIUM** if file is oversized
-- **LOW** if organization could be improved
-
-#### Do NOT Flag
-- Small rule files (<10 lines) that are focused and complete
-- CLAUDE.md files under 200 lines
+**Do NOT Flag**
+- Small focused rule files (<10 lines)
+- CLAUDE.md under 200 lines
 - Subdirectory rules that are intentionally broad
-
----
 
 ### Area 6: Hooks Quality
 **pattern_type:** \`scan_hooks_redundancy\` | **Default target:** \`SETTINGS\`
 
-#### What to Check
-- Duplicate hooks (same event + same command registered twice)
-- Overlapping hooks (different commands doing the same check on the same event)
-- Hooks registered in settings but pointing to non-existent scripts
-- Hooks without error handling (missing \`|| true\` for non-critical hooks)
+**What to Check**
+- Duplicate hooks (same event + same command)
+- Overlapping hooks (different commands, same check, same event)
+- Hooks pointing to non-existent scripts
+- Hooks without error handling (missing \`|| true\` for non-critical)
 
-#### Severity Rules
-- **problem** if hook script does not exist (will fail at runtime)
-- **problem** if exact duplicate (wastes execution time)
-- **suggestion** if hooks overlap in function
+**Severity Rules:** problem if script missing or exact duplicate; suggestion if overlap.
+**Confidence:** HIGH if script non-existent or exact duplicate; MEDIUM if purpose overlap.
 
-#### Confidence
-- **HIGH** if script path is clearly non-existent
-- **HIGH** if exact command match (duplicate)
-- **MEDIUM** if commands appear to overlap in purpose
-
-#### Do NOT Flag
-- Multiple hooks on the same event doing different things (valid composition)
-- harness-evolve's own hooks (managed by the tool itself)
-
----
+**Do NOT Flag**
+- Multiple hooks on the same event doing different things
+- harness-evolve's own hooks
 
 ### Area 7: Commands Quality
 **pattern_type:** \`scan_command_convention\` | **Default target:** \`SKILL\`
 
-#### What to Check
+**What to Check**
 - Command files missing YAML frontmatter (name, description)
-- Empty command files (non-functional)
-- Commands without \`description\` field (poor discoverability)
+- Empty command files
+- Commands without \`description\` field
 - Commands with overly generic names
 - Commands referencing non-existent tools or paths
 
-#### Severity Rules
-- **problem** if command file is empty (non-functional)
-- **suggestion** for missing frontmatter or poor naming
+**Severity Rules:** problem if empty; suggestion for missing frontmatter or poor naming.
+**Confidence:** HIGH if empty; MEDIUM if frontmatter missing; LOW if naming could improve.
 
-#### Confidence
-- **HIGH** if file is empty
-- **MEDIUM** if frontmatter is missing
-- **LOW** if naming could be improved
-
-#### Do NOT Flag
-- Commands that intentionally skip frontmatter for specific technical reasons
+**Do NOT Flag**
+- Commands that intentionally skip frontmatter
 - Short commands (<5 lines) that are clear without description
+
+You should have 3-8 findings. If zero, confirm config is clean. If over 20, reduce to highest severity. Proceed to Step 3.
 
 ## Severity Classification
 
@@ -265,7 +195,31 @@ End with:
 | Referenced file does not exist | problem | HIGH |
 | Referenced file might not exist | suggestion | MEDIUM |
 
-> When in doubt, prefer \`suggestion\` over \`problem\`, and \`MEDIUM\` over \`HIGH\`. Conservative classification reduces false positives.
+> When in doubt, prefer \`suggestion\` over \`problem\`, and \`MEDIUM\` over \`HIGH\`.
+
+## Step 3: Store Findings
+
+MANDATORY: Format all findings as a JSON array and pipe to store-findings.
+
+\`\`\`bash
+echo '<json_array>' | npx harness-evolve store-findings
+\`\`\`
+
+If \`skipped > 0\`, check the \`errors\` array. Fix invalid fields and re-pipe corrected findings. DO NOT skip this step.
+
+If \`stored > 0\`, proceed to Step 4.
+
+## Step 4: Present Results
+
+Show a human-readable summary:
+
+> Analyzed **N** areas, found **M** finding(s).
+
+Group by severity (problems first, then suggestions). For each finding show title, description, and suggested action.
+
+End with:
+
+> Run \`/evolve:apply\` to review and apply fixes.
 
 ## Output Format
 
@@ -280,12 +234,12 @@ Format each finding as a JSON object matching this structure:
   "confidence": "HIGH",
   "pattern_type": "scan_redundancy",
   "title": "Duplicate constraint in CLAUDE.md and rules/coding.md",
-  "description": "The instruction 'always use TypeScript strict mode' appears in both CLAUDE.md (line 12) and .claude/rules/coding.md (line 5). This creates maintenance burden -- update one and the other becomes stale.",
+  "description": "The instruction 'always use TypeScript strict mode' appears in both CLAUDE.md (line 12) and .claude/rules/coding.md (line 5).",
   "evidence": {
     "count": 1,
-    "examples": ["CLAUDE.md line 12: 'Use TypeScript strict mode'", "rules/coding.md line 5: 'Always enable strict mode in TypeScript'"]
+    "examples": ["CLAUDE.md line 12: 'Use TypeScript strict mode'", "rules/coding.md line 5: 'Always enable strict mode'"]
   },
-  "suggested_action": "Remove the constraint from CLAUDE.md and keep it in .claude/rules/coding.md where it is more specific and maintainable.",
+  "suggested_action": "Remove the constraint from CLAUDE.md and keep it in .claude/rules/coding.md.",
   "severity": "suggestion"
 }
 \`\`\`
@@ -296,56 +250,21 @@ Format each finding as a JSON object matching this structure:
 - \`confidence\`: HIGH, MEDIUM, LOW
 - \`severity\`: problem, suggestion
 - \`evidence.examples\`: maximum 3 strings
-- \`id\` format: \`scan-{area}-{short-hash}\` (e.g., scan-redundancy-a1b2c3)
+- \`id\` format: \`scan-{area}-{short-hash}\`
 
-## Boundary Conditions (What NOT to Flag)
+## Boundary Conditions
 
-Global exclusions that apply across all analysis areas:
+Global exclusions across all analysis areas:
 
 - npm scoped packages (\`@scope/package\`) are NOT stale references
 - URL user paths (\`/@user/path\`) are NOT stale references
 - Empty \`.claude/\` directory is normal for new projects
-- Global-only configuration (no project-level config) is a valid setup
+- Global-only configuration (no project-level config) is valid
 - harness-evolve's own hooks are NOT redundant
-- Intentional scope overrides (project overriding user) are NOT conflicts
+- Intentional scope overrides are NOT conflicts
 - Do not produce more than 20 findings total
 - Aim for 3-8 findings on a typical config. Zero findings is valid for clean configs.
-
-## Error Handling
-
-### scan-context Command Fails
-
-If \`npx harness-evolve scan-context\` exits with a non-zero code:
-
-1. Show the error message to the user
-2. Suggest: "Try running \`harness-evolve status\` to check installation health"
-3. If the error mentions "not found", suggest: "Run \`harness-evolve init\` to set up"
-
-### store-findings Reports Skipped Findings
-
-If the store-findings output shows \`skipped > 0\`:
-
-1. Show which findings failed validation
-2. Check the \`errors\` array in the output for field-level issues
-3. Fix the invalid fields and re-pipe the corrected findings
-
-### Empty or Minimal Context
-
-If scan-context returns empty arrays for all fields (no config files found):
-
-- Report: "No configuration files found. This project has no Claude Code configuration yet."
-- Suggest: "Run \`harness-evolve init\` to set up initial configuration."
-
-## Edge Cases
-
-- **No \`.claude/\` directory:** Report minimal findings. This is normal for new projects or projects that rely on global configuration only.
-- **Very large configs (50+ rules files):** Focus on highest-severity findings. Stay within 20 findings maximum.
-- **No internet required:** The scan runs entirely locally. No network access is needed.
-
-## Notes
-
-- Findings stored via store-findings are available in \`/evolve:apply\`.
-- Re-running scan replaces previous scan results.
-- Each analysis area maps to a \`pattern_type\` value for routing and tracking.
+- **No \`.claude/\` directory:** Report minimal findings. Normal for new projects.
+- **Very large configs (50+ rules files):** Focus on highest-severity findings.
 `;
 }
