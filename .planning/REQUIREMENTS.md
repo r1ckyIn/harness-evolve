@@ -2,76 +2,44 @@
 
 ## Core Value
 
-Make Claude Code harnesses self-improving without manual analysis -- now with intelligent, model-driven config analysis.
+Make Claude Code harnesses self-improving without manual analysis -- with a reliable model-driven scan/apply pipeline.
 
 ---
 
-## v4.0 Requirements
+## v5.0 Requirements
 
-### Bug 修复与基础设施 (INFRA)
+### Template Execution (TMPL)
 
-- [x] **INFRA-01**: context-builder 正确解析 Claude Code 嵌套 hooks 格式 `{matcher, hooks: [{type, command}]}`，扫描真实用户配置零误报
-- [x] **INFRA-02**: `harness-evolve scan-context` CLI 子命令输出结构化 JSON 配置上下文，供用户模型直接消费
-- [x] **INFRA-03**: `harness-evolve store-findings` CLI 子命令接收模型生成的 findings 并持久化到 apply 管道，通过 Recommendation schema 验证
-- [x] **INFRA-04**: 用户首次安装后无需手动运行 `harness-evolve init` 即可使用斜杠命令，或 init 流程有明确的自动化引导
+- [ ] **TMPL-01**: `/evolve:scan` template is treated by the model as mandatory instructions, executing the 3-step pipeline (scan-context → analyze → store-findings) rather than free-styling or running legacy `pending` command
+- [ ] **TMPL-02**: `/evolve:apply` template is executed as interactive 4-option flow (Apply/Skip/Dismiss/Let Claude decide), processing each pending recommendation one-by-one
+- [ ] **TMPL-03**: First scan only analyzes configuration files (CLAUDE.md, rules, settings, hooks, commands) without mixing in historical prompt pattern suggestions
 
-### Scanner 架构 (SCAN)
+### Legacy Cleanup (LEGACY)
 
-- [x] **SCAN-01**: `/evolve:scan` 模板包含完整的分析指导文档，指导用户当前模型执行配置审查（而非展示 CLI 预计算结果）
-- [x] **SCAN-02**: 指导文档定义 7 个分析领域的检查清单、严重性分类规则、输出格式规范和边界条件
-- [x] **SCAN-03**: 模型驱动方案验证通过后，移除 7 个旧 TypeScript scanner 函数及相关代码
+- [ ] **LEGACY-01**: Deprecated `harness-evolve scan` CLI subcommand is removed or redirected to `scan-context`, no longer producing false-positive findings
+- [ ] **LEGACY-02**: `harness-evolve scan-context` output distinguishes project-level config from user-global config, labeling each config source (project/user scope)
 
-### 模型驱动能力 (MODEL)
+### Self-Healing (HEAL)
 
-- [x] **MODEL-01**: 模型能检测语义级配置冲突（如"use ESM" vs "use CommonJS"），不依赖正则模式匹配
-- [x] **MODEL-02**: 模型能评估 CLAUDE.md + rules + settings + commands 的跨文件一致性，发现矛盾或冗余
-- [x] **MODEL-03**: 模型能用任意自然语言措辞识别可 hook 化的操作，不限于固定关键词
-- [x] **MODEL-04**: 用户通过编辑指导文档 .md 即可添加新的扫描领域，无需修改 TypeScript 代码
-
-### 生态学习 (ECO)
-
-- [x] **ECO-01**: 逆向分析 GSD 的 workflow .md 行为规范模式，将适用的结构化约束模式应用到 scan/apply 模板
-- [x] **ECO-02**: 研究同类优秀开源项目，提取并采纳至少 3 个适合 harness-evolve 的设计模式或功能
+- [ ] **HEAL-01**: SessionStart hook or `/evolve` skill detects whether `~/.claude/commands/evolve/` exists, auto-reinstalling slash commands or prompting user to run init when missing
 
 ---
 
-## v3.0 Requirements (Completed)
+## Future Requirements (v6.0+)
 
-### Bug Fixes (v2.0 dogfooding)
-
-- [x] **FIX-01**: 斜杠命令安装到全局 `~/.claude/commands/evolve/` -- Validated in Phase 17
-- [x] **FIX-02**: Stale reference scanner 过滤 npm scoped 包名和 URL 用户路径 -- Validated in Phase 17
-- [x] **FIX-03**: `apply-one` 跳过 confidence 门槛 -- Validated in Phase 17
-- [x] **FIX-04**: Stop hook 自动设置通知标记 -- Validated in Phase 17
-
-### Config Audit
-
-- [x] **AUD-01**: Scanner 全面分析配置质量 -- Validated in Phase 18
-- [x] **AUD-02**: 审计输出包含具体优化建议和预期效果 -- Validated in Phase 18
-- [x] **AUD-03**: 结果区分问题和优化建议 -- Validated in Phase 18
-
-### Workflow Docs
-
-- [x] **WFL-01**: 每个斜杠命令有 workflow .md 文档 -- Validated in Phase 19
-- [x] **WFL-02**: Workflow 通过模板自动注入 -- Validated in Phase 19
-
----
-
-## Future Requirements (v5.0+)
-
-- 跨项目模式聚合（用户级别而非项目级别）
-- 配置健康评分（0-100 分 + Top 3 改进项）
-- 漂移检测（已应用推荐被撤回时告警）
-- 社区共享路由规则市场
+- Cross-project pattern aggregation (user-level, not project-level)
+- Configuration health score (0-100 + Top 3 improvements)
+- Drift detection (alert when applied recommendations are reverted)
+- Community shared routing rule marketplace
 
 ---
 
 ## Out of Scope
 
-- Web 可视化仪表盘 -- CLI-native 定位不变
-- 直接调用 Anthropic API -- harness-evolve 不调用 API，由用户的 Claude Code session 提供模型
-- 支持非 Claude Code 的 AI coding agents -- Claude Code 专用
-- NLP 库做语义分析 -- 模型本身就是 NLP 引擎
+- Web visualization dashboard -- CLI-native positioning unchanged
+- Calling Anthropic API directly -- harness-evolve doesn't call APIs, user's Claude Code session provides the model
+- Supporting non-Claude Code AI coding agents -- Claude Code specific
+- NLP libraries for semantic analysis -- model itself is the NLP engine
 
 ---
 
@@ -79,28 +47,12 @@ Make Claude Code harnesses self-improving without manual analysis -- now with in
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| FIX-01 | Phase 17 | Complete |
-| FIX-02 | Phase 17 | Complete |
-| FIX-03 | Phase 17 | Complete |
-| FIX-04 | Phase 17 | Complete |
-| AUD-01 | Phase 18 | Complete |
-| AUD-02 | Phase 18 | Complete |
-| AUD-03 | Phase 18 | Complete |
-| WFL-01 | Phase 19 | Complete |
-| WFL-02 | Phase 19 | Complete |
-| INFRA-01 | Phase 21 | Complete |
-| INFRA-02 | Phase 21 | Complete |
-| INFRA-03 | Phase 21 | Complete |
-| INFRA-04 | Phase 21 | Complete |
-| SCAN-01 | Phase 22 | Complete |
-| SCAN-02 | Phase 22 | Complete |
-| SCAN-03 | Phase 23 | Complete |
-| MODEL-01 | Phase 23 | Complete |
-| MODEL-02 | Phase 23 | Complete |
-| MODEL-03 | Phase 23 | Complete |
-| MODEL-04 | Phase 23 | Complete |
-| ECO-01 | Phase 22 | Complete |
-| ECO-02 | Phase 22 | Complete |
+| TMPL-01 | TBD | Pending |
+| TMPL-02 | TBD | Pending |
+| TMPL-03 | TBD | Pending |
+| LEGACY-01 | TBD | Pending |
+| LEGACY-02 | TBD | Pending |
+| HEAL-01 | TBD | Pending |
 
 ---
-*Last updated: 2026-04-06 -- v4.0 roadmap created, all 13 requirements mapped to phases 21-23*
+*Last updated: 2026-04-11 -- v5.0 milestone, 6 requirements from dogfooding*
