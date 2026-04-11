@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Scan Pipeline Reliability & UX
-status: executing
-stopped_at: Completed 26-01-PLAN.md
-last_updated: "2026-04-11T13:00:37.776Z"
+status: verifying
+stopped_at: Completed 26-02-PLAN.md
+last_updated: "2026-04-11T13:07:32.430Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 50
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 Phase: 26 (self-healing-installation) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-11
 
 Progress: [=====.....] 50% (v5.0 scope)
@@ -58,6 +58,7 @@ Progress: [=====.....] 50% (v5.0 scope)
 | Phase 25 P01 | 4min | 2 tasks | 2 files |
 | Phase 25 P02 | 4min | 2 tasks | 2 files |
 | Phase 26 P01 | 3min | 1 tasks | 3 files |
+| Phase 26 P02 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,7 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 25]: 5 MANDATORY markers at critical pipeline gates, 4 DO NOT markers for batching prevention
 - [Phase 26]: homeOverride parameter for checkAndRepairSlashCommands enables real-filesystem testing without mocking
 - [Phase 26]: Zero output for healthy sessions -- no additionalContext emitted unless repair performed
+- [Phase 26]: Dependency injection (repairFn parameter) for handleSessionStart instead of vi.spyOn module mocking
 
 ### Pending Todos
 
@@ -109,6 +111,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-11T13:00:37.771Z
-Stopped at: Completed 26-01-PLAN.md
+Last session: 2026-04-11T13:07:32.426Z
+Stopped at: Completed 26-02-PLAN.md
 Resume file: None
