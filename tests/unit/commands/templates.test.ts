@@ -322,10 +322,16 @@ describe('generateApplyCommand', () => {
     expect(output).toContain('## Output Format');
   });
 
-  it('contains ## Error Handling with multiple scenarios', () => {
-    expect(output).toContain('## Error Handling');
-    expect(output).toMatch(/CLI.*Fail|Command Fails/i);
-    expect(output).toMatch(/Apply.*Fail|Apply.*Error/i);
+  it('has inline error handling, not a separate bottom section', () => {
+    // v5 moves error handling inline per step -- no standalone ## Error Handling section
+    expect(output).not.toMatch(/^## Error Handling/m);
+    // But error/fail language should exist within the step instructions
+    const instructionsIdx = output.indexOf('## Instructions');
+    const notesIdx = output.indexOf('## Notes');
+    const edgeCasesIdx = output.indexOf('## Edge Cases');
+    const endBound = notesIdx > 0 ? notesIdx : (edgeCasesIdx > 0 ? edgeCasesIdx : undefined);
+    const instructionRegion = output.slice(instructionsIdx, endBound);
+    expect(instructionRegion).toMatch(/error|fail/i);
   });
 
   it('contains ## Edge Cases section', () => {
@@ -360,7 +366,27 @@ describe('generateApplyCommand', () => {
     expect(output).not.toMatch(/Choose: \[Apply\] \[Skip\] \[Dismiss\]/);
   });
 
-  it('has template version 4', () => {
-    expect(output).toContain('<!-- template-version: 4 -->');
+  it('has template version 5', () => {
+    expect(output).toContain('<!-- template-version: 5 -->');
   });
+
+  // --- v5 One-at-a-time enforcement tests ---
+
+  it('contains explicit DO NOT present multiple enforcement', () => {
+    expect(output).toMatch(/DO NOT present multiple/i);
+  });
+
+  it('contains one-at-a-time MANDATORY enforcement', () => {
+    expect(output).toMatch(/MANDATORY/);
+    expect(output).toMatch(/exactly ONE|one at a time|ONE recommendation/i);
+  });
+
+  it('contains per-decision confirmation gate', () => {
+    expect(output).toMatch(/confirm the result|confirm.*before.*next/i);
+  });
+
+  it('contains imperative preamble language', () => {
+    expect(output).toMatch(/follow.*step.*exactly|do not improvise/i);
+  });
+
 });
