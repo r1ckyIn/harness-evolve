@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Scan Pipeline Reliability & UX
 status: executing
-stopped_at: Completed 24-02-PLAN.md
-last_updated: "2026-04-11T11:41:00Z"
+stopped_at: Completed 25-01-PLAN.md
+last_updated: "2026-04-11T12:28:48.483Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 3
-  completed_phases: 0
-  total_plans: 2
-  completed_plans: 1
+  completed_phases: 1
+  total_plans: 4
+  completed_plans: 3
   percent: 50
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 24 — context-infrastructure-legacy-cleanup
+**Current focus:** Phase 25 — template-execution-pipeline
 
 ## Current Position
 
-Phase: 24 (context-infrastructure-legacy-cleanup) — EXECUTING
-Plan: 2 of 2 (complete)
-Status: Executing Phase 24
+Phase: 25 (template-execution-pipeline) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-11
 
 Progress: [=====.....] 50% (v5.0 scope)
@@ -55,6 +55,7 @@ Progress: [=====.....] 50% (v5.0 scope)
 | 15-slash-commands-interactive-apply | 02 | 8min | 2 | 6 |
 | Phase 16 P02 | 3min | 1 tasks | 4 files |
 | Phase 16-ux-polish P01 | 4min | 2 tasks | 6 files |
+| Phase 25 P01 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,8 @@ See `.planning/milestones/v1.1-ROADMAP.md` for v1.1 history.
 - [Phase 16-ux-polish]: Hook descriptions embedded in HOOK_REGISTRATIONS array, not a separate data structure
 - [Phase 24-02]: Scan command kept registered (not removed entirely) for CLI discoverability -- users running --help can see it redirects
 - [Phase 24-02]: Synchronous action handler (no async needed since no I/O operations)
+- [Phase 25]: Areas integrated into Step 2 rather than separate Analysis Guidance section
+- [Phase 25]: Template reduced from 351 to 270 lines by tightening prose, not cutting analysis content
 
 ### Pending Todos
 
@@ -100,6 +103,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-11T11:41:00Z
-Stopped at: Completed 24-02-PLAN.md
+Last session: 2026-04-11T12:28:48.479Z
+Stopped at: Completed 25-01-PLAN.md
 Resume file: None

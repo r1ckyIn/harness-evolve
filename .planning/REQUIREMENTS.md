@@ -10,9 +10,9 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 
 ### Template Execution (TMPL)
 
-- [ ] **TMPL-01**: `/evolve:scan` template is treated by the model as mandatory instructions, executing the 3-step pipeline (scan-context → analyze → store-findings) rather than free-styling or running legacy `pending` command
+- [x] **TMPL-01**: `/evolve:scan` template is treated by the model as mandatory instructions, executing the 3-step pipeline (scan-context → analyze → store-findings) rather than free-styling or running legacy `pending` command
 - [ ] **TMPL-02**: `/evolve:apply` template is executed as interactive 4-option flow (Apply/Skip/Dismiss/Let Claude decide), processing each pending recommendation one-by-one
-- [ ] **TMPL-03**: First scan only analyzes configuration files (CLAUDE.md, rules, settings, hooks, commands) without mixing in historical prompt pattern suggestions
+- [x] **TMPL-03**: First scan only analyzes configuration files (CLAUDE.md, rules, settings, hooks, commands) without mixing in historical prompt pattern suggestions
 
 ### Legacy Cleanup (LEGACY)
 
@@ -47,9 +47,9 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TMPL-01 | Phase 25 | Pending |
+| TMPL-01 | Phase 25 | Complete |
 | TMPL-02 | Phase 25 | Pending |
-| TMPL-03 | Phase 25 | Pending |
+| TMPL-03 | Phase 25 | Complete |
 | LEGACY-01 | Phase 24 | Pending |
 | LEGACY-02 | Phase 24 | Complete |
 | HEAL-01 | Phase 26 | Pending |

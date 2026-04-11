@@ -97,10 +97,10 @@ Plans:
   2. When a user invokes `/evolve:apply`, the model presents each pending recommendation with 4 numbered options and processes them one-by-one
   3. A first-time scan (no prior analysis history) only analyzes configuration files -- no historical prompt pattern suggestions appear in the output
   4. A subsequent scan (with prior history) includes both configuration analysis and historical pattern insights
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 25-01-PLAN.md -- Rewrite scan template to v5 imperative pipeline with first-scan detection
+- [x] 25-01-PLAN.md -- Rewrite scan template to v5 imperative pipeline with first-scan detection
 - [ ] 25-02-PLAN.md -- Rewrite apply template to v5 with strict one-at-a-time enforcement
 
 ### Phase 26: Self-Healing Installation
@@ -122,5 +122,5 @@ Plans:
 | 17-20 | v3.0 | 11/11 | Complete | 2026-04-06 |
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
 | 24. Context & Legacy | v5.0 | 1/2 | Executing | - |
-| 25. Template Pipeline | v5.0 | 0/2 | Not started | - |
+| 25. Template Pipeline | v5.0 | 1/2 | In Progress|  |
 | 26. Self-Healing | v5.0 | 0/TBD | Not started | - |
