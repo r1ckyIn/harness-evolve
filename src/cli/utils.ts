@@ -32,10 +32,17 @@ export interface HookRegistration {
 }
 
 /**
- * All 6 hook events that harness-evolve registers.
+ * All 7 hook events that harness-evolve registers.
  * Each entry maps an event name to the compiled JS hook file.
  */
 export const HOOK_REGISTRATIONS: HookRegistration[] = [
+  {
+    event: 'SessionStart',
+    hookFile: 'session-start.js',
+    timeout: 10,
+    async: false,
+    description: 'Detects and repairs missing slash commands on session start',
+  },
   {
     event: 'UserPromptSubmit',
     hookFile: 'user-prompt-submit.js',
