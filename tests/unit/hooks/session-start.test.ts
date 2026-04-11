@@ -198,16 +198,15 @@ describe('handleSessionStart', () => {
   };
 
   it('outputs JSON with hookSpecificOutput.additionalContext when repair was performed', async () => {
-    // We need to mock checkAndRepairSlashCommands at module level
     const mod = await import('../../../src/hooks/session-start.js');
 
-    // Mock the function to return a repaired result
-    vi.spyOn(mod, 'checkAndRepairSlashCommands').mockResolvedValueOnce({
+    // Use dependency injection to provide a mock repair function
+    const mockRepair = async () => ({
       repaired: true,
       details: ['scan.md installed', 'apply.md installed'],
     });
 
-    await mod.handleSessionStart(JSON.stringify(validInput));
+    await mod.handleSessionStart(JSON.stringify(validInput), mockRepair);
 
     expect(stdoutChunks.length).toBeGreaterThan(0);
     const output = JSON.parse(stdoutChunks.join(''));
@@ -221,12 +220,12 @@ describe('handleSessionStart', () => {
   it('outputs nothing (empty stdout) when everything is healthy', async () => {
     const mod = await import('../../../src/hooks/session-start.js');
 
-    vi.spyOn(mod, 'checkAndRepairSlashCommands').mockResolvedValueOnce({
+    const mockRepair = async () => ({
       repaired: false,
-      details: [],
+      details: [] as string[],
     });
 
-    await mod.handleSessionStart(JSON.stringify(validInput));
+    await mod.handleSessionStart(JSON.stringify(validInput), mockRepair);
 
     expect(stdoutChunks.length).toBe(0);
   });
@@ -249,11 +248,11 @@ describe('handleSessionStart', () => {
   it('does not throw when checkAndRepairSlashCommands fails', async () => {
     const mod = await import('../../../src/hooks/session-start.js');
 
-    vi.spyOn(mod, 'checkAndRepairSlashCommands').mockRejectedValueOnce(
-      new Error('filesystem exploded'),
-    );
+    const mockRepairFail = async () => {
+      throw new Error('filesystem exploded');
+    };
 
-    await expect(mod.handleSessionStart(JSON.stringify(validInput))).resolves.not.toThrow();
+    await expect(mod.handleSessionStart(JSON.stringify(validInput), mockRepairFail)).resolves.not.toThrow();
     expect(stdoutChunks.length).toBe(0);
   });
 });

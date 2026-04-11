@@ -27,6 +27,7 @@ export {
   postToolUseFailureInputSchema,
   permissionRequestInputSchema,
   stopInputSchema,
+  sessionStartInputSchema,
 } from './schemas/hook-input.js';
 export type {
   HookCommon,
@@ -36,10 +37,13 @@ export type {
   PostToolUseFailureInput,
   PermissionRequestInput,
   StopInput,
+  SessionStartInput,
 } from './schemas/hook-input.js';
 
 export { readStdin, readFromStream, summarizeToolInput } from './hooks/shared.js';
 export { handleStop } from './hooks/stop.js';
+export { handleSessionStart, checkAndRepairSlashCommands } from './hooks/session-start.js';
+export type { SlashCommandHealth, RepairResult } from './hooks/session-start.js';
 
 export { paths, ensureInit } from './storage/dirs.js';
 export { loadConfig } from './storage/config.js';

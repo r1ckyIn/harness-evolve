@@ -41,7 +41,7 @@ afterEach(async () => {
 });
 
 describe('CLI init -> status -> uninstall integration', () => {
-  it('init writes hooks to settings.json with all 6 events', async () => {
+  it('init writes hooks to settings.json with all 7 events', async () => {
     await runInit({
       yes: true,
       settingsPath,
@@ -52,12 +52,13 @@ describe('CLI init -> status -> uninstall integration', () => {
     const settings = JSON.parse(raw);
     const hooks = settings.hooks;
 
-    // All 6 hook events should be present
+    // All 7 hook events should be present
     expect(Object.keys(hooks).sort()).toEqual([
       'PermissionRequest',
       'PostToolUse',
       'PostToolUseFailure',
       'PreToolUse',
+      'SessionStart',
       'Stop',
       'UserPromptSubmit',
     ]);

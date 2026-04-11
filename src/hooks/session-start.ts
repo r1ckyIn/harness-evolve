@@ -91,10 +91,13 @@ export async function checkAndRepairSlashCommands(homeOverride?: string): Promis
  * Outputs JSON with additionalContext only when repair was performed.
  * Swallows all errors to never block Claude Code.
  */
-export async function handleSessionStart(rawJson: string): Promise<void> {
+export async function handleSessionStart(
+  rawJson: string,
+  repairFn: typeof checkAndRepairSlashCommands = checkAndRepairSlashCommands,
+): Promise<void> {
   try {
     const input = sessionStartInputSchema.parse(JSON.parse(rawJson));
-    const result = await checkAndRepairSlashCommands();
+    const result = await repairFn();
 
     if (result.repaired) {
       const output = {

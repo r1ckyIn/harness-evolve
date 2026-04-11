@@ -52,6 +52,10 @@
       "types": "./dist/hooks/stop.d.ts",
       "default": "./dist/hooks/stop.js"
     },
+    "./hooks/session-start": {
+      "types": "./dist/hooks/session-start.d.ts",
+      "default": "./dist/hooks/session-start.js"
+    },
     "./delivery/run-evolve": {
       "types": "./dist/delivery/run-evolve.d.ts",
       "default": "./dist/delivery/run-evolve.js"
