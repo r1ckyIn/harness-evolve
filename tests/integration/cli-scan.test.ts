@@ -100,6 +100,10 @@ describe('deep scan integration', () => {
     expect(result.scan_context).toBeDefined();
     expect(result.scan_context.project_root).toBe(tempDir);
     expect(Array.isArray(result.recommendations)).toBe(true);
+    // Verify scope_summary is present
+    expect(result.scan_context.scope_summary).toBeDefined();
+    expect(result.scan_context.scope_summary.has_project_config).toBe(true);
+    expect(result.scan_context.scope_summary.project_sources).toBeGreaterThan(0);
   });
 
   it('returns empty recommendations when no issues found', async () => {
@@ -109,5 +113,30 @@ describe('deep scan integration', () => {
     expect(result.recommendations).toEqual([]);
     expect(result.scan_context.claude_md_files).toEqual([]);
     expect(result.scan_context.rules).toEqual([]);
+  });
+
+  it('commands have scope field and scope_summary reflects counts', async () => {
+    // Create project command
+    const cmdDir = join(tempDir, '.claude', 'commands');
+    await mkdir(cmdDir, { recursive: true });
+    await writeFile(join(cmdDir, 'deploy.md'), 'Deploy project.');
+
+    // Create user command
+    const userCmdDir = join(fakeHome, '.claude', 'commands');
+    await mkdir(userCmdDir, { recursive: true });
+    await writeFile(join(userCmdDir, 'global.md'), 'Global cmd.');
+
+    const result = await runDeepScan(tempDir, fakeHome);
+
+    const projCmd = result.scan_context.commands.find((c) => c.scope === 'project');
+    const userCmd = result.scan_context.commands.find((c) => c.scope === 'user');
+    expect(projCmd).toBeDefined();
+    expect(userCmd).toBeDefined();
+    expect(projCmd!.name).toBe('deploy');
+    expect(userCmd!.name).toBe('global');
+
+    // scope_summary should reflect these
+    expect(result.scan_context.scope_summary.user_sources).toBeGreaterThanOrEqual(1);
+    expect(result.scan_context.scope_summary.has_user_config).toBe(true);
   });
 });
