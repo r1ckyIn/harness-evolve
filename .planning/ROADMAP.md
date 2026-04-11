@@ -127,4 +127,4 @@ Plans:
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
 | 24. Context & Legacy | v5.0 | 1/2 | Executing | - |
 | 25. Template Pipeline | v5.0 | 2/2 | Complete    | 2026-04-11 |
-| 26. Self-Healing | v5.0 | 2/2 | Complete   | 2026-04-11 |
+| 26. Self-Healing | v5.0 | 2/2 | Complete    | 2026-04-11 |
