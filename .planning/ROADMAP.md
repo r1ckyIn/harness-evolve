@@ -69,7 +69,7 @@
 **Milestone Goal:** Fix the model-driven scan/apply pipeline so templates are executed as instructions (not treated as documentation), clean up legacy CLI confusion, and add self-healing slash command installation.
 
 - [ ] **Phase 24: Context Infrastructure & Legacy Cleanup** - Fix scan-context scope labeling and remove deprecated scan CLI
-- [ ] **Phase 25: Template Execution Pipeline** - Rewrite scan/apply templates so the model reliably executes the structured pipeline
+- [x] **Phase 25: Template Execution Pipeline** - Rewrite scan/apply templates so the model reliably executes the structured pipeline (completed 2026-04-11)
 - [ ] **Phase 26: Self-Healing Installation** - Auto-detect and reinstall missing slash commands
 
 ## Phase Details
@@ -97,11 +97,11 @@ Plans:
   2. When a user invokes `/evolve:apply`, the model presents each pending recommendation with 4 numbered options and processes them one-by-one
   3. A first-time scan (no prior analysis history) only analyzes configuration files -- no historical prompt pattern suggestions appear in the output
   4. A subsequent scan (with prior history) includes both configuration analysis and historical pattern insights
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 25-01-PLAN.md -- Rewrite scan template to v5 imperative pipeline with first-scan detection
-- [ ] 25-02-PLAN.md -- Rewrite apply template to v5 with strict one-at-a-time enforcement
+- [x] 25-02-PLAN.md -- Rewrite apply template to v5 with strict one-at-a-time enforcement
 
 ### Phase 26: Self-Healing Installation
 **Goal**: Users never get stuck with broken slash commands -- the system detects and repairs missing installation automatically
@@ -122,5 +122,5 @@ Plans:
 | 17-20 | v3.0 | 11/11 | Complete | 2026-04-06 |
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
 | 24. Context & Legacy | v5.0 | 1/2 | Executing | - |
-| 25. Template Pipeline | v5.0 | 1/2 | In Progress|  |
+| 25. Template Pipeline | v5.0 | 2/2 | Complete   | 2026-04-11 |
 | 26. Self-Healing | v5.0 | 0/TBD | Not started | - |
