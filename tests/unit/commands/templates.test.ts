@@ -35,8 +35,8 @@ describe('generateScanCommand', () => {
 
   // --- Version tests ---
 
-  it('has template version 4', () => {
-    expect(output).toContain('<!-- template-version: 4 -->');
+  it('has template version 5', () => {
+    expect(output).toContain('<!-- template-version: 5 -->');
   });
 
   it('contains template version comment', () => {
@@ -45,27 +45,12 @@ describe('generateScanCommand', () => {
 
   // --- Workflow structure tests ---
 
-  it('contains ## Prerequisites section', () => {
-    expect(output).toContain('## Prerequisites');
-  });
-
-  it('contains ## Instructions with step-by-step process', () => {
-    expect(output).toContain('## Instructions');
-    expect(output).toContain('### Step 1');
+  it('contains step-by-step process', () => {
+    expect(output).toContain('Step 1');
   });
 
   it('contains ## Output Format with exact formatting rules', () => {
     expect(output).toContain('## Output Format');
-  });
-
-  it('contains ## Error Handling section', () => {
-    expect(output).toContain('## Error Handling');
-    expect(output).toContain('scan-context Command Fails');
-    expect(output).toContain('Skipped Findings');
-  });
-
-  it('contains ## Edge Cases section', () => {
-    expect(output).toContain('## Edge Cases');
   });
 
   it('suggests running /evolve:apply if issues are found', () => {
@@ -74,6 +59,51 @@ describe('generateScanCommand', () => {
 
   it('is self-contained with no CLAUDE.md preload dependency', () => {
     expect(output).not.toMatch(/preload.*CLAUDE\.md|load.*CLAUDE\.md|requires.*CLAUDE\.md/i);
+  });
+
+  // --- v5 Imperative pipeline tests ---
+
+  it('contains imperative preamble with mandatory execution language', () => {
+    // Preamble should appear before Step 1
+    const step1Idx = output.indexOf('Step 1');
+    const preambleRegion = output.slice(0, step1Idx);
+    expect(preambleRegion).toMatch(/follow each step exactly|do not improvise/i);
+  });
+
+  it('contains first-scan detection via summary.json check', () => {
+    expect(output).toContain('ls ~/.harness-evolve/analysis/pre-processed/summary.json');
+  });
+
+  it('contains first-scan vs subsequent-scan branching logic', () => {
+    expect(output).toMatch(/first scan/i);
+    expect(output).toMatch(/subsequent scan/i);
+  });
+
+  it('does not mention deprecated harness-evolve scan command', () => {
+    // Use regex to match "harness-evolve scan" but NOT "harness-evolve scan-context" or "harness-evolve store-findings"
+    const matches = output.match(/harness-evolve scan(?![-_])/g) || [];
+    expect(matches.length, 'should not contain deprecated "harness-evolve scan" command').toBe(0);
+  });
+
+  it('does not mention harness-evolve pending command', () => {
+    expect(output).not.toContain('harness-evolve pending');
+  });
+
+  it('contains per-step verification gates', () => {
+    // Each major step should have a verification/proceed instruction
+    expect(output).toMatch(/proceed|stop and report/i);
+  });
+
+  it('contains imperative markers (MANDATORY or DO NOT)', () => {
+    expect(output).toMatch(/MANDATORY/);
+    expect(output).toMatch(/DO NOT/);
+  });
+
+  it('contains inline error handling within steps', () => {
+    // Error handling should appear between step headers, not just in a bottom section
+    const step1Idx = output.indexOf('Step 1');
+    const stepRegion = output.slice(step1Idx);
+    expect(stepRegion).toMatch(/error|fail/i);
   });
 
   // --- v4 CLI pipeline tests ---
@@ -216,10 +246,10 @@ describe('generateScanCommand', () => {
 
   // --- v4 Template size test ---
 
-  it('template is between 250 and 400 lines', () => {
+  it('template is between 200 and 300 lines', () => {
     const lineCount = output.split('\n').length;
-    expect(lineCount).toBeGreaterThanOrEqual(250);
-    expect(lineCount).toBeLessThanOrEqual(400);
+    expect(lineCount).toBeGreaterThanOrEqual(200);
+    expect(lineCount).toBeLessThanOrEqual(300);
   });
 });
 
