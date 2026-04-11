@@ -110,7 +110,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. When `~/.claude/commands/evolve/` directory is missing or incomplete, the system detects this and either auto-reinstalls or prompts the user to run `harness-evolve init`
   2. Detection happens at a natural trigger point (SessionStart hook or `/evolve` skill invocation) without adding user-visible latency to normal operations
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 26-01-PLAN.md -- SessionStart hook handler with schema, health check, auto-repair, and unit tests
+- [ ] 26-02-PLAN.md -- Wire SessionStart into HOOK_REGISTRATIONS, tsup, package.json, index.ts exports, and integration test
 
 ## Progress
 
@@ -123,4 +127,4 @@ Plans:
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
 | 24. Context & Legacy | v5.0 | 1/2 | Executing | - |
 | 25. Template Pipeline | v5.0 | 2/2 | Complete    | 2026-04-11 |
-| 26. Self-Healing | v5.0 | 0/TBD | Not started | - |
+| 26. Self-Healing | v5.0 | 0/2 | Not started | - |
