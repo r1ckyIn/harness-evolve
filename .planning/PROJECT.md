@@ -92,6 +92,18 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 (No active requirements — all v4.0 requirements validated. Next milestone requirements defined via `/gsd:new-milestone`)
 
+## Current Milestone: v5.0 Scan Pipeline Reliability & UX
+
+**Goal:** Fix the model-driven scan/apply pipeline so templates are executed as instructions (not treated as documentation), clean up legacy CLI confusion, and add self-healing slash command installation.
+
+**Target features:**
+- Rewrite scan/apply templates so model reliably executes the 3-step pipeline (scan-context → analyze → store-findings) instead of free-styling
+- Separate first-scan (config-only) from subsequent scans (config + historical patterns)
+- Make apply template enforce interactive numbered option flow
+- Auto-detect and reinstall missing slash commands (self-healing)
+- Remove or redirect deprecated `scan` CLI to prevent false-positive confusion
+- Add scan-context scope control (project-level vs user-level config separation)
+
 ## Current State (v4.0 shipped 2026-04-11)
 
 **Architecture:** Model-driven scanner — the Claude Code model itself is the analyzer, guided by a 328-line structured guidance document embedded in `/evolve:scan`. Legacy TypeScript scanners removed (~2960 LOC deleted).
@@ -219,4 +231,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 — v4.0 milestone shipped (model-driven scanner, 13/13 requirements, 684 tests). All 4 milestones complete.*
+*Last updated: 2026-04-11 — v5.0 milestone started (scan pipeline reliability & UX fixes from dogfooding).*

@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Intelligent Scanner & Ecosystem Learning
-status: verifying
-stopped_at: Completed 22-02-PLAN.md
+milestone: v5.0
+milestone_name: Scan Pipeline Reliability & UX
+status: planning
+stopped_at: Defining requirements
 last_updated: "2026-04-11T10:36:22.831Z"
 last_activity: 2026-04-11
 progress:
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 
 ## Current Position
 
-Phase: 23
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-11
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-11 — Milestone v5.0 started
 
 Progress: [..........] 0%
 
