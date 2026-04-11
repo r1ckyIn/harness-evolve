@@ -1,43 +1,22 @@
-// Scan CLI subcommand -- triggers deep configuration scan and outputs JSON results.
-// Used by the /evolve:scan slash command to programmatically invoke scanning.
+// Scan CLI subcommand -- removed in v5.0, now a hard error pointing to /evolve:scan.
 
 import type { Command } from '@commander-js/extra-typings';
-import { runDeepScan } from '../scan/index.js';
-
-/** Confidence tier ordering: HIGH (0) -> MEDIUM (1) -> LOW (2) */
-const CONFIDENCE_ORDER: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
 
 /**
- * Register the 'scan' subcommand on a Commander.js program.
- *
- * Runs a full deep configuration scan (CLAUDE.md, rules, settings, hooks)
- * and outputs the results as structured JSON to stdout. The output omits
- * scan_context to keep it concise for slash command consumers.
+ * Register the 'scan' subcommand as a hard error.
+ * The scan CLI was removed in v5.0. Users should use /evolve:scan in Claude Code
+ * for model-driven analysis, or scan-context for raw JSON.
  */
 export function registerScanCommand(program: Command): void {
   program
     .command('scan')
-    .description('Run deep configuration scan and output results as JSON')
-    .action(async () => {
-      try {
-        const result = await runDeepScan(process.cwd());
-        // Sort recommendations by confidence: HIGH -> MEDIUM -> LOW
-        const sorted = [...result.recommendations].sort((a, b) =>
-          (CONFIDENCE_ORDER[a.confidence] ?? 3) - (CONFIDENCE_ORDER[b.confidence] ?? 3)
-        );
-        // Output minimal JSON (no scan_context to keep output clean for slash command)
-        const output = {
-          generated_at: result.generated_at,
-          recommendation_count: sorted.length,
-          recommendations: sorted,
-        };
-        console.log(JSON.stringify(output, null, 2));
-      } catch (err) {
-        console.log(JSON.stringify({
-          error: err instanceof Error ? err.message : String(err),
-          recommendations: [],
-        }, null, 2));
-        process.exitCode = 1;
-      }
+    .description('[REMOVED] Use /evolve:scan in Claude Code instead')
+    .action(() => {
+      console.error(
+        'Error: The "scan" subcommand was removed in v5.0.\n\n' +
+        'Use /evolve:scan in Claude Code for model-driven configuration analysis.\n' +
+        'Or use "harness-evolve scan-context" for raw configuration JSON.\n'
+      );
+      process.exitCode = 1;
     });
 }
