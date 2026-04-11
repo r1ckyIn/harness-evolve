@@ -82,7 +82,11 @@
   1. Running `harness-evolve scan-context` outputs JSON where each config source is labeled with its scope (project or user)
   2. Running `harness-evolve scan` either errors with a clear message pointing to `/evolve:scan`, or is fully removed as a subcommand
   3. No CLI subcommand produces false-positive scan findings on its own (raw context only, analysis left to model)
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 24-01-PLAN.md -- Add scope labeling to scan-context output (commands scope, rules scope, scope_summary)
+- [ ] 24-02-PLAN.md -- Remove deprecated scan CLI (hard error with redirect message)
 
 ### Phase 25: Template Execution Pipeline
 **Goal**: The model reliably executes scan and apply templates as step-by-step instructions, producing consistent structured output
@@ -113,6 +117,6 @@
 | 12-16 | v2.0 | 10/10 | Complete | 2026-04-04 |
 | 17-20 | v3.0 | 11/11 | Complete | 2026-04-06 |
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
-| 24. Context & Legacy | v5.0 | 0/TBD | Not started | - |
+| 24. Context & Legacy | v5.0 | 0/2 | Planning | - |
 | 25. Template Pipeline | v5.0 | 0/TBD | Not started | - |
 | 26. Self-Healing | v5.0 | 0/TBD | Not started | - |
