@@ -62,3 +62,11 @@ export const stopInputSchema = hookCommonSchema.extend({
   last_assistant_message: z.string().optional(),
 });
 export type StopInput = z.infer<typeof stopInputSchema>;
+
+// SessionStart: fires when a Claude Code session begins, resumes, or context is cleared
+export const sessionStartInputSchema = hookCommonSchema.extend({
+  hook_event_name: z.literal('SessionStart'),
+  source: z.enum(['startup', 'resume', 'clear', 'compact']),
+  model: z.string().optional(),
+});
+export type SessionStartInput = z.infer<typeof sessionStartInputSchema>;
