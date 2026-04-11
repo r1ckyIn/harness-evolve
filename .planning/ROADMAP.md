@@ -64,6 +64,46 @@
 
 </details>
 
+### v5.0 Scan Pipeline Reliability & UX (In Progress)
+
+**Milestone Goal:** Fix the model-driven scan/apply pipeline so templates are executed as instructions (not treated as documentation), clean up legacy CLI confusion, and add self-healing slash command installation.
+
+- [ ] **Phase 24: Context Infrastructure & Legacy Cleanup** - Fix scan-context scope labeling and remove deprecated scan CLI
+- [ ] **Phase 25: Template Execution Pipeline** - Rewrite scan/apply templates so the model reliably executes the structured pipeline
+- [ ] **Phase 26: Self-Healing Installation** - Auto-detect and reinstall missing slash commands
+
+## Phase Details
+
+### Phase 24: Context Infrastructure & Legacy Cleanup
+**Goal**: scan-context output clearly separates project vs user scope, and deprecated CLI paths no longer confuse users or the model
+**Depends on**: Nothing (first phase of v5.0)
+**Requirements**: LEGACY-01, LEGACY-02
+**Success Criteria** (what must be TRUE):
+  1. Running `harness-evolve scan-context` outputs JSON where each config source is labeled with its scope (project or user)
+  2. Running `harness-evolve scan` either errors with a clear message pointing to `/evolve:scan`, or is fully removed as a subcommand
+  3. No CLI subcommand produces false-positive scan findings on its own (raw context only, analysis left to model)
+**Plans**: TBD
+
+### Phase 25: Template Execution Pipeline
+**Goal**: The model reliably executes scan and apply templates as step-by-step instructions, producing consistent structured output
+**Depends on**: Phase 24 (clean scan-context output is prerequisite for template rewrites)
+**Requirements**: TMPL-01, TMPL-02, TMPL-03
+**Success Criteria** (what must be TRUE):
+  1. When a user invokes `/evolve:scan`, the model executes the 3-step pipeline (scan-context, analyze, store-findings) without free-styling or running deprecated commands
+  2. When a user invokes `/evolve:apply`, the model presents each pending recommendation with 4 numbered options and processes them one-by-one
+  3. A first-time scan (no prior analysis history) only analyzes configuration files -- no historical prompt pattern suggestions appear in the output
+  4. A subsequent scan (with prior history) includes both configuration analysis and historical pattern insights
+**Plans**: TBD
+
+### Phase 26: Self-Healing Installation
+**Goal**: Users never get stuck with broken slash commands -- the system detects and repairs missing installation automatically
+**Depends on**: Phase 25 (templates must be finalized before auto-reinstall can install correct versions)
+**Requirements**: HEAL-01
+**Success Criteria** (what must be TRUE):
+  1. When `~/.claude/commands/evolve/` directory is missing or incomplete, the system detects this and either auto-reinstalls or prompts the user to run `harness-evolve init`
+  2. Detection happens at a natural trigger point (SessionStart hook or `/evolve` skill invocation) without adding user-visible latency to normal operations
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -73,3 +113,6 @@
 | 12-16 | v2.0 | 10/10 | Complete | 2026-04-04 |
 | 17-20 | v3.0 | 11/11 | Complete | 2026-04-06 |
 | 21-23 | v4.0 | 8/8 | Complete | 2026-04-11 |
+| 24. Context & Legacy | v5.0 | 0/TBD | Not started | - |
+| 25. Template Pipeline | v5.0 | 0/TBD | Not started | - |
+| 26. Self-Healing | v5.0 | 0/TBD | Not started | - |

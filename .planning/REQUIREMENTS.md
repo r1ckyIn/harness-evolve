@@ -47,12 +47,12 @@ Make Claude Code harnesses self-improving without manual analysis -- with a reli
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TMPL-01 | TBD | Pending |
-| TMPL-02 | TBD | Pending |
-| TMPL-03 | TBD | Pending |
-| LEGACY-01 | TBD | Pending |
-| LEGACY-02 | TBD | Pending |
-| HEAL-01 | TBD | Pending |
+| TMPL-01 | Phase 25 | Pending |
+| TMPL-02 | Phase 25 | Pending |
+| TMPL-03 | Phase 25 | Pending |
+| LEGACY-01 | Phase 24 | Pending |
+| LEGACY-02 | Phase 24 | Pending |
+| HEAL-01 | Phase 26 | Pending |
 
 ---
-*Last updated: 2026-04-11 -- v5.0 milestone, 6 requirements from dogfooding*
+*Last updated: 2026-04-11 -- v5.0 roadmap created, 6 requirements mapped to 3 phases*

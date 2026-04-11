@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Scan Pipeline Reliability & UX
 status: planning
-stopped_at: Defining requirements
-last_updated: "2026-04-11T10:36:22.831Z"
+stopped_at: Roadmap created, ready to plan Phase 24
+last_updated: "2026-04-11"
 last_activity: 2026-04-11
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 19
-  completed_plans: 19
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
   percent: 0
 ---
 
@@ -18,45 +18,35 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-06)
+See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Make Claude Code harnesses self-improving without manual analysis.
-**Current focus:** Phase 22 — ecosystem-learning-scanner-guidance
+**Current focus:** v5.0 Scan Pipeline Reliability & UX -- Phase 24
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-11 — Milestone v5.0 started
+Phase: 24 (Context Infrastructure & Legacy Cleanup) -- first of 3 in v5.0
+Plan: --
+Status: Ready to plan
+Last activity: 2026-04-11 -- v5.0 roadmap created
 
 Progress: [..........] 0%
 
 ## Performance Metrics
 
-**Velocity (v3.0):**
+**Velocity (v4.0):**
 
-- Total plans completed: 11
-- Timeline: 2 days (2026-04-04 to 2026-04-06)
+- Total plans completed: 8
+- Timeline: 5 days (2026-04-06 to 2026-04-11)
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
-| 17-bug-fixes-reliability | 01 | 6min | 2 | 4 |
-| 17-bug-fixes-reliability | 02 | 5min | 2 | 10 |
-| 18-comprehensive-config-audit | 01 | 5min | 3 | 6 |
-| 18-comprehensive-config-audit | 02 | 4min | 3 | 10 |
-| 19-workflow-documentation | 01 | 3min | 2 | 3 |
-| 19-workflow-documentation | 02 | 4min | 2 | 4 |
-| 19.1 | 01 | 3min | 1 | 11 |
-| 19.1 | 02 | 4min | 2 | 2 |
-| 20-scanner-ux-coverage-polish | 01 | 4min | 2 | 8 |
-| 20-scanner-ux-coverage-polish | 02 | 3min | 1 | 1 |
-| Phase 23 P01 | 30min | 2 tasks | 11 files |
-| Phase 23 P02 | 7min | 2 tasks | 24 files |
-| Phase 23 P03 | 1min | 1 tasks | 0 files |
 | 21-foundation-context-infrastructure | 03 | 3min | 2 | 3 |
 | Phase 22 P01 | 5min | 3 tasks | 2 files |
 | Phase 22 P02 | 2min | 2 tasks | 2 files |
+| Phase 23 P01 | 30min | 2 tasks | 11 files |
+| Phase 23 P02 | 7min | 2 tasks | 24 files |
+| Phase 23 P03 | 1min | 1 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -64,25 +54,15 @@ Progress: [..........] 0%
 
 All prior decisions archived in PROJECT.md Key Decisions table.
 
-- v4.0 roadmap: 3 phases derived from 4 requirement categories (INFRA, SCAN, MODEL, ECO) clustering into 3 delivery boundaries
-- v4.0 roadmap: ECO research combined with SCAN guidance (Phase 22) because ecosystem learning directly informs guidance quality
-- v4.0 roadmap: SCAN-03 (legacy removal) combined with MODEL validation (Phase 23) because old scanners stay as fallback until model approach is proven
-- v4.0 roadmap: Phase 21 depends on nothing; Phase 22 depends on 21 (scan-context CLI); Phase 23 depends on 22 (guidance docs must exist before validation)
-- [Phase 23]: Force-added test fixture CLAUDE.md files past .gitignore (test fixtures, not project config)
-- [Phase 23]: Nested hooks test validates current behavior since INFRA-01 fix is in Phase 21
-- [Phase 23]: buildScanResult is thin wrapper (timestamp + context) -- model produces findings via guidance docs
-- [Phase 23]: CLI scan deprecation notice goes to stderr to preserve JSON piping
-- [Phase 23]: Auto-approved MODEL-01 through MODEL-04 checkpoint -- live model inference verification deferred to /gsd:verify-work
-- [Phase 21-03]: Added store-findings after dismiss command (Plan 02 runs in parallel wave)
-- [Phase 22]: Template embeds guidance as structured markdown in TypeScript template literal (not external .md file)
-- [Phase 22]: Conservative classification: prefer suggestion over problem, MEDIUM over HIGH to reduce false positives
-- [Phase 22]: Template uses scan-context exclusively (not deprecated scan command) to avoid stderr noise
-- [Phase 22]: Apply template v4 context section explicitly references store-findings pipeline for transparency
+- v5.0 roadmap: 3 phases derived from 3 requirement categories (TMPL, LEGACY, HEAL) clustering into 3 delivery boundaries
+- v5.0 roadmap: LEGACY cleanup (Phase 24) before TMPL rewrites (Phase 25) because clean scan-context output is prerequisite for templates
+- v5.0 roadmap: HEAL (Phase 26) depends on Phase 25 because templates must be finalized before auto-reinstall can install correct versions
 
 ### Roadmap Evolution
 
 - v3.0 shipped with 5 phases (17-20 + 19.1 insertion)
-- v4.0 roadmap: 3 phases (21-23), 13 requirements
+- v4.0 shipped with 3 phases (21-23)
+- v5.0 roadmap: 3 phases (24-26), 6 requirements
 
 ### Pending Todos
 
@@ -94,6 +74,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-08T03:42:57.296Z
-Stopped at: Completed 22-02-PLAN.md
+Last session: 2026-04-11
+Stopped at: v5.0 roadmap created
 Resume file: None
