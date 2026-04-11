@@ -90,35 +90,20 @@ An open-source, environment-agnostic self-iteration engine for Claude Code. It o
 
 ### Active
 
-(v4.0 Phase 23 code-level requirements validated — MODEL-01 through MODEL-04 human verification pending)
+(No active requirements — all v4.0 requirements validated. Next milestone requirements defined via `/gsd:new-milestone`)
 
-- [x] All 7 legacy scanner TypeScript functions removed, test suite passes with model-driven replacements — Validated in Phase 23: model-driven-validation-legacy-cleanup (SCAN-03)
-- [ ] Model detects semantic config conflicts (ESM vs CommonJS) — Phase 23 (MODEL-01, awaiting human verification)
-- [ ] Model identifies cross-file inconsistencies — Phase 23 (MODEL-02, awaiting human verification)
-- [ ] Model identifies hookable operations from natural language — Phase 23 (MODEL-03, awaiting human verification)
-- [ ] User extends scan by editing guidance .md without code changes — Phase 23 (MODEL-04, awaiting human verification)
-- [x] context-builder correctly parses nested hooks format `{matcher, hooks: [{type, command}]}`, zero false positives on real configs — Validated in Phase 21: foundation-context-infrastructure (INFRA-01)
-- [x] `harness-evolve scan-context` CLI outputs complete ScanContext JSON for model consumption — Validated in Phase 21: foundation-context-infrastructure (INFRA-02)
-- [x] `harness-evolve store-findings` validates and persists model-generated findings to apply pipeline — Validated in Phase 21: foundation-context-infrastructure (INFRA-03)
-- [x] First-time user onboarding: scan-context works without init, store-findings auto-creates directories — Validated in Phase 21: foundation-context-infrastructure (INFRA-04)
-- [x] `/evolve:scan` template contains comprehensive model-executable guidance document with 7 analysis areas — Validated in Phase 22: ecosystem-learning-scanner-guidance (SCAN-01)
-- [x] Guidance defines 7 analysis areas with checklists, severity rules, output format specs, and boundary conditions — Validated in Phase 22: ecosystem-learning-scanner-guidance (SCAN-02)
-- [x] GSD workflow patterns (structured output contracts, severity tiers, boundary conditions) applied to scan/apply templates — Validated in Phase 22: ecosystem-learning-scanner-guidance (ECO-01)
-- [x] 3+ open-source patterns (PR-Agent severity classification, ESLint extensibility, Singularity scoring) adopted — Validated in Phase 22: ecosystem-learning-scanner-guidance (ECO-02)
+## Current State (v4.0 shipped 2026-04-11)
 
-## Current Milestone: v4.0 Intelligent Scanner & Ecosystem Learning
+**Architecture:** Model-driven scanner — the Claude Code model itself is the analyzer, guided by a 328-line structured guidance document embedded in `/evolve:scan`. Legacy TypeScript scanners removed (~2960 LOC deleted).
 
-**Goal:** 将 scanner 从纯代码检测升级为用户模型驱动的智能分析，借鉴同类开源项目和 GSD 行为规范机制，全面提升项目质量
+**Pipeline:** capture → store → pre-process → classify → route → deliver (v1.0) + scan-context → model analysis → store-findings → apply (v4.0)
 
-**Target features:**
-- 修复 hooks 嵌套结构解析 bug（BUG-01：context-builder 不支持 `{matcher, hooks: [{type, command}]}` 格式）
-- Scanner 架构重构：从纯代码 scanner 函数改为用户当前 Claude Code 模型驱动的分析，harness-evolve 提供指导文档和格式规范，模型执行实际分析判断
-- 创建详细的 scanner guidance docs（检查清单、严重性定义、输出格式、边界条件），嵌入 `/evolve:scan` 模板
-- 研究同类优秀开源项目，提取适合 harness-evolve 的设计模式和功能
-- 逆向分析 GSD 如何通过 workflow .md 和模板规范模型行为，将可借鉴的模式应用到 scan/apply 流程
-- 用真实用户配置验证 scanner 准确性，确保零误报
+**Key stats:** ~20,700 LOC TypeScript, 684 tests, 9 CLI subcommands, 6 hooks, 7 analysis areas, 4 appliers, 3 generators
 
 ## Shipped Milestones
+
+### v4.0 Intelligent Scanner & Ecosystem Learning (shipped 2026-04-11)
+Model-driven scanner architecture: fixed hooks parsing, added scan-context/store-findings CLI bridge, rewrote scan template with 7-area guidance document (GSD + open-source patterns), validated model capabilities via live UAT (4/4 MODEL tests passed), removed 7 legacy TypeScript scanners. 3 phases (21-23), 8 plans.
 
 ### v3.0 Reliability & Config Audit (shipped 2026-04-06)
 Bug fixes (global slash commands, scanner false positives, apply-one confidence gate, stop hook notification), comprehensive config audit (7 scanners), workflow documentation, integration testing, scanner UX polish. 5 phases (17-20), 11 plans.
@@ -234,4 +219,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 — Phase 22 complete (scan template v4 with model-driven guidance, 7 analysis areas, 684 tests passing). v4.0 milestone: 2/3 phases shipped.*
+*Last updated: 2026-04-11 — v4.0 milestone shipped (model-driven scanner, 13/13 requirements, 684 tests). All 4 milestones complete.*

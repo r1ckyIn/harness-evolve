@@ -1,5 +1,32 @@
 # Milestones
 
+## v4.0 Intelligent Scanner & Ecosystem Learning (Shipped: 2026-04-11)
+
+**Phases completed:** 8 phases, 19 plans, 38 tasks
+
+**Key accomplishments:**
+
+- Global slash command installation via ~/.claude/commands/evolve/ and npm/URL false positive filtering in reference extraction
+- skipConfidenceGate bypass for apply-one CLI (MEDIUM/LOW recs now applicable) and notification flag write after Stop hook analysis
+- Extended recommendation schema with problem/suggestion severity, plus conflict detection and structure audit scanners with full TDD coverage
+- Hooks redundancy and commands convention scanners completing all 7 audit domains, with severity-based problems/suggestions output grouping in CLI and slash commands
+- Comprehensive GSD-style workflow templates for /evolve:scan (130+ lines) and /evolve:apply (150+ lines) with error handling, exact output formatting, edge cases, and template version tracking
+- Version-aware installSlashCommands overwrites stale templates using template-version HTML comments; uninstall now cleans both global and project-level slash command paths
+- Added severity field to all 20 recommendation push calls across 8 classifiers and 3 scanners, resolving DTS build error and enabling clean build gate
+- Shell-scriptable integration test covering init, status, scan, pending, apply-one, dismiss, uninstall with 27/27 tests passing and zero bugs found
+- All 6 hook types verified via stdin simulation, slash commands and live hooks confirmed working in real Claude Code session, notification pipeline tested end-to-end
+- English-language scan instruction, numbered apply options (1-4) with Let Claude decide, and scanner_summary in CLI scan JSON output
+- E2E integration test constructing intentionally broken Claude Code config to verify all 7 scanners detect issues in a single runDeepScan pass
+- Fixed extractHooksFromAllSettings to parse nested hooks format {matcher, hooks: [{type, command}]} with optional matcher field extraction
+- scan-context CLI subcommand outputting raw ScanContext JSON to stdout for model-driven analysis consumption
+- Rewrote /evolve:scan from CLI-result-display template (v3) to 328-line model-executable guidance document (v4) with 7 analysis area checklists, severity classification matrix, and structured output contract
+- Apply template (v4) updated to reference model-driven analysis pipeline and store-findings, synchronized with scan template v4
+- 6 deterministic integration tests validating v4.0 scan pipeline + 4 crafted test config fixtures proving model superiority over regex scanners
+- Surgically removed 7 code-based scanners (~2960 LOC), simplified scan orchestrator to context-only, updated CLI and public API -- build passes, 654 tests green
+- Auto-approved human verification checkpoint for MODEL-01 through MODEL-04 -- live model inference validation deferred to /gsd:verify-work milestone audit
+
+---
+
 ## v2.0 Deep Scan & Auto-Generation (Shipped: 2026-04-04)
 
 **Phases completed:** 5 phases, 10 plans, 20 tasks
