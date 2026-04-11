@@ -1,26 +1,31 @@
-// Unit tests for CLI scan subcommand
+// Unit tests for CLI scan subcommand -- removed in v5.0, now a hard error
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Command } from '@commander-js/extra-typings';
 
-// Mock the scan module
-vi.mock('../../../src/scan/index.js', () => ({
-  runDeepScan: vi.fn(),
-}));
-
-describe('CLI scan command', () => {
-  let logs: string[];
+describe('CLI scan command (removed in v5.0)', () => {
+  let stderrLogs: string[];
+  let stdoutLogs: string[];
+  let originalError: typeof console.error;
   let originalLog: typeof console.log;
+  let originalExitCode: number | undefined;
 
   beforeEach(() => {
     vi.resetAllMocks();
-    logs = [];
+    stderrLogs = [];
+    stdoutLogs = [];
+    originalError = console.error;
     originalLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    originalExitCode = process.exitCode;
+    console.error = (...args: unknown[]) => stderrLogs.push(args.join(' '));
+    console.log = (...args: unknown[]) => stdoutLogs.push(args.join(' '));
+    process.exitCode = undefined;
   });
 
   afterEach(() => {
+    console.error = originalError;
     console.log = originalLog;
+    process.exitCode = originalExitCode;
   });
 
   it('registerScanCommand is exported as a function', async () => {
@@ -28,81 +33,16 @@ describe('CLI scan command', () => {
     expect(typeof registerScanCommand).toBe('function');
   });
 
-  it('scan command outputs JSON with recommendations', async () => {
-    const { runDeepScan } = await import('../../../src/scan/index.js');
-    const mockedScan = vi.mocked(runDeepScan);
-    mockedScan.mockResolvedValueOnce({
-      generated_at: '2026-04-04T00:00:00.000Z',
-      scan_context: {} as any,
-      recommendations: [
-        {
-          id: 'rec-1',
-          target: 'HOOK',
-          confidence: 'HIGH',
-          pattern_type: 'scan_missing_mechanization',
-          title: 'Test Recommendation',
-          description: 'A test recommendation',
-          evidence: { count: 1, examples: ['example'] },
-          suggested_action: 'Do something',
-        },
-      ],
-    });
-
+  it('registers a scan command on the program', async () => {
     const { registerScanCommand } = await import('../../../src/cli/scan.js');
     const program = new Command();
     program.exitOverride();
     registerScanCommand(program);
-
-    await program.parseAsync(['scan'], { from: 'user' });
-
-    expect(logs.length).toBeGreaterThan(0);
-    const output = JSON.parse(logs.join(''));
-    expect(output.generated_at).toBe('2026-04-04T00:00:00.000Z');
-    expect(output.recommendations).toHaveLength(1);
-    expect(output.recommendation_count).toBe(1);
-    expect(output.recommendations[0].id).toBe('rec-1');
+    const scanCmd = program.commands.find(c => c.name() === 'scan');
+    expect(scanCmd).toBeDefined();
   });
 
-  it('scan output recommendations are sorted by confidence', async () => {
-    const { runDeepScan } = await import('../../../src/scan/index.js');
-    const mockedScan = vi.mocked(runDeepScan);
-    mockedScan.mockResolvedValueOnce({
-      generated_at: '2026-04-04T00:00:00.000Z',
-      scan_context: {} as any,
-      recommendations: [
-        {
-          id: 'low-1',
-          target: 'RULE',
-          confidence: 'LOW',
-          pattern_type: 'scan_redundancy',
-          title: 'Low priority',
-          description: 'Low',
-          evidence: { count: 1, examples: ['x'] },
-          suggested_action: 'Do low',
-        },
-        {
-          id: 'high-1',
-          target: 'HOOK',
-          confidence: 'HIGH',
-          pattern_type: 'scan_missing_mechanization',
-          title: 'High priority',
-          description: 'High',
-          evidence: { count: 5, examples: ['y'] },
-          suggested_action: 'Do high',
-        },
-        {
-          id: 'med-1',
-          target: 'CLAUDE_MD',
-          confidence: 'MEDIUM',
-          pattern_type: 'scan_stale_reference',
-          title: 'Medium priority',
-          description: 'Medium',
-          evidence: { count: 2, examples: ['z'] },
-          suggested_action: 'Do medium',
-        },
-      ],
-    });
-
+  it('running scan outputs error to stderr containing "removed in v5.0"', async () => {
     const { registerScanCommand } = await import('../../../src/cli/scan.js');
     const program = new Command();
     program.exitOverride();
@@ -110,16 +50,11 @@ describe('CLI scan command', () => {
 
     await program.parseAsync(['scan'], { from: 'user' });
 
-    const output = JSON.parse(logs.join(''));
-    expect(output.recommendations.map((r: any) => r.confidence)).toEqual(['HIGH', 'MEDIUM', 'LOW']);
-    expect(output.recommendations.map((r: any) => r.id)).toEqual(['high-1', 'med-1', 'low-1']);
+    const stderrOutput = stderrLogs.join('\n');
+    expect(stderrOutput).toContain('removed in v5.0');
   });
 
-  it('scan command handles errors gracefully', async () => {
-    const { runDeepScan } = await import('../../../src/scan/index.js');
-    const mockedScan = vi.mocked(runDeepScan);
-    mockedScan.mockRejectedValueOnce(new Error('Scan failed: no access'));
-
+  it('running scan outputs error to stderr containing "/evolve:scan"', async () => {
     const { registerScanCommand } = await import('../../../src/cli/scan.js');
     const program = new Command();
     program.exitOverride();
@@ -127,9 +62,48 @@ describe('CLI scan command', () => {
 
     await program.parseAsync(['scan'], { from: 'user' });
 
-    expect(logs.length).toBeGreaterThan(0);
-    const output = JSON.parse(logs.join(''));
-    expect(output.error).toBe('Scan failed: no access');
-    expect(output.recommendations).toEqual([]);
+    const stderrOutput = stderrLogs.join('\n');
+    expect(stderrOutput).toContain('/evolve:scan');
+  });
+
+  it('running scan outputs error to stderr containing "scan-context"', async () => {
+    const { registerScanCommand } = await import('../../../src/cli/scan.js');
+    const program = new Command();
+    program.exitOverride();
+    registerScanCommand(program);
+
+    await program.parseAsync(['scan'], { from: 'user' });
+
+    const stderrOutput = stderrLogs.join('\n');
+    expect(stderrOutput).toContain('scan-context');
+  });
+
+  it('running scan sets process.exitCode = 1', async () => {
+    const { registerScanCommand } = await import('../../../src/cli/scan.js');
+    const program = new Command();
+    program.exitOverride();
+    registerScanCommand(program);
+
+    await program.parseAsync(['scan'], { from: 'user' });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('running scan does NOT output any JSON to stdout', async () => {
+    const { registerScanCommand } = await import('../../../src/cli/scan.js');
+    const program = new Command();
+    program.exitOverride();
+    registerScanCommand(program);
+
+    await program.parseAsync(['scan'], { from: 'user' });
+
+    expect(stdoutLogs).toHaveLength(0);
+  });
+
+  it('running scan does NOT call buildScanContext', async () => {
+    // Verify that the scan module does not import buildScanContext
+    const scanModule = await import('../../../src/cli/scan.js');
+    const moduleSource = scanModule.registerScanCommand.toString();
+    expect(moduleSource).not.toContain('buildScanContext');
   });
 });
