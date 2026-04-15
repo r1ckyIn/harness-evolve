@@ -1,6 +1,6 @@
 {
   "name": "harness-evolve",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Self-iteration engine for Claude Code — detects usage patterns and routes optimization recommendations",
   "keywords": [
