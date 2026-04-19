@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 500" font-family="'Virgil', 'Segoe UI', sans-serif">
+  <rect width="720" height="500" fill="#ffffff"/>
+
+  <!-- Claude Session -->
+  <rect x="60" y="60" width="220" height="80" rx="10" ry="10" fill="#bae6fd" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="170" y="105" text-anchor="middle" font-size="20" fill="#1e1e1e">Claude Code Session</text>
+
+  <!-- Hooks -->
+  <rect x="60" y="220" width="220" height="80" rx="10" ry="10" fill="#fde68a" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="170" y="255" text-anchor="middle" font-size="18" fill="#1e1e1e">5 Lifecycle Hooks</text>
+  <text x="170" y="280" text-anchor="middle" font-size="15" fill="#1e1e1e">(UserPrompt, PreTool, PostTool)</text>
+
+  <!-- JSONL Store -->
+  <rect x="60" y="380" width="220" height="80" rx="10" ry="10" fill="#e0e7ff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="170" y="415" text-anchor="middle" font-size="18" fill="#1e1e1e">JSONL Event Store</text>
+  <text x="170" y="440" text-anchor="middle" font-size="15" fill="#1e1e1e">(14-pattern secret scrub)</text>
+
+  <!-- Classifiers -->
+  <rect x="380" y="380" width="260" height="80" rx="10" ry="10" fill="#bbf7d0" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="510" y="415" text-anchor="middle" font-size="18" fill="#1e1e1e">8 Pattern Classifiers</text>
+  <text x="510" y="440" text-anchor="middle" font-size="15" fill="#1e1e1e">(prompts, tools, drift, ...)</text>
+
+  <!-- Router -->
+  <rect x="380" y="220" width="260" height="80" rx="10" ry="10" fill="#fbcfe8" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="510" y="255" text-anchor="middle" font-size="18" fill="#1e1e1e">Routing Decision Tree</text>
+  <text x="510" y="280" text-anchor="middle" font-size="15" fill="#1e1e1e">(/evolve command)</text>
+
+  <!-- Config Targets -->
+  <rect x="380" y="60" width="260" height="80" rx="10" ry="10" fill="#fecaca" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="510" y="95" text-anchor="middle" font-size="18" fill="#1e1e1e">Config Targets</text>
+  <text x="510" y="120" text-anchor="middle" font-size="15" fill="#1e1e1e">Hook / Skill / Rule / CLAUDE.md</text>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#1e1e1e"/>
+    </marker>
+  </defs>
+
+  <!-- Session to Hooks -->
+  <line x1="170" y1="140" x2="170" y2="220" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- Hooks to JSONL -->
+  <line x1="170" y1="300" x2="170" y2="380" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- JSONL to Classifiers -->
+  <line x1="280" y1="420" x2="380" y2="420" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- Classifiers to Router -->
+  <line x1="510" y1="380" x2="510" y2="300" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- Router to Targets -->
+  <line x1="510" y1="220" x2="510" y2="140" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)"/>
+</svg>

@@ -17,6 +17,14 @@
 
 ---
 
+## Demo
+
+![Demo](demo.gif)
+
+Regenerate: `npm run build && vhs demo.tape`
+
+---
+
 ## English
 
 ### Problem
@@ -64,6 +72,12 @@ Capture -> Store -> Pre-Process -> Classify -> Route -> Deliver -> Track Outcome
 | Personal/contextual information | **Memory** | Suggest a memory entry |
 | Project-level configuration pattern | **CLAUDE.md** | Update project CLAUDE.md |
 | Config contradictions or redundancy | **Cleanup** | Flag drift for review |
+
+### Routing Flow
+
+![Routing Flow](assets/routing-flow.svg)
+
+Source: [routing-flow.excalidraw](assets/routing-flow.excalidraw) — drag to [excalidraw.com](https://excalidraw.com) to edit.
 
 ### Key Features
 
@@ -172,6 +186,10 @@ Add to your Claude Code `settings.json`:
 | Classifiers | 8 pattern classifiers |
 | Routing Targets | 7+ configuration tools |
 | Total Commits | 96 |
+
+### Why Story
+
+harness-evolve started as a personal itch: I wanted Claude Code sessions that adapt to the task at hand without me hand-curating skills or rereading my own shell history. The library sits between my prompts and Claude's execution layer, silently logging lifecycle events and routing recurring patterns to the right configuration tool — a hook, a skill, a rule, or a CLAUDE.md entry. Shipping as an npm package (not just a private script) is intentional: it forces a clean public API and forces me to keep the classifier/routing layer decoupled. The broader story is that AI-augmented engineering benefits from meta-tools — not just better prompts, but an infrastructure layer that watches your tooling drift and closes the loop.
 
 ---
 
